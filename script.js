@@ -1,4 +1,4 @@
-const weeks = [
+let weeks = [
   { id: "semana-01", label: "Semana 01", title: "Tecnología de producción" },
   { id: "semana-02-03", label: "Semana 02-03", title: "Maximización del beneficio" },
   { id: "semana-04", label: "Semana 04", title: "Minimización del costo" },
@@ -11,10 +11,16 @@ const courses = [
     title: "Economía de la Producción Competitiva",
     subtitle: "Unidad 1",
     description: "Guía, teoría y ejercicios de producción, beneficios y costos."
+  },
+  {
+    id: "poder-mercado",
+    title: "Economía de la Empresa con Poder de Mercado",
+    subtitle: "Unidades 1-4",
+    description: "Monopolio, oligopolio, teoría de juegos, concentración e información asimétrica."
   }
 ];
 
-const topics = [
+let topics = [
   {
     id: "empresa-tecnologia",
     week: "semana-01",
@@ -130,6 +136,7 @@ const topics = [
 ];
 
 const state = {
+  courseId: "economia-produccion",
   topicId: topics[0].id,
   theoryLevel: "facil",
   viewed: new Set()
@@ -173,9 +180,20 @@ function graphSvg(type) {
     profit: ["assets/graphs/graph-5.png", "Gráfico LaTeX de maximización del beneficio"],
     costmin: ["assets/graphs/graph-6.png", "Gráfico LaTeX de minimización del costo"],
     costcurves: ["assets/graphs/graph-7.png", "Gráfico LaTeX de costos medios y marginales"],
-    scale: ["assets/graphs/graph-8.png", "Gráfico LaTeX de escala y aprendizaje"]
+    scale: ["assets/graphs/graph-8.png", "Gráfico LaTeX de escala y aprendizaje"],
+    marketpower: ["assets/graphs/market-1.png", "Gráfico LaTeX de fuentes del poder de mercado"],
+    monopoly: ["assets/graphs/market-2.png", "Gráfico LaTeX de monopolio"],
+    naturalmonopoly: ["assets/graphs/market-3.png", "Gráfico LaTeX de monopolio natural"],
+    discrimination: ["assets/graphs/market-4.png", "Gráfico LaTeX de discriminación de precios"],
+    monopsony: ["assets/graphs/market-5.png", "Gráfico LaTeX de monopsonio"],
+    concentration: ["assets/graphs/market-6.png", "Gráfico LaTeX de concentración de mercado"],
+    oligopoly: ["assets/graphs/market-7.png", "Gráfico LaTeX de oligopolio"],
+    gamematrix: ["assets/graphs/market-8.png", "Gráfico LaTeX de matriz de teoría de juegos"],
+    dominant: ["assets/graphs/market-9.png", "Gráfico LaTeX de estrategia dominante"],
+    repeatedgame: ["assets/graphs/market-10.png", "Gráfico LaTeX de juegos repetidos"],
+    asymmetric: ["assets/graphs/market-11.png", "Gráfico LaTeX de información asimétrica"]
   };
-  const asset = graphAssets[type] || graphAssets.production;
+  const asset = graphAssets[type];
   if (asset) {
     return `<img class="concept-chart latex-chart" src="${asset[0]}" alt="${asset[1]}" loading="lazy" />`;
   }
@@ -243,9 +261,73 @@ function graphSvg(type) {
       <path d="M88 176 C154 132, 238 105, 340 88" class="avg-curve"/>
       <line x1="92" y1="176" x2="92" y2="220" class="guide-line"/><line x1="306" y1="95" x2="306" y2="220" class="guide-line"/>
       <text x="216" y="84" class="graph-label">curva de aprendizaje</text><text x="232" y="179" class="graph-label gold">CMe por escala</text>
-      <text x="320" y="242" class="axis-label">experiencia / escala</text><text x="30" y="48" class="axis-label">costo</text>`
+      <text x="320" y="242" class="axis-label">experiencia / escala</text><text x="30" y="48" class="axis-label">costo</text>`,
+    monopoly: `${common}
+      <path d="M86 70 L344 196" class="curve"/>
+      <path d="M90 92 L318 216" class="var-curve"/>
+      <line x1="82" y1="174" x2="346" y2="174" class="cost-line"/>
+      <circle cx="210" cy="174" r="4.8" class="point"/>
+      <line x1="210" y1="174" x2="210" y2="220" class="guide-line"/>
+      <line x1="210" y1="174" x2="210" y2="130" class="guide-line"/>
+      <text x="300" y="190" class="graph-label">D=P(Q)</text><text x="274" y="212" class="graph-label blue">IMg</text><text x="94" y="166" class="graph-label red">CMg</text><text x="218" y="126" class="graph-label">Pₘ</text><text x="214" y="190" class="graph-label">Qₘ</text>
+      <text x="344" y="242" class="axis-label">cantidad Q</text><text x="35" y="48" class="axis-label">precio/costo</text>`,
+    naturalmonopoly: `${common}
+      <path d="M86 74 C150 98, 236 138, 344 190" class="avg-curve"/>
+      <path d="M86 126 C152 136, 246 155, 346 174" class="cost-line"/>
+      <path d="M86 66 L344 196" class="curve"/>
+      <circle cx="230" cy="148" r="4.8" class="point"/>
+      <text x="286" y="186" class="graph-label gold">CMe decreciente</text><text x="286" y="165" class="graph-label red">CMg bajo</text><text x="302" y="192" class="graph-label">demanda</text><text x="238" y="145" class="graph-label">escala eficiente</text>
+      <text x="344" y="242" class="axis-label">usuarios Q</text><text x="35" y="48" class="axis-label">costo/precio</text>`,
+    discrimination: `${common}
+      <path d="M86 62 L344 200" class="curve"/>
+      <line x1="88" y1="184" x2="344" y2="184" class="cost-line"/>
+      <rect x="92" y="77" width="48" height="107" class="bar-a"/><rect x="142" y="104" width="48" height="80" class="bar-a"/><rect x="192" y="130" width="48" height="54" class="bar-a"/><rect x="242" y="157" width="48" height="27" class="bar-a"/>
+      <text x="96" y="72" class="graph-label">P₁</text><text x="147" y="99" class="graph-label">P₂</text><text x="198" y="125" class="graph-label">P₃</text><text x="292" y="198" class="graph-label">D</text><text x="96" y="177" class="graph-label red">CMg</text>
+      <text x="340" y="242" class="axis-label">unidades</text><text x="35" y="48" class="axis-label">precio</text>`,
+    monopsony: `${common}
+      <path d="M86 202 L344 72" class="curve"/>
+      <path d="M92 220 L294 66" class="var-curve"/>
+      <path d="M86 76 C150 112, 230 160, 344 210" class="cost-line"/>
+      <circle cx="202" cy="142" r="4.8" class="point"/>
+      <line x1="202" y1="142" x2="202" y2="220" class="guide-line"/>
+      <text x="298" y="82" class="graph-label">Oferta w(L)</text><text x="255" y="95" class="graph-label blue">GMg</text><text x="290" y="202" class="graph-label red">VPMg</text><text x="210" y="137" class="graph-label">Lₘ</text>
+      <text x="344" y="242" class="axis-label">factor L</text><text x="35" y="48" class="axis-label">salario/valor</text>`,
+    concentration: `${common}
+      <rect x="96" y="84" width="42" height="136" rx="4" class="bar-a"/><rect x="150" y="112" width="42" height="108" rx="4" class="bar-b"/><rect x="204" y="142" width="42" height="78" rx="4" class="bar-a"/><rect x="258" y="166" width="42" height="54" rx="4" class="bar-b"/>
+      <line x1="86" y1="96" x2="344" y2="96" class="muted-line"/>
+      <text x="96" y="78" class="graph-label">s₁²</text><text x="150" y="106" class="graph-label">s₂²</text><text x="204" y="136" class="graph-label">s₃²</text><text x="258" y="160" class="graph-label">s₄²</text><text x="252" y="90" class="graph-label">umbral alto</text>
+      <text x="326" y="242" class="axis-label">empresas</text><text x="35" y="48" class="axis-label">participación</text>`,
+    oligopoly: `${common}
+      <path d="M86 70 L344 198" class="curve"/>
+      <path d="M102 198 C148 150, 216 122, 326 96" class="var-curve"/>
+      <path d="M104 210 C166 176, 238 138, 340 78" class="avg-curve"/>
+      <circle cx="190" cy="136" r="4.8" class="point"/><circle cx="250" cy="111" r="4.8" class="point"/>
+      <text x="292" y="194" class="graph-label">D</text><text x="255" y="98" class="graph-label blue">respuesta rival</text><text x="278" y="84" class="graph-label gold">mejor respuesta</text><text x="196" y="132" class="graph-label">qᵢ</text>
+      <text x="336" y="242" class="axis-label">cantidad</text><text x="35" y="48" class="axis-label">precio</text>`,
+    gamematrix: `<svg class="concept-chart" viewBox="0 0 420 270" role="img" aria-label="Matriz de pagos">
+      <rect x="18" y="16" width="384" height="236" rx="10" class="graph-bg" />
+      <rect x="96" y="62" width="250" height="160" class="grid-box" />
+      <line x1="221" y1="62" x2="221" y2="222" class="axis"/><line x1="96" y1="142" x2="346" y2="142" class="axis"/>
+      <text x="140" y="50" class="graph-label">Empresa B: Alto</text><text x="256" y="50" class="graph-label">Empresa B: Bajo</text><text x="24" y="108" class="axis-label">A: Alto</text><text x="24" y="188" class="axis-label">A: Bajo</text>
+      <text x="142" y="110" class="graph-label">(50, 50)</text><text x="260" y="110" class="graph-label">(10, 100)</text><text x="142" y="190" class="graph-label">(100, 10)</text><text x="262" y="190" class="graph-label">(20, 20)</text>
+      <circle cx="293" cy="186" r="5" class="point"/><text x="304" y="191" class="graph-label red">Nash</text>
+    </svg>`,
+    repeatedgame: `${common}
+      <path d="M82 190 C120 190, 158 190, 196 190 C230 190, 272 122, 338 82" class="curve"/>
+      <path d="M82 206 L338 206" class="cost-line"/>
+      <line x1="196" y1="40" x2="196" y2="220" class="muted-line"/>
+      <text x="92" y="184" class="graph-label">desvío hoy</text><text x="212" y="84" class="graph-label">cooperación si futuro importa</text><text x="205" y="214" class="graph-label red">castigo</text><text x="173" y="56" class="axis-label">δ crítico</text>
+      <text x="344" y="242" class="axis-label">factor de descuento δ</text><text x="35" y="48" class="axis-label">valor esperado</text>`,
+    asymmetric: `<svg class="concept-chart" viewBox="0 0 420 270" role="img" aria-label="Información asimétrica">
+      <rect x="18" y="16" width="384" height="236" rx="10" class="graph-bg" />
+      <rect x="44" y="92" width="92" height="58" rx="10" class="bar-a"/><rect x="166" y="92" width="92" height="58" rx="10" class="bar-b"/><rect x="288" y="92" width="92" height="58" rx="10" class="bar-a"/>
+      <line x1="136" y1="121" x2="166" y2="121" class="axis"/><line x1="258" y1="121" x2="288" y2="121" class="axis"/>
+      <text x="66" y="126" class="graph-label">Principal</text><text x="190" y="126" class="graph-label">Contrato</text><text x="317" y="126" class="graph-label">Agente</text>
+      <path d="M90 170 C150 226, 280 226, 334 170" class="muted-line"/><text x="138" y="222" class="graph-label red">información privada</text><text x="54" y="188" class="axis-label">selección adversa: antes</text><text x="244" y="188" class="axis-label">riesgo moral: después</text>
+    </svg>`
   };
-  return `<svg class="concept-chart" viewBox="0 0 420 270" role="img" aria-label="Gráfico conceptual">${graphs[type] || graphs.production}</svg>`;
+  const selectedGraph = graphs[type] || graphs.production;
+  return selectedGraph.startsWith("<svg") ? selectedGraph : `<svg class="concept-chart" viewBox="0 0 420 270" role="img" aria-label="Gráfico conceptual">${selectedGraph}</svg>`;
 }
 
 function graphMath(type) {
@@ -283,6 +365,56 @@ function graphMath(type) {
     scale: [
       ["Elasticidad costo-producto", "\\[EC=\\frac{\\operatorname{CMg}}{\\operatorname{CMe}}\\]"],
       ["Economías de escala", "\\[IEE=1-EC>0\\]"]
+    ],
+    marketpower: [
+      ["Índice de Lerner", "\\[L=\\frac{P-\\operatorname{CMg}}{P}\\]"],
+      ["Demanda menos elástica", "\\[|\\varepsilon_d|\\downarrow\\quad\\Longrightarrow\\quad L\\uparrow\\]"],
+      ["Fuentes principales", "\\[\\text{barreras}+\\text{diferenciación}+\\text{pocos rivales}\\]"]
+    ],
+    monopoly: [
+      ["Decisión de cantidad", "\\[\\operatorname{IMg}(Q_m)=\\operatorname{CMg}(Q_m)\\]"],
+      ["Precio de monopolio", "\\[P_m=P(Q_m)\\]"],
+      ["Pérdida social", "\\[Q_m<Q_c\\quad\\text{y}\\quad P_m>\\operatorname{CMg}\\]"]
+    ],
+    naturalmonopoly: [
+      ["Subaditividad de costos", "\\[C(Q)<C(q_1)+C(q_2)\\]"],
+      ["Costo medio decreciente", "\\[\\frac{C(Q)}{Q}\\downarrow\\]"]
+    ],
+    discrimination: [
+      ["Segmentos", "\\[\\max \\sum_i P_i(q_i)q_i-C\\!\\left(\\sum_i q_i\\right)\\]"],
+      ["Regla por elasticidad", "\\[\\frac{P_i-\\operatorname{CMg}}{P_i}=\\frac{1}{|\\varepsilon_i|}\\]"]
+    ],
+    monopsony: [
+      ["Oferta de factores", "\\[w=w(L)\\]"],
+      ["Gasto marginal", "\\[\\operatorname{GMg}=w(L)+L\\frac{dw}{dL}\\]"],
+      ["Óptimo del comprador", "\\[\\operatorname{VPMg}_L=\\operatorname{GMg}\\]"]
+    ],
+    concentration: [
+      ["Índice de Lerner", "\\[L=\\frac{P-\\operatorname{CMg}}{P}\\]"],
+      ["Concentración de cuatro firmas", "\\[CR4=s_1+s_2+s_3+s_4\\]"],
+      ["Herfindahl-Hirschman", "\\[HHI=\\sum_{i=1}^{n}s_i^2\\]"]
+    ],
+    oligopoly: [
+      ["Cantidad total", "\\[Q=q_i+q_{-i}\\]"],
+      ["Beneficio de la firma", "\\[\\pi_i=P(Q)q_i-C_i(q_i)\\]"],
+      ["Mejor respuesta", "\\[q_i^*=R_i(q_{-i})\\]"]
+    ],
+    gamematrix: [
+      ["Juego normal", "\\[G=\\{N,S,u\\}\\]"],
+      ["Pago del jugador", "\\[u_i(s_i,s_{-i})\\]"]
+    ],
+    dominant: [
+      ["Dominancia", "\\[u_i(s_i^*,s_{-i})\\ge u_i(s_i,s_{-i})\\quad\\forall s_{-i}\\]"],
+      ["Equilibrio dominante", "\\[s^*=(s_1^*,s_2^*)\\]"]
+    ],
+    repeatedgame: [
+      ["Valor presente", "\\[VA=\\sum_{t=0}^{T}\\delta^t\\pi_t\\]"],
+      ["Cooperación sostenible", "\\[VA_{coop}\\ge VA_{desviar}\\]"]
+    ],
+    asymmetric: [
+      ["Selección adversa", "\\[E(\\text{tipo}\\mid\\text{contrato})\\ne E(\\text{tipo})\\]"],
+      ["Riesgo moral", "\\[a\\ \\text{no observable después del contrato}\\]"],
+      ["Agente-principal", "\\[\\max_{contrato}\\ E(\\pi_P)\\quad\\text{s.a. incentivos del agente}\\]"]
     ]
   };
 
@@ -368,13 +500,34 @@ function renderCourses() {
         <span>🧠 Teoría</span>
         <span>✍️ Ejercicios</span>
       </div>
+      <div class="course-progress-note" aria-label="Aviso de progreso">
+        <span>Progreso</span>
+        <p>No confiar en los datos brindados.</p>
+      </div>
       <strong>Abrir plataforma</strong>
     </button>
   `).join("");
 }
 
 function openCourse(courseId) {
-  if (courseId !== "economia-produccion") return;
+  const selectedCourse = courseContent[courseId];
+  if (!selectedCourse) return;
+  state.courseId = courseId;
+  weeks = selectedCourse.weeks;
+  topics = selectedCourse.topics;
+  theoryData = selectedCourse.theoryData;
+  practiceBanks = selectedCourse.practiceBanks;
+  state.topicId = topics[0].id;
+  state.theoryLevel = "facil";
+  state.viewed = new Set();
+  document.querySelector("#courseHeroTitle").textContent = selectedCourse.heroTitle;
+  document.querySelector("#courseHeroSubtitle").textContent = selectedCourse.heroSubtitle;
+  renderWeekSelects();
+  renderTopics();
+  renderGuide();
+  renderChoiceQuiz(weeks[0].id, "facil");
+  renderPracticeQuiz(weeks[0].id);
+  updateProgress();
   showOnly("app");
   activateSection("learn");
   window.scrollTo({ top: 0, behavior: "instant" });
@@ -393,7 +546,7 @@ function textQuestion(prompt, answer, explain) {
   return { type: "text", prompt, answer, explain };
 }
 
-const theoryData = {
+let theoryData = {
   "semana-01": {
     facil: [
       ["¿Qué representa una función de producción?", "La relación técnica entre insumos y producción", ["La cantidad de dinero que gana la empresa", "La demanda de los consumidores", "La tasa de interés del mercado"], "La función de producción muestra cuánto puede producirse con ciertas cantidades de factores."],
@@ -566,7 +719,7 @@ function theoryBank(weekId, level = state.theoryLevel) {
   return levels.flatMap((difficulty) => bank[difficulty].map(makeTheoryQuestion));
 }
 
-const practiceBanks = {
+let practiceBanks = {
   "semana-01": [
     numberQuestion("Para \\(y=4L^{1/2}K^{1/3}\\), calcula \\(a+b\\).", 0.8333, "\\(\\frac{1}{2}+\\frac{1}{3}=\\frac{5}{6}\\)."),
     numberQuestion("Para \\(y=2x_1^{1/3}x_2^{2/3}\\), calcula \\(a+b\\).", 1, "\\(\\frac{1}{3}+\\frac{2}{3}=1\\)."),
@@ -655,6 +808,269 @@ const practiceBanks = {
     numberQuestion("Si \\(C_v=900\\), \\(F=300\\), \\(y=60\\), calcula \\(CMe\\).", 20, "\\((900+300)/60=20\\)."),
     numberQuestion("Si \\(CMg=18\\) y \\(CMe=18\\), calcula \\(EC\\).", 1, "\\(18/18=1\\).")
   ]
+};
+
+const productionCourse = {
+  weeks: [...weeks],
+  topics: [...topics],
+  theoryData,
+  practiceBanks,
+  heroTitle: "EPC Economía de la Producción Competitiva",
+  heroSubtitle: "Domina producción, costos y beneficios con teoría, gráficos y ejercicios."
+};
+
+const marketWeeks = [
+  { id: "pm-semana-01", label: "Semana 01", title: "Poder de mercado" },
+  { id: "pm-semana-02", label: "Semana 02", title: "Monopolio" },
+  { id: "pm-semana-03", label: "Semana 03", title: "Monopolio natural" },
+  { id: "pm-semana-04", label: "Semana 04", title: "Discriminación de precios" },
+  { id: "pm-semana-05", label: "Semana 05", title: "Monopsonio" },
+  { id: "pm-semana-06", label: "Semana 06", title: "Métricas de concentración" },
+  { id: "pm-semana-07", label: "Semana 07", title: "Oligopolio" },
+  { id: "pm-semana-10", label: "Semana 10", title: "Teoría de juegos" },
+  { id: "pm-semana-11", label: "Semana 11", title: "Estrategias dominantes" },
+  { id: "pm-semana-12", label: "Semana 12", title: "Juegos repetidos" },
+  { id: "pm-semana-14", label: "Semana 14", title: "Información asimétrica" }
+];
+
+const marketTopics = [
+  { id: "pm-poder-mercado", week: "pm-semana-01", title: "Poder de mercado y sus fuentes", question: "¿Por qué una empresa puede influir en precios o condiciones del mercado?", formulas: ["\\[L=\\frac{P-\\operatorname{CMg}}{P}\\]", "\\[\\text{Poder de mercado}\\uparrow \\quad\\text{cuando}\\quad |\\varepsilon_d|\\downarrow\\]"], explanation: ["Una empresa tiene poder de mercado cuando no actúa como precio-aceptante: sus decisiones de precio, cantidad o compra afectan el resultado del mercado.", "Las fuentes principales son una demanda poco elástica, pocas empresas, barreras de entrada, diferenciación del producto o coordinación entre firmas.", "El poder de mercado no siempre significa ilegalidad, pero sí exige estudiar eficiencia, bienestar y posibles efectos sobre consumidores y competidores."], example: "Si una empresa vende un bien con pocos sustitutos, puede subir el precio sin perder demasiados clientes. Ese margen se resume con el índice de Lerner.", graph: "profit" },
+  { id: "pm-monopolio", week: "pm-semana-02", title: "Monopolio de precio único", question: "¿Cómo decide precio y cantidad una empresa que enfrenta toda la demanda?", formulas: ["\\[\\operatorname{IMg}=\\operatorname{CMg}\\]", "\\[P>\\operatorname{IMg}\\quad\\text{si la demanda tiene pendiente negativa}\\]", "\\[\\pi=P(Q)Q-C(Q)\\]"], explanation: ["El monopolista enfrenta la demanda del mercado. Para vender más unidades debe aceptar un precio menor, por eso su ingreso marginal queda por debajo del precio.", "La regla de decisión sigue siendo marginal: producir hasta que el ingreso marginal iguale al costo marginal.", "A diferencia de la competencia perfecta, el precio final se lee en la demanda y suele quedar por encima del costo marginal."], example: "Si la condición marginal entrega \\(Q_m\\), el precio no se toma del costo marginal sino de la demanda: \\(P_m=P(Q_m)\\).", graph: "profit" },
+  { id: "pm-monopolio-natural", week: "pm-semana-03", title: "Monopolio natural y regulación", question: "¿Cuándo una sola empresa puede abastecer el mercado a menor costo?", formulas: ["\\[C(Q)<C(q_1)+C(q_2)\\quad\\text{si}\\quad Q=q_1+q_2\\]", "\\[\\operatorname{CMe}(Q)\\downarrow\\quad\\text{en el rango relevante}\\]"], explanation: ["Un monopolio natural aparece cuando los costos fijos son altos y el costo medio cae en el rango de demanda relevante.", "Duplicar infraestructura puede ser ineficiente: redes de agua, electricidad o transporte suelen tener esta lógica.", "El problema económico es que una sola empresa puede ser eficiente en costos, pero también puede abusar del precio si no existe regulación."], example: "Si una red cuesta mucho instalarse y cada usuario adicional cuesta poco, una sola red puede ser más barata que varias redes paralelas.", graph: "scale" },
+  { id: "pm-discriminacion", week: "pm-semana-04", title: "Discriminación de precios", question: "¿Cómo captura el monopolista más excedente del consumidor?", formulas: ["\\[\\pi=\\sum_i P_iq_i-C\\!\\left(\\sum_i q_i\\right)\\]", "\\[\\frac{P_i-\\operatorname{CMg}}{P_i}=\\frac{1}{|\\varepsilon_i|}\\]"], explanation: ["Discriminar precios significa cobrar precios distintos por el mismo bien según unidades, bloques o segmentos, cuando esas diferencias no se explican solo por costos.", "El objetivo es capturar más excedente del consumidor que con un precio único.", "Para funcionar, la empresa necesita poder de mercado, capacidad de segmentar y dificultad de reventa entre consumidores."], example: "Una tarifa de dos tramos combina un cargo fijo con un precio por unidad. El cargo fijo captura parte del excedente y el precio por unidad controla consumo.", graph: "opportunity" },
+  { id: "pm-monopsonio", week: "pm-semana-05", title: "Monopsonio", question: "¿Qué ocurre cuando hay un solo comprador relevante?", formulas: ["\\[\\operatorname{GMe}=w(L)\\]", "\\[\\operatorname{GMg}>w(L)\\quad\\text{si la oferta tiene pendiente positiva}\\]"], explanation: ["Un monopsonio concentra poder del lado de la compra. El caso típico es una empresa muy importante contratando trabajo o comprando insumos en una zona.", "Como la oferta que enfrenta tiene pendiente positiva, contratar más puede elevar el precio pagado a todas las unidades.", "El resultado suele ser menor cantidad contratada y menor precio pagado que en un mercado competitivo de factores."], example: "Si una empresa es casi la única compradora de cierto cultivo local, puede presionar precios a la baja frente a productores pequeños.", graph: "costmin" },
+  { id: "pm-concentracion", week: "pm-semana-06", title: "Lerner, CR4 y HHI", question: "¿Cómo medimos concentración y poder de mercado?", formulas: ["\\[L=\\frac{P-\\operatorname{CMg}}{P}\\]", "\\[CR4=\\frac{V_1+V_2+V_3+V_4}{V_T}\\]", "\\[HHI=\\sum_{i=1}^{n}s_i^2\\]"], explanation: ["El índice de Lerner mide el margen del precio sobre el costo marginal como proporción del precio.", "El CR4 suma la participación de las cuatro empresas más grandes. Es simple y útil, pero ignora la distribución entre el resto.", "El HHI suma participaciones al cuadrado, por eso castiga más la concentración en pocas firmas grandes."], example: "Si cuatro empresas concentran 70% de ventas, el CR4 es 0.70. Si además una sola tiene mucho peso, el HHI subirá con fuerza.", graph: "returns" },
+  { id: "pm-oligopolio", week: "pm-semana-07", title: "Oligopolio e interdependencia", question: "¿Por qué las empresas oligopólicas deben anticipar a sus rivales?", formulas: ["\\[\\pi_i=P(Q)q_i-C_i(q_i)\\]", "\\[Q=q_1+q_2+\\cdots+q_n\\]"], explanation: ["En oligopolio hay pocas empresas y cada una sabe que sus decisiones afectan a las demás.", "La interdependencia abre espacio para guerras de precios, liderazgo, colusión o competencia estratégica.", "No basta con conocer la demanda: cada empresa debe formar expectativas sobre la reacción de sus rivales."], example: "Si una aerolínea baja precios, las demás pueden responder. La ganancia final depende de la reacción estratégica, no solo de la demanda propia.", graph: "profit" },
+  { id: "pm-juegos", week: "pm-semana-10", title: "Teoría de juegos: jugadores, estrategias y pagos", question: "¿Cómo se representan decisiones estratégicas?", formulas: ["\\[G=\\{J,E,u\\}\\]", "\\[u_i(e_i,e_{-i})\\]"], explanation: ["Un juego resume jugadores, estrategias disponibles y pagos asociados a cada combinación de decisiones.", "La matriz de resultados permite ver cómo cambia la ganancia de cada jugador según lo que hagan los demás.", "La clave es estratégica: una acción no se evalúa aislada, sino frente a las posibles respuestas del otro."], example: "Dos empresas pueden elegir publicidad o no publicidad. El mejor resultado de cada una depende también de la decisión de la rival.", graph: "opportunity" },
+  { id: "pm-dominantes", week: "pm-semana-11", title: "Estrategias dominantes y equilibrio", question: "¿Cuándo una estrategia conviene sin importar lo que haga el rival?", formulas: ["\\[u_i(s_i^*,s_{-i})\\ge u_i(s_i,s_{-i})\\quad\\forall s_i, s_{-i}\\]", "\\[s^*=(s_1^*,s_2^*)\\]"], explanation: ["Una estrategia dominante es la mejor respuesta de un jugador ante cualquier estrategia del rival.", "Si todos tienen estrategia dominante, el equilibrio se obtiene combinándolas.", "El resultado puede ser estable aunque no sea el más eficiente colectivamente, como ocurre en dilemas competitivos."], example: "Si hacer publicidad genera más ingreso para una empresa tanto cuando la rival publicita como cuando no, publicidad es estrategia dominante.", graph: "costcurves" },
+  { id: "pm-repetidos", week: "pm-semana-12", title: "Juegos repetidos y cooperación", question: "¿Por qué repetir el juego puede cambiar la conducta?", formulas: ["\\[VA=\\sum_{t=0}^{T}\\delta^t\\pi_t\\]", "\\[0<\\delta<1\\]"], explanation: ["Cuando el juego se repite, las empresas valoran no solo la ganancia actual sino también consecuencias futuras.", "La posibilidad de castigo futuro puede sostener cooperación, siempre que el futuro sea suficientemente importante.", "Si los jugadores son impacientes o el juego termina pronto, aumenta la tentación de desviarse."], example: "En precios, cobrar bajo puede ganar hoy, pero si provoca una guerra de precios futura, quizá no convenga desviarse.", graph: "scale" },
+  { id: "pm-asimetria", week: "pm-semana-14", title: "Información asimétrica, riesgo moral y selección adversa", question: "¿Qué falla cuando una parte sabe más que la otra?", formulas: ["\\[\\text{Principal}\\rightarrow\\text{Contrato}\\rightarrow\\text{Agente}\\]", "\\[E[u\\mid\\text{información incompleta}]\\]"], explanation: ["La información asimétrica aparece cuando una parte de la transacción posee información privada relevante.", "La selección adversa ocurre antes del contrato: quienes tienen peor riesgo pueden ser quienes más desean contratar.", "El riesgo moral ocurre después del contrato: una parte cambia su conducta porque no asume totalmente las consecuencias."], example: "Un asegurado puede manejar con menos cuidado si sabe que el seguro cubre gran parte del daño. Ese cambio posterior es riesgo moral.", graph: "isoquant" }
+];
+
+const marketTopicEnhancements = {
+  "pm-poder-mercado": {
+    graph: "marketpower",
+    formulas: ["\\[L=\\frac{P-\\operatorname{CMg}}{P}\\]", "\\[L=-\\frac{1}{\\varepsilon_d}\\quad\\text{en monopolio simple}\\]", "\\[\\text{poder de mercado}\\uparrow\\ \\Longleftrightarrow\\ \\text{sustitutos cercanos}\\downarrow\\]"],
+    explanation: [
+      "Poder de mercado significa que la empresa puede influir en el precio o en las condiciones del intercambio. No toma el precio como dato: al cambiar su cantidad, precio, calidad o estrategia, modifica el resultado que enfrentan consumidores y rivales.",
+      "La fuente más directa es la elasticidad de la demanda. Si los consumidores tienen pocos sustitutos, una subida de precio reduce poco la cantidad demandada y la firma puede sostener un margen mayor sobre el costo marginal.",
+      "También importan el número de empresas, las barreras de entrada, el control de insumos, patentes, redes, ubicación, información y la posibilidad de coordinación. Por eso una empresa grande no siempre tiene poder de mercado, y una empresa pequeña sí puede tenerlo en un nicho estrecho.",
+      "El índice de Lerner resume el margen relativo: si \\(L\\) está cerca de cero, el precio se parece al costo marginal; si crece, hay mayor separación entre precio y costo marginal.",
+      "La interpretación económica no es solo contable. Un margen alto puede reflejar innovación o riesgo, pero también puede indicar pérdida de bienestar, exclusión o abuso si se sostiene por barreras artificiales."
+    ],
+    example: "Si \\(P=10\\) y \\(CMg=8\\), entonces \\(L=\\frac{10-8}{10}=0.20\\). La empresa cobra un precio 20% por encima del costo marginal."
+  },
+  "pm-monopolio": {
+    graph: "monopoly",
+    formulas: ["\\[\\max_Q\\ \\pi(Q)=P(Q)Q-C(Q)\\]", "\\[\\frac{d\\pi}{dQ}=\\operatorname{IMg}(Q)-\\operatorname{CMg}(Q)=0\\]", "\\[\\operatorname{IMg}=P(Q)+Q\\frac{dP}{dQ}\\]", "\\[P_m=P(Q_m)>\\operatorname{CMg}(Q_m)\\]"],
+    explanation: [
+      "El monopolio de precio único enfrenta toda la demanda del mercado. Si quiere vender una unidad adicional debe bajar el precio no solo para esa unidad, sino para las unidades que ya vendía.",
+      "Por eso el ingreso marginal queda por debajo de la curva de demanda. La decisión correcta no es producir donde el precio iguala el costo marginal, sino donde el ingreso marginal iguala el costo marginal.",
+      "Luego de encontrar \\(Q_m\\), el precio se lee en la demanda: \\(P_m=P(Q_m)\\). Esta separación entre precio y costo marginal genera menor cantidad que en competencia perfecta.",
+      "La pérdida social aparece porque hay unidades que los consumidores valoran más que su costo marginal, pero que no se producen por mantener el precio alto.",
+      "El monopolio no siempre surge por mal comportamiento: puede venir de patentes, tecnología, control de recursos o barreras legales. El análisis económico separa origen, conducta y efecto sobre bienestar."
+    ],
+    example: "Con demanda \\(P=100-Q\\) y \\(CMg=20\\), el ingreso total es \\(IT=100Q-Q^2\\), entonces \\(IMg=100-2Q\\). Igualando \\(100-2Q=20\\), se obtiene \\(Q_m=40\\) y \\(P_m=60\\)."
+  },
+  "pm-monopolio-natural": {
+    graph: "naturalmonopoly",
+    formulas: ["\\[C(Q)<C(q_1)+C(q_2)\\quad\\text{para}\\quad Q=q_1+q_2\\]", "\\[\\operatorname{CMe}(Q)=\\frac{F+cQ}{Q}=\\frac{F}{Q}+c\\]", "\\[\\operatorname{CMe}(Q)>\\operatorname{CMg}\\quad\\text{si }F>0\\]"],
+    explanation: [
+      "Un monopolio natural aparece cuando una sola empresa puede abastecer el mercado a menor costo que varias empresas separadas. La razón típica es una estructura con costos fijos muy altos y costos marginales bajos.",
+      "Cuando el costo medio cae en el rango relevante de la demanda, dividir el mercado entre varias firmas puede duplicar infraestructura y elevar costos totales.",
+      "El dilema es regulatorio: una sola empresa puede ser eficiente desde el punto de vista productivo, pero al mismo tiempo tiene incentivos para fijar precios altos.",
+      "Regular a precio igual a costo marginal puede generar pérdidas si el costo medio está por encima del costo marginal. Regular a costo medio cubre costos, pero no alcanza la eficiencia de primer mejor.",
+      "Por eso redes de electricidad, agua, saneamiento, transporte o telecomunicaciones suelen requerir reglas tarifarias y supervisión de calidad."
+    ],
+    example: "Si \\(C(Q)=1000+2Q\\), entonces \\(CMe=\\frac{1000}{Q}+2\\). A mayor \\(Q\\), el costo fijo se reparte entre más usuarios y el costo medio cae."
+  },
+  "pm-discriminacion": {
+    graph: "discrimination",
+    formulas: ["\\[\\pi=\\sum_i P_i(q_i)q_i-C\\!\\left(\\sum_i q_i\\right)\\]", "\\[\\operatorname{IMg}_i=\\operatorname{CMg}\\quad\\text{en cada segmento}\\]", "\\[\\frac{P_i-\\operatorname{CMg}}{P_i}=\\frac{1}{|\\varepsilon_i|}\\]"],
+    explanation: [
+      "La discriminación de precios ocurre cuando la empresa cobra precios distintos por el mismo bien o servicio sin que la diferencia se explique únicamente por costos.",
+      "El objetivo es capturar más excedente del consumidor. Con precio único, algunos consumidores pagarían más de lo que efectivamente pagan; la discriminación intenta apropiarse de parte de esa diferencia.",
+      "Hay discriminación de primer grado cuando se cobra a cada consumidor su disposición máxima a pagar; de segundo grado cuando el precio depende de bloques, cantidades o paquetes; y de tercer grado cuando se separan grupos observables.",
+      "Para que funcione se necesitan tres condiciones: poder de mercado, capacidad de separar consumidores y dificultad de reventa. Si alguien puede comprar barato y revender caro, la estrategia se rompe.",
+      "La regla por elasticidades dice que el segmento menos elástico puede recibir un precio más alto, porque reacciona menos ante cambios de precio."
+    ],
+    example: "Si estudiantes tienen demanda más elástica que profesionales, una empresa puede cobrar menor tarifa estudiantil y mayor tarifa regular, siempre que pueda verificar el segmento y evitar reventa."
+  },
+  "pm-monopsonio": {
+    graph: "monopsony",
+    formulas: ["\\[w=w(L)\\quad\\text{con oferta ascendente}\\]", "\\[GT(L)=w(L)L\\]", "\\[\\operatorname{GMg}=\\frac{dGT}{dL}=w(L)+L\\frac{dw}{dL}\\]", "\\[\\operatorname{VPMg}_L=\\operatorname{GMg}\\]"],
+    explanation: [
+      "El monopsonio es poder de mercado del lado comprador. Una empresa o grupo de compradores enfrenta una oferta ascendente y puede influir en el precio que paga por trabajo o insumos.",
+      "Si para contratar una unidad adicional debe subir el salario, ese aumento puede aplicarse también a unidades ya contratadas. Por eso el gasto marginal queda por encima del salario.",
+      "La regla de decisión iguala el valor del producto marginal del factor con el gasto marginal, no con el salario. Esto genera menor contratación que en competencia y un pago menor al competitivo.",
+      "Puede observarse en mercados laborales locales, compras agroindustriales, plataformas o cadenas con mucho poder frente a proveedores pequeños.",
+      "La política pública puede incluir salario mínimo, negociación colectiva, transparencia salarial o regulación de contratos, pero debe evaluar efectos sobre empleo y eficiencia."
+    ],
+    example: "Si \\(w(L)=10+L\\), entonces \\(GT=10L+L^2\\) y \\(GMg=10+2L\\). El gasto marginal supera al salario porque contratar más encarece el total."
+  },
+  "pm-concentracion": {
+    graph: "concentration",
+    formulas: ["\\[L=\\frac{P-\\operatorname{CMg}}{P}\\]", "\\[CR4=s_1+s_2+s_3+s_4\\]", "\\[HHI=\\sum_{i=1}^{n}s_i^2\\quad\\text{con }s_i\\text{ en porcentaje}\\]"],
+    explanation: [
+      "Las métricas de concentración no prueban por sí solas abuso, pero ayudan a diagnosticar estructura de mercado.",
+      "El índice de Lerner mide margen relativo sobre precio y requiere información de costo marginal, que muchas veces es difícil de observar.",
+      "El CR4 suma la participación de las cuatro empresas más grandes. Es fácil de explicar, pero no distingue si una firma domina y las otras tres son pequeñas o si las cuatro son parecidas.",
+      "El HHI sí captura mejor esa diferencia porque eleva participaciones al cuadrado. Una empresa con 50% pesa mucho más que cinco empresas con 10% cada una.",
+      "Para interpretar estas métricas hay que definir bien el mercado relevante: producto, geografía, sustitutos y horizonte temporal."
+    ],
+    example: "Con participaciones \\(40,30,20,10\\), \\(CR4=100\\) y \\(HHI=40^2+30^2+20^2+10^2=3000\\). Es un mercado altamente concentrado."
+  },
+  "pm-oligopolio": {
+    graph: "oligopoly",
+    formulas: ["\\[Q=q_1+q_2+\\cdots+q_n\\]", "\\[\\pi_i=P(Q)q_i-C_i(q_i)\\]", "\\[q_i^*=R_i(q_{-i})\\]"],
+    explanation: [
+      "Un oligopolio tiene pocas empresas relevantes. Cada firma entiende que su decisión afecta precios, cantidades y estrategias de las demás.",
+      "La interdependencia es el rasgo clave. Una rebaja de precio puede atraer demanda, pero también puede provocar una respuesta de rivales y terminar en una guerra de precios.",
+      "Según el contexto, las empresas pueden competir en cantidades, precios, publicidad, calidad, ubicación o capacidad.",
+      "La colusión es más probable cuando hay pocos jugadores, productos similares, interacción repetida y facilidad para observar desviaciones.",
+      "El análisis no busca una sola curva mecánica, sino entender mejores respuestas: qué conviene hacer dado lo que se espera del rival."
+    ],
+    example: "Si dos empresas venden un bien similar, cada una decide su precio pensando si la otra lo mantendrá, lo bajará o responderá con promociones."
+  },
+  "pm-juegos": {
+    graph: "gamematrix",
+    formulas: ["\\[G=\\{N,S,u\\}\\]", "\\[N=\\{1,2,\\ldots,n\\}\\]", "\\[u_i(s_i,s_{-i})\\]"],
+    explanation: [
+      "La teoría de juegos organiza problemas donde el resultado de cada agente depende de las decisiones de otros.",
+      "Un juego en forma normal contiene jugadores, estrategias y pagos. La matriz de resultados resume qué gana cada jugador en cada combinación de estrategias.",
+      "La notación \\(s_{-i}\\) representa las estrategias de todos menos el jugador \\(i\\). Esto obliga a pensar en mejores respuestas, no solo en decisiones individuales aisladas.",
+      "En economía de la empresa, esta herramienta sirve para analizar publicidad, guerras de precios, entrada a mercados, cooperación, colusión y castigos.",
+      "La lectura correcta de una matriz siempre exige mirar los pagos por jugador: el primer número suele corresponder a un jugador y el segundo al otro."
+    ],
+    example: "Si dos empresas eligen entre precio alto y bajo, cada celda de la matriz muestra los beneficios de ambas según la combinación elegida."
+  },
+  "pm-dominantes": {
+    graph: "dominant",
+    formulas: ["\\[u_i(s_i^*,s_{-i})\\ge u_i(s_i,s_{-i})\\quad\\forall s_i,s_{-i}\\]", "\\[s^*=(s_1^*,s_2^*)\\]", "\\[\\text{dominante}\\Rightarrow\\text{mejor respuesta ante todo }s_{-i}\\]"],
+    explanation: [
+      "Una estrategia dominante es la mejor para un jugador sin importar qué haga el rival. Es una condición fuerte: debe ganar o empatar contra todas las alternativas del otro.",
+      "Si ambos jugadores tienen estrategia dominante, el equilibrio se obtiene cruzando esas estrategias.",
+      "Esto no significa que el resultado sea socialmente deseable. Puede ocurrir que ambos elijan estrategias defensivas y terminen peor que si cooperaran.",
+      "La forma práctica de resolverlo es comparar pagos por filas o columnas: para cada acción del rival, se marca qué estrategia da mayor pago al jugador analizado.",
+      "Si una misma estrategia queda marcada en todos los casos, es dominante."
+    ],
+    example: "Si hacer publicidad da más ingreso tanto cuando la rival publicita como cuando no publicita, entonces hacer publicidad es dominante para esa empresa."
+  },
+  "pm-repetidos": {
+    graph: "repeatedgame",
+    formulas: ["\\[VA=\\pi_0+\\delta\\pi_1+\\delta^2\\pi_2+\\cdots\\]", "\\[VA_{cooperar}\\ge VA_{desviar}\\]", "\\[0<\\delta<1\\]"],
+    explanation: [
+      "En un juego de una sola vez, puede convenir desviarse aunque el resultado colectivo sea malo. Cuando el juego se repite, la historia y la reputación importan.",
+      "El factor de descuento \\(\\delta\\) mide cuánto valora la empresa el futuro. Si \\(\\delta\\) es alto, perder cooperación futura puede ser más costoso que ganar hoy desviándose.",
+      "Una estrategia de castigo funciona si es creíble: el rival debe estar dispuesto a castigar y la amenaza debe afectar ganancias futuras.",
+      "La cooperación es más probable cuando las empresas se observan, interactúan con frecuencia y no esperan que el mercado termine pronto.",
+      "Si el juego tiene final conocido, puede aparecer razonamiento hacia atrás: en el último periodo no hay futuro que castigue, y eso debilita la cooperación en periodos anteriores."
+    ],
+    example: "Una empresa puede evitar bajar precios hoy si sabe que la rival responderá con precios bajos durante varios periodos, destruyendo márgenes futuros."
+  },
+  "pm-asimetria": {
+    graph: "asymmetric",
+    formulas: ["\\[\\text{Principal}\\rightarrow\\text{Contrato}\\rightarrow\\text{Agente}\\]", "\\[\\text{Selección adversa: información oculta antes del contrato}\\]", "\\[\\text{Riesgo moral: acción oculta después del contrato}\\]"],
+    explanation: [
+      "La información asimétrica aparece cuando una parte sabe algo relevante que la otra no conoce. Esto impide que el contrato refleje perfectamente riesgos, calidad o esfuerzo.",
+      "La selección adversa ocurre antes de contratar. Quienes tienen mayor riesgo o menor calidad pueden ser los más interesados en participar, deteriorando el promedio del mercado.",
+      "El riesgo moral ocurre después de contratar. Una vez protegido por un seguro, contrato o delegación, el agente puede cambiar su esfuerzo o conducta porque no asume todo el costo.",
+      "El modelo principal-agente resume esta tensión: el principal diseña incentivos, pero el agente posee información privada o controla acciones difíciles de observar.",
+      "Las soluciones incluyen señales, filtros, deducibles, monitoreo, contratos por desempeño, reputación y regulación de información."
+    ],
+    example: "En seguros, una persona conoce mejor su riesgo que la aseguradora antes de contratar. Después de contratar, además puede cuidarse menos si el seguro cubre gran parte de la pérdida."
+  }
+};
+
+marketTopics.forEach((topic) => Object.assign(topic, marketTopicEnhancements[topic.id] || {}));
+
+function makeMarketTheoryData(weeksList) {
+  const topicByWeek = Object.fromEntries(marketTopics.map((topic) => [topic.week, topic]));
+  const data = {};
+  weeksList.forEach((weekItem) => {
+    const topic = topicByWeek[weekItem.id];
+    data[weekItem.id] = {
+      facil: [
+        [`¿Cuál es la idea central de ${topic.title}?`, topic.question, ["Reducir todo a costos fijos", "Eliminar la demanda del análisis", "Suponer competencia perfecta siempre"], `La semana estudia esto: ${topic.question}`],
+        ["¿Qué significa poder de mercado?", "Capacidad de influir en precio o condiciones", ["Aceptar siempre el precio como dato", "No tener costos", "Producir sin demanda"], "El poder de mercado aparece cuando la empresa no es plenamente precio-aceptante."],
+        ["¿Qué elemento vuelve estratégico un mercado?", "Las decisiones de otros agentes afectan mi resultado", ["El precio nunca cambia", "No existen competidores", "La demanda es perfectamente horizontal"], "La interdependencia obliga a anticipar respuestas."],
+        ["¿Qué indica una barrera de entrada?", "Dificulta que nuevas empresas compitan", ["Hace que entren infinitas firmas", "Elimina costos fijos", "Vuelve perfecto el mercado"], "Las barreras sostienen poder de mercado."],
+        ["¿Qué mide una métrica de concentración?", "Qué tan repartido o concentrado está el mercado", ["La utilidad del consumidor solamente", "La inflación mensual", "El costo fijo de una planta"], "CR4 y HHI resumen estructura de mercado."],
+        ["¿Qué es una estrategia en teoría de juegos?", "Un plan de acción de un jugador", ["Una curva de costo medio", "Un impuesto", "Una restricción presupuestaria"], "La estrategia define qué hará el jugador ante el juego."],
+        ["¿Qué es una matriz de pagos?", "Una tabla de resultados por combinación de estrategias", ["Una lista de costos fijos", "Un balance contable", "Una curva de oferta agregada"], "La matriz permite comparar pagos de cada jugador."],
+        ["¿Qué significa información imperfecta?", "Los agentes no conocen todo lo relevante", ["Todos conocen todo perfectamente", "No hay incertidumbre", "El precio siempre es cero"], "La información limitada puede distorsionar decisiones."],
+        ["¿Qué tipo de pregunta responde este curso?", "Cómo cambia la conducta cuando existe poder de mercado", ["Cómo maximiza utilidad un consumidor aislado", "Cómo se mide el PIB", "Cómo se imprime dinero"], "El foco es conducta empresarial con poder de mercado."],
+        ["¿Qué debe revisar un regulador?", "Eficiencia, bienestar y posibles abusos", ["Solo el color del producto", "Solo la publicidad", "Solo la contabilidad interna"], "El poder de mercado puede requerir supervisión."]
+      ],
+      medio: [
+        ["Si la demanda es menos elástica, el margen posible suele:", "Aumentar", ["Disminuir siempre", "Ser cero", "No depender de la demanda"], "Con pocos sustitutos, el consumidor reacciona menos ante el precio."],
+        ["Si aumenta el número de competidores efectivos, el poder de mercado tiende a:", "Disminuir", ["Aumentar necesariamente", "Volverse infinito", "No cambiar nunca"], "Más presión competitiva reduce capacidad de fijar márgenes."],
+        ["¿Por qué el monopolista no iguala precio a ingreso marginal?", "Porque bajar precio afecta unidades inframarginales", ["Porque no tiene demanda", "Porque el costo marginal no existe", "Porque el precio es exógeno"], "Con demanda decreciente, vender más exige reducir precio."],
+        ["Una concentración alta puede ser preocupante porque:", "Facilita márgenes altos o coordinación", ["Elimina toda demanda", "Reduce siempre precios", "Impide medir ventas"], "Pocas firmas pueden tener más capacidad estratégica."],
+        ["La discriminación de precios requiere:", "Segmentación y dificultad de reventa", ["Competencia perfecta pura", "Precio único obligatorio", "Costos marginales negativos"], "Sin segmentación o con reventa fácil, la discriminación se debilita."],
+        ["El monopsonio se diferencia del monopolio porque:", "El poder está en el comprador", ["No hay mercado", "No hay precios", "La demanda desaparece"], "El monopsonista influye en el precio de compra."],
+        ["En oligopolio, una decisión de precio debe considerar:", "La respuesta de rivales", ["Solo el costo fijo histórico", "La utilidad marginal del consumidor sin competencia", "Una tasa de interés"], "La interdependencia es el rasgo central."],
+        ["Una estrategia dominante es:", "La mejor sin importar qué haga el rival", ["La más costosa", "La que siempre maximiza producción", "La que elimina pagos"], "Es una comparación contra todas las acciones del otro jugador."],
+        ["En juegos repetidos, la cooperación puede sostenerse si:", "El futuro pesa lo suficiente", ["Nadie recuerda nada", "El juego ocurre una sola vez", "No existen castigos"], "Los pagos futuros cambian incentivos presentes."],
+        ["La selección adversa ocurre principalmente:", "Antes de firmar el contrato", ["Después por esfuerzo oculto", "Solo con monopolios naturales", "Solo si no hay precios"], "Es un problema de información privada previa."]
+      ],
+      dificil: [
+        ["Una lectura correcta del índice de Lerner es:", "Mide margen relativo sobre el precio", ["Mide participación de ventas", "Mide cantidad producida", "Mide el número de jugadores"], "\\(L=(P-CMg)/P\\) conecta margen y poder de mercado."],
+        ["Si una empresa tiene altos costos fijos y bajo costo marginal, puede aparecer:", "Monopolio natural", ["Competencia perfecta garantizada", "Ausencia de escala", "Precio igual a cero"], "Los costos medios decrecientes favorecen un solo proveedor."],
+        ["Una tarifa de dos tramos busca:", "Capturar excedente con cargo fijo y uso", ["Prohibir toda compra", "Igualar siempre precio a cero", "Eliminar segmentación"], "Combina acceso y consumo para extraer excedente."],
+        ["En monopsonio con oferta ascendente, el gasto marginal suele ser mayor que el salario porque:", "Contratar más eleva el pago de unidades previas", ["El salario no existe", "La oferta es horizontal", "No hay costos"], "La empresa internaliza el aumento en el gasto total."],
+        ["El HHI pondera con más fuerza a empresas grandes porque:", "Eleva participaciones al cuadrado", ["Suma precios", "Resta costos fijos", "Ignora participaciones"], "El cuadrado amplifica participaciones altas."],
+        ["La colusión es más probable cuando:", "Hay pocos jugadores e interacción repetida", ["Hay infinitas empresas pequeñas", "No se observan precios", "No hay beneficios"], "Pocos jugadores y repetición facilitan disciplina."],
+        ["Un equilibrio por estrategias dominantes puede ser ineficiente porque:", "La racionalidad individual no siempre maximiza el total", ["Nadie elige estrategia", "Los pagos no importan", "No existe interdependencia"], "El dilema del prisionero es el ejemplo clásico."],
+        ["En un juego repetido, un castigo creíble debe:", "Ser costoso para quien se desvía en el futuro", ["Ser imposible de observar", "No afectar pagos", "Eliminar el tiempo"], "La amenaza funciona si cambia el valor esperado de desviarse."],
+        ["El riesgo moral se distingue porque:", "La acción oculta ocurre después del contrato", ["El tipo oculto se conoce antes", "No hay contrato", "Siempre elimina pérdidas"], "El agente modifica conducta al no asumir todo el costo."],
+        ["Una política pública adecuada depende de:", "Comparar eficiencia, bienestar y poder de mercado", ["Prohibir toda empresa grande sin análisis", "Ignorar elasticidades", "Usar solo beneficios contables"], "El diagnóstico debe distinguir eficiencia real de abuso de poder."]
+      ]
+    };
+  });
+  return data;
+}
+
+function makeMarketPracticeBanks(weeksList) {
+  const banks = {};
+  weeksList.forEach((weekItem, weekIndex) => {
+    const n = weekIndex + 1;
+    banks[weekItem.id] = [
+      numberQuestion(`Si \\(P=${10 + n}\\) y \\(CMg=${7 + n}\\), calcula \\(L=\\frac{P-CMg}{P}\\).`, Number((3 / (10 + n)).toFixed(4)), `\\(L=\\frac{${10+n}-${7+n}}{${10+n}}\\).`),
+      numberQuestion(`Si \\(P=${20 + n}\\) y \\(CMg=${15 + n}\\), calcula el margen \\(P-CMg\\).`, 5, `\\(${20+n}-${15+n}=5\\).`),
+      numberQuestion(`Ventas de las cuatro firmas: \\(80,70,60,50\\). Ventas totales \\(${400 + n * 10}\\). Calcula \\(CR4\\).`, Number((260 / (400 + n * 10)).toFixed(4)), `\\(CR4=\\frac{80+70+60+50}{${400+n*10}}\\).`),
+      numberQuestion("Si las participaciones son \\(40,30,20,10\\), calcula \\(HHI\\).", 3000, "\\(40^2+30^2+20^2+10^2=3000\\)."),
+      numberQuestion(`Si \\(Q=${20 + n}\\), \\(P=${12 + n}\\) y \\(C=${120 + n * 5}\\), calcula \\(\\pi=PQ-C\\).`, (20+n)*(12+n)-(120+n*5), "Multiplica precio por cantidad y resta costo total."),
+      numberQuestion(`Demanda \\(P=100-Q\\). Si \\(Q=${20 + n}\\), calcula \\(P\\).`, 100-(20+n), `\\(P=100-${20+n}\\).`),
+      numberQuestion(`Si \\(IT=900\\) y \\(CT=${500 + n * 20}\\), calcula beneficio.`, 900-(500+n*20), "Beneficio es ingreso total menos costo total."),
+      numberQuestion(`Si el costo fijo es \\(${300 + n * 10}\\) y \\(CMg=5\\), calcula costo total para \\(Q=20\\).`, (300+n*10)+100, "\\(C=F+CMg\\cdot Q\\)."),
+      numberQuestion("Si una tarifa cobra fijo \\(40\\) y uso \\(3\\) por \\(20\\) unidades, calcula pago total.", 100, "\\(40+3\\cdot20=100\\)."),
+      numberQuestion(`Si un consumidor valora en \\(${150 + n}\\) y paga \\(${100 + n}\\), calcula excedente.`, 50, "Excedente del consumidor es valoración menos pago."),
+      numberQuestion(`En monopsonio, si salario \\(w=${8+n}\\) y se contratan \\(L=${10+n}\\), calcula gasto total.`, (8+n)*(10+n), "\\(GT=wL\\)."),
+      numberQuestion("Matriz de pagos: A obtiene \\(12\\) con Alto y \\(8\\) con Bajo. Diferencia.", 4, "\\(12-8=4\\)."),
+      numberQuestion("Si el pago futuro es \\(100\\) y \\(\\delta=0.8\\), calcula valor descontado de un periodo.", 80, "\\(0.8\\cdot100=80\\)."),
+      numberQuestion("Si hay dos periodos con pagos \\(50\\) y \\(50\\), \\(\\delta=0.9\\). Calcula valor presente.", 95, "\\(50+0.9\\cdot50=95\\)."),
+      numberQuestion("Si una desviación gana \\(30\\) hoy pero pierde \\(50\\) mañana con \\(\\delta=0.8\\), ganancia neta.", -10, "\\(30-0.8\\cdot50=-10\\)."),
+      numberQuestion("Si probabilidad de mal tipo es \\(0.25\\) y pérdida \\(200\\), pérdida esperada.", 50, "\\(0.25\\cdot200=50\\)."),
+      numberQuestion("Si prima \\(80\\) y pérdida esperada \\(50\\), margen de la aseguradora.", 30, "\\(80-50=30\\)."),
+      numberQuestion(`Si entran \\(${2+n}\\) firmas nuevas a un mercado con \\(4\\), total de firmas.`, 4+2+n, "Suma firmas existentes y entrantes."),
+      numberQuestion("Si \\(CR4\\) pasa de \\(0.75\\) a \\(0.60\\), cambio.", -0.15, "\\(0.60-0.75=-0.15\\)."),
+      numberQuestion("Si \\(HHI\\) baja de \\(2500\\) a \\(1800\\), reducción.", 700, "\\(2500-1800=700\\).")
+    ];
+  });
+  return banks;
+}
+
+const courseContent = {
+  "economia-produccion": productionCourse,
+  "poder-mercado": {
+    weeks: marketWeeks,
+    topics: marketTopics,
+    theoryData: makeMarketTheoryData(marketWeeks),
+    practiceBanks: makeMarketPracticeBanks(marketWeeks),
+    heroTitle: "Economía de la Empresa con Poder de Mercado",
+    heroSubtitle: "Estudia monopolio, oligopolio, concentración, teoría de juegos e información asimétrica."
+  }
 };
 
 function numericOptions(answer, index) {
