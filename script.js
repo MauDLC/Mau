@@ -436,9 +436,103 @@ function renderTopics() {
   `).join("");
 }
 
+function renderMarketPowerWeekGuide() {
+  return String.raw`
+    <article class="week-guide">
+      <section class="week-hero">
+        <span class="eyebrow">Unidad 1</span>
+        <h2>Semana 1: El poder de mercado de un agente económico</h2>
+        <p class="week-subtitle">Poder de mercado, monopolio, elasticidad precio de la demanda e ingreso marginal.</p>
+        <p>En esta semana se estudia cómo una empresa puede influir sobre el precio de mercado, cuáles son las fuentes del poder de mercado y por qué la elasticidad de la demanda es clave para entender las decisiones de producción y precios.</p>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading">
+          <span>01</span>
+          <h3>Fuentes del poder de mercado</h3>
+          <p>El poder de mercado aparece cuando una empresa no toma el precio como dado, sino que puede influir sobre él mediante sus decisiones de producción, precio o estrategia.</p>
+        </div>
+        <div class="source-grid">
+          <article class="study-card"><div class="card-icon">E</div><h4>Elasticidad de la demanda</h4><p>Mientras menos sensible sea la cantidad demandada frente a cambios en el precio, mayor capacidad tendrá la empresa para subir precios sin perder muchos compradores.</p><strong>Idea clave: demanda menos elástica, mayor margen posible.</strong><small>Ejemplo: un medicamento sin sustitutos suele permitir mayor margen que una bebida con muchas alternativas.</small></article>
+          <article class="study-card"><div class="card-icon">N</div><h4>Número de empresas</h4><p>Mientras menos empresas existan, mayor será la posibilidad de que una firma influya en el precio o en la cantidad del mercado.</p><strong>Idea clave: menos rivales, mayor influencia.</strong><small>Ejemplo: un proveedor único de un servicio local pesa más que un vendedor en un mercado con muchos competidores.</small></article>
+          <article class="study-card"><div class="card-icon">R</div><h4>Relación entre empresas</h4><p>Si las empresas compiten agresivamente, el poder de mercado disminuye. Si coordinan, coluden o actúan estratégicamente, puede aumentar.</p><strong>Idea clave: la conducta estratégica también crea poder.</strong><small>Ejemplo: dos firmas que evitan guerras de precios pueden sostener precios más altos.</small></article>
+        </div>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading"><span>02</span><h3>¿Por qué aparece un monopolio?</h3><p>Un monopolio puede surgir por la tecnología de costos, por coordinación entre empresas o por ventajas acumuladas por una firma que llegó primero.</p></div>
+        <div class="cause-grid">
+          <article class="cause-card"><h4>Escala Mínima Eficiente y demanda</h4><p>La Escala Mínima Eficiente es el nivel de producción donde una empresa alcanza costos medios bajos. Si esa escala es muy grande frente a la demanda total, puede ser eficiente que solo una o pocas empresas produzcan.</p></article>
+          <article class="cause-card"><h4>Colusión o cártel</h4><p>Varias empresas pueden coordinarse para actuar como si fueran una sola empresa monopólica, reduciendo la competencia y elevando precios.</p></article>
+          <article class="cause-card"><h4>Productor histórico</h4><p>La primera empresa en posicionarse puede ganar ventajas de marca, experiencia, infraestructura, clientes o acceso a canales de distribución.</p></article>
+        </div>
+        <div class="chart-pair">
+          <figure class="svg-chart-card"><figcaption>Gráfico A: Mercado competitivo</figcaption><svg viewBox="0 0 560 360" role="img" aria-label="Escala mínima eficiente lejos de la demanda total"><rect x="18" y="18" width="524" height="324" rx="18" class="svg-panel"/><g class="chart-grid"><path d="M90 285H500 M90 235H500 M90 185H500 M90 135H500 M90 85H500"/><path d="M150 55V285 M220 55V285 M290 55V285 M360 55V285 M430 55V285"/></g><path d="M88 286H510" class="axis-line"/><path d="M90 288V54" class="axis-line"/><text x="32" y="64" class="axis-label">Precio / Costo</text><text x="454" y="324" class="axis-label">Cantidad</text><path d="M112 88C210 128 326 190 480 268" class="demand-line"/><path d="M115 235C170 174 224 142 274 136C330 130 397 143 470 170" class="avg-cost-line"/><line x1="215" y1="284" x2="215" y2="128" class="guide-line-svg"/><circle cx="215" cy="142" r="7" class="point-green"/><text x="188" y="310" class="chart-label">EME</text><text x="405" y="252" class="chart-label demand-text">D</text><text x="392" y="164" class="chart-label cost-text">CMe</text><text x="245" y="82" class="chart-note">La EME es pequeña frente al mercado.</text><text x="245" y="106" class="chart-note">Muchas empresas pueden operar eficientemente.</text></svg></figure>
+          <figure class="svg-chart-card"><figcaption>Gráfico B: Mercado concentrado o monopólico</figcaption><svg viewBox="0 0 560 360" role="img" aria-label="Escala mínima eficiente cercana al tamaño de la demanda"><rect x="18" y="18" width="524" height="324" rx="18" class="svg-panel"/><g class="chart-grid"><path d="M90 285H500 M90 235H500 M90 185H500 M90 135H500 M90 85H500"/><path d="M150 55V285 M220 55V285 M290 55V285 M360 55V285 M430 55V285"/></g><path d="M88 286H510" class="axis-line"/><path d="M90 288V54" class="axis-line"/><text x="32" y="64" class="axis-label">Precio / Costo</text><text x="454" y="324" class="axis-label">Cantidad</text><path d="M112 88C210 128 326 190 480 268" class="demand-line"/><path d="M110 275C170 215 240 166 318 138C376 118 430 114 488 126" class="avg-cost-line"/><line x1="412" y1="284" x2="412" y2="116" class="guide-line-svg"/><circle cx="412" cy="118" r="7" class="point-green"/><text x="385" y="310" class="chart-label">EME</text><text x="405" y="252" class="chart-label demand-text">D</text><text x="448" y="120" class="chart-label cost-text">CMe</text><text x="134" y="82" class="chart-note">La EME ocupa gran parte del mercado.</text><text x="134" y="106" class="chart-note">Pocas empresas o una sola operan eficientemente.</text></svg></figure>
+        </div>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading"><span>03</span><h3>Elasticidad precio de la demanda</h3><p>La elasticidad precio de la demanda mide la variación porcentual de la cantidad demandada dividida entre la variación porcentual del precio.</p></div>
+        <div class="formula-highlight"><div>\[\varepsilon_{q,p}=\frac{\%\Delta q}{\%\Delta p}\]</div><div>\[\varepsilon=\frac{\Delta q}{\Delta p}\cdot\frac{\bar p}{\bar q}\]</div></div>
+        <div class="text-columns"><p>La pendiente no es suficiente para medir sensibilidad porque depende de las unidades de medida. Si la cantidad se mide en litros o hectolitros, la pendiente cambia.</p><p>La elasticidad corrige ese problema porque mide cambios porcentuales. Suele ser negativa porque precio y cantidad demandada se mueven en sentido contrario; para clasificarla se usa \(|\varepsilon|\).</p></div>
+        <aside class="key-idea"><strong>Idea clave</strong><p>La pendiente mide cambios en unidades. La elasticidad mide cambios porcentuales. Por eso la elasticidad permite comparar mejor la sensibilidad de distintos mercados.</p></aside>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading"><span>04</span><h3>Determinantes de la elasticidad</h3></div>
+        <div class="responsive-table"><table><thead><tr><th>Determinante</th><th>Efecto sobre elasticidad</th><th>Ejemplo</th></tr></thead><tbody><tr><td>Sustituibilidad del bien</td><td>Más sustitutos disponibles → demanda más elástica.</td><td>Una marca de café enfrenta sustitutos cercanos.</td></tr><tr><td>Generalidad del bien</td><td>Un bien general suele tener demanda menos elástica; uno específico, más elástica.</td><td>Alimentos en general vs. una variedad específica.</td></tr><tr><td>Porcentaje del ingreso</td><td>Mayor proporción del ingreso destinada al bien → mayor elasticidad.</td><td>Un auto pesa más que una goma de mascar.</td></tr><tr><td>Tiempo</td><td>A mayor tiempo para adaptarse → mayor elasticidad.</td><td>Con gasolina cara, después se puede cambiar transporte.</td></tr><tr><td>Bienes esenciales</td><td>Mientras más necesario sea un bien → menor elasticidad.</td><td>Medicinas urgentes o servicios básicos.</td></tr></tbody></table></div>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading"><span>05</span><h3>Tipos de elasticidad</h3></div>
+        <div class="responsive-table"><table><thead><tr><th>Tipo</th><th>Condición</th><th>Interpretación</th><th>Ejemplo</th></tr></thead><tbody><tr><td>Elástica</td><td><span class="math-badge">\(|\varepsilon|>1\)</span></td><td>La cantidad cambia proporcionalmente más que el precio.</td><td>Bienes con sustitutos.</td></tr><tr><td>Inelástica</td><td><span class="math-badge">\(0<|\varepsilon|<1\)</span></td><td>La cantidad cambia proporcionalmente menos que el precio.</td><td>Medicinas necesarias.</td></tr><tr><td>Unitaria</td><td><span class="math-badge">\(|\varepsilon|=1\)</span></td><td>Cantidad y precio cambian proporcionalmente igual.</td><td>Punto específico de una demanda lineal.</td></tr><tr><td>Perfectamente elástica</td><td><span class="math-badge">\(|\varepsilon|=\infty\)</span></td><td>A un precio dado se demanda cualquier cantidad.</td><td>Caso teórico.</td></tr><tr><td>Perfectamente inelástica</td><td><span class="math-badge">\(|\varepsilon|=0\)</span></td><td>La cantidad no cambia aunque cambie el precio.</td><td>Bien extremadamente necesario sin sustitutos.</td></tr></tbody></table></div>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading"><span>06</span><h3>Elasticidad en una demanda lineal</h3><p>En una demanda lineal, la pendiente es constante, pero la elasticidad cambia dependiendo del punto de la curva.</p></div>
+        <p>La pendiente no es igual a la elasticidad. La pendiente mide la relación entre cambios absolutos de precio y cantidad, mientras que la elasticidad mide cambios porcentuales.</p>
+        <figure class="svg-chart-card wide-chart"><figcaption>Demanda lineal y zonas de elasticidad</figcaption><svg viewBox="0 0 920 460" role="img" aria-label="Demanda lineal con zonas de elasticidad"><rect x="18" y="18" width="884" height="424" rx="20" class="svg-panel"/><g class="chart-grid"><path d="M110 360H800 M110 300H800 M110 240H800 M110 180H800 M110 120H800 M110 60H800"/><path d="M190 60V360 M290 60V360 M390 60V360 M490 60V360 M590 60V360 M690 60V360"/></g><path d="M108 362H820" class="axis-line"/><path d="M110 364V52" class="axis-line"/><text x="64" y="64" class="axis-label">Precio p</text><text x="760" y="404" class="axis-label">Cantidad q</text><path d="M148 76L760 360" class="demand-line thick"/><circle cx="148" cy="76" r="8" class="point-green"/><circle cx="300" cy="146" r="7" class="point-green"/><circle cx="454" cy="218" r="8" class="point-orange"/><circle cx="620" cy="294" r="7" class="point-green"/><circle cx="760" cy="360" r="8" class="point-green"/><text x="170" y="82" class="elastic-label">Perfectamente elástica |ε| = ∞</text><text x="330" y="132" class="elastic-label">Elástica |ε| &gt; 1</text><text x="478" y="218" class="elastic-label">Unitaria |ε| = 1</text><text x="642" y="292" class="elastic-label">Inelástica 0 &lt; |ε| &lt; 1</text><text x="520" y="382" class="elastic-label">Perfectamente inelástica |ε| = 0</text></svg></figure>
+        <aside class="common-error"><strong>Error común</strong><p>Creer que pendiente y elasticidad son lo mismo. En una demanda lineal la pendiente es constante, pero la elasticidad cambia a lo largo de la curva.</p></aside>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading"><span>07</span><h3>Elasticidad e ingreso marginal</h3><p>El ingreso marginal mide cuánto cambia el ingreso total cuando se vende una unidad adicional.</p></div>
+        <div class="formula-highlight"><div>\[IMg=\frac{\Delta IT}{\Delta q}\]</div><div>\[IT=p\cdot q\]</div><div>\[IMg=p\left(1-\frac{1}{|\varepsilon|}\right)\]</div></div>
+        <div class="mr-grid"><article class="mr-card positive"><h4>Demanda elástica</h4><span>\(|\varepsilon|>1\)</span><strong>IMg positivo</strong><p>Al aumentar \(q\), el ingreso total aumenta.</p></article><article class="mr-card neutral"><h4>Demanda unitaria</h4><span>\(|\varepsilon|=1\)</span><strong>IMg = 0</strong><p>El ingreso total está en su máximo.</p></article><article class="mr-card negative"><h4>Demanda inelástica</h4><span>\(0<|\varepsilon|<1\)</span><strong>IMg negativo</strong><p>Al aumentar \(q\), el ingreso total disminuye.</p></article></div>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading"><span>08</span><h3>¿Cómo se fija el precio?</h3><p>Una empresa busca elegir el precio y la cantidad que le generen mayor beneficio.</p></div>
+        <div class="formula-highlight"><div>\[\pi=IT-CT\]</div><div>\[\frac{\Delta\pi}{\Delta q}=IMg-\frac{\Delta CT}{\Delta q}\]</div></div>
+        <p>Si la empresa aumenta producción en una zona inelástica, el ingreso marginal cae, los costos aumentan y los beneficios pueden caer.</p>
+        <div class="flow-diagram" aria-label="Flujo de fijación de precios"><span>Aumenta \(q\)</span><span>baja \(p\)</span><span>IMg cae</span><span>costos suben</span><span>beneficios caen</span></div>
+        <aside class="key-idea"><strong>Conclusión</strong><p>Una empresa con poder de mercado no debería producir en la parte inelástica de la demanda si busca maximizar beneficios, porque vender más exige bajar el precio y el ingreso adicional puede ser negativo.</p></aside>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading"><span>09</span><h3>Ingreso marginal en una demanda lineal inversa</h3></div>
+        <div class="derivation-box"><div>\[p=a-bq\]</div><div>\[IT=p\cdot q\]</div><div>\[IT=(a-bq)q=aq-bq^2\]</div><div>\[IMg=a-2bq\]</div></div>
+        <p>La demanda inversa representa el ingreso medio. El ingreso marginal tiene el mismo intercepto vertical que la demanda, pero el doble de pendiente; por eso corta el eje de cantidad en la mitad. Con demanda negativa, el precio es mayor que el ingreso marginal.</p>
+        <figure class="svg-chart-card wide-chart"><figcaption>Demanda inversa e ingreso marginal</figcaption><svg viewBox="0 0 880 430" role="img" aria-label="Demanda inversa e ingreso marginal"><rect x="18" y="18" width="844" height="394" rx="20" class="svg-panel"/><g class="chart-grid"><path d="M100 340H780 M100 280H780 M100 220H780 M100 160H780 M100 100H780"/><path d="M190 72V340 M300 72V340 M410 72V340 M520 72V340 M630 72V340 M740 72V340"/></g><path d="M98 342H796" class="axis-line"/><path d="M100 344V64" class="axis-line"/><text x="42" y="74" class="axis-label">Precio / Ingreso</text><text x="730" y="382" class="axis-label">Cantidad</text><path d="M100 88L720 340" class="demand-line thick"/><path d="M100 88L410 340" class="marginal-line thick"/><circle cx="100" cy="88" r="7" class="point-green"/><circle cx="410" cy="340" r="7" class="point-orange"/><circle cx="720" cy="340" r="7" class="point-green"/><text x="74" y="82" class="chart-label">a</text><text x="646" y="234" class="chart-label demand-text">D = IMe</text><text x="306" y="218" class="chart-label mr-text">IMg</text><text x="384" y="374" class="chart-label">a/2b</text><text x="698" y="374" class="chart-label">a/b</text></svg></figure>
+      </section>
+
+      <section class="guide-section summary-guide">
+        <div class="section-heading"><span>10</span><h3>Resumen de la guía</h3></div>
+        <ul><li>El poder de mercado es la capacidad de influir en el precio.</li><li>Sus fuentes principales son elasticidad de la demanda, número de empresas y relación entre empresas.</li><li>El monopolio puede aparecer por escala mínima eficiente, colusión o ventaja del productor histórico.</li><li>La elasticidad mide sensibilidad en términos porcentuales.</li><li>En una demanda lineal, la elasticidad cambia a lo largo de la curva.</li><li>El ingreso marginal depende de la elasticidad.</li><li>Si la demanda es elástica, el ingreso marginal es positivo.</li><li>Si la demanda es unitaria, el ingreso marginal es cero.</li><li>Si la demanda es inelástica, el ingreso marginal es negativo.</li><li>Si \(p=a-bq\), entonces \(IMg=a-2bq\).</li></ul>
+      </section>
+    </article>
+  `;
+}
+
 function renderGuide() {
   const topic = currentTopic();
   document.querySelector("#topicEyebrow").textContent = `${weekLabel(topic.week)} · Concepto clave`;
+  if (state.courseId === "poder-mercado" && topic.id === "pm-poder-mercado") {
+    guideView.innerHTML = renderMarketPowerWeekGuide();
+    typesetMath();
+    return;
+  }
   guideView.innerHTML = `
     <div class="guide-layout">
       <section class="guide-main">
