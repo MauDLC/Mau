@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guía de Economía de la Producción Competitiva</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#inicio" aria-label="Ir al inicio">
+        <span class="brand-mark">EPC</span>
+        <span>
+          <strong>Economía de la Producción</strong>
+          <small>Guía propia de estudio</small>
+        </span>
+      </a>
+      <nav class="main-nav" aria-label="Secciones principales">
+        <button class="nav-link active" data-section="learn">Guía</button>
+        <button class="nav-link" data-section="theory">Teoría</button>
+        <button class="nav-link" data-section="practice">Ejercicios</button>
+      </nav>
+    </header>
+
+    <main id="inicio">
+      <section class="intro">
+        <div class="intro-copy">
+          <p class="eyebrow">Unidad 1 · Conceptos clave explicados</p>
+          <h1>Una guía clara para entender producción, beneficios y costos.</h1>
+          <p>
+            Esta versión no resume diapositiva por diapositiva. Organiza la unidad como una guía didáctica con explicaciones propias, gráficos, fórmulas, ejemplos y práctica por semana.
+          </p>
+        </div>
+        <div class="progress-panel" aria-label="Progreso de estudio">
+          <span>Temas vistos</span>
+          <strong id="progressText">0%</strong>
+          <div class="progress-track"><div id="progressBar"></div></div>
+          <p id="progressHint">Marca los temas como vistos para medir tu avance.</p>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <aside class="sidebar" aria-label="Temas de la guía">
+          <h2>Temas clave</h2>
+          <div id="topicList" class="module-list"></div>
+          <div class="sidebar-note">
+            <strong>Ruta sugerida</strong>
+            <p>Lee la explicación, mira el gráfico, revisa el ejemplo y resuelve los exámenes de esa semana.</p>
+          </div>
+        </aside>
+
+        <section id="learn" class="app-section active" aria-labelledby="learnTitle">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow" id="topicEyebrow">Guía</p>
+              <h2 id="learnTitle">Conceptos explicados</h2>
+            </div>
+            <button id="markTopic" class="primary-btn">Marcar tema visto</button>
+          </div>
+          <article id="guideView" class="lesson"></article>
+        </section>
+
+        <section id="theory" class="app-section" aria-labelledby="theoryTitle">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Examen de teoría</p>
+              <h2 id="theoryTitle">20 preguntas por semana</h2>
+            </div>
+            <div class="section-actions">
+              <select id="theoryWeek" aria-label="Semana para examen de teoría"></select>
+              <button id="resetTheory" class="ghost-btn">Reiniciar</button>
+            </div>
+          </div>
+          <div class="level-tabs" aria-label="Nivel del examen de teoría">
+            <button class="level-btn active" data-level="facil">Fácil</button>
+            <button class="level-btn" data-level="medio">Medio</button>
+            <button class="level-btn" data-level="dificil">Difícil</button>
+            <button class="level-btn" data-level="todas">Todas</button>
+          </div>
+          <div id="theoryQuiz" class="quiz"></div>
+          <div id="theoryResult" class="result-box" hidden></div>
+        </section>
+
+        <section id="practice" class="app-section" aria-labelledby="practiceTitle">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Examen de ejercicios</p>
+              <h2 id="practiceTitle">20 ejercicios por semana</h2>
+            </div>
+            <div class="section-actions">
+              <select id="practiceWeek" aria-label="Semana para examen de ejercicios"></select>
+              <button id="resetPractice" class="ghost-btn">Reiniciar</button>
+            </div>
+          </div>
+          <div id="practiceQuiz" class="quiz"></div>
+          <div id="practiceResult" class="result-box" hidden></div>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [["\\(", "\\)"]],
+          displayMath: [["\\[", "\\]"]]
+        },
+        svg: { fontCache: "global" }
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
