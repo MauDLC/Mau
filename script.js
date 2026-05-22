@@ -263,6 +263,7 @@ function activateSection(sectionId) {
   document.querySelectorAll(".app-section").forEach((section) => {
     section.classList.toggle("active", section.id === sectionId);
   });
+  document.querySelector(".workspace")?.classList.toggle("exam-mode", sectionId !== "learn");
 }
 
 function optionQuestion(prompt, options, answer, explain) {
@@ -453,57 +454,118 @@ function theoryBank(weekId, level = state.theoryLevel) {
 const practiceBanks = {
   "semana-01": [
     numberQuestion("Para \\(y=4L^{1/2}K^{1/3}\\), calcula \\(a+b\\).", 0.8333, "\\(\\frac{1}{2}+\\frac{1}{3}=\\frac{5}{6}\\)."),
-    textQuestion("Con \\(a+b=\\frac{5}{6}\\), clasifica rendimientos.", "decrecientes", "Como \\(\\frac{5}{6}<1\\)."),
     numberQuestion("Para \\(y=2x_1^{1/3}x_2^{2/3}\\), calcula \\(a+b\\).", 1, "\\(\\frac{1}{3}+\\frac{2}{3}=1\\)."),
-    textQuestion("Con \\(a+b=1\\), clasifica rendimientos.", "constantes", "Igual a \\(1\\)."),
+    numberQuestion("Para \\(y=3L K^2\\), calcula la suma de exponentes.", 3, "\\(1+2=3\\)."),
     numberQuestion("Si \\(PMg_1=8\\) y \\(PMg_2=4\\), calcula \\(RTS=-\\frac{PMg_1}{PMg_2}\\).", -2, "\\(-\\frac{8}{4}=-2\\)."),
+    numberQuestion("Si \\(PMg_1=12\\) y \\(PMg_2=3\\), calcula \\(RTS\\).", -4, "\\(RTS=-\\frac{12}{3}=-4\\)."),
     numberQuestion("Si \\(y\\) pasa de \\(50\\) a \\(62\\) cuando \\(x\\) aumenta \\(3\\), calcula el \\(PMg\\) promedio.", 4, "\\(\\frac{62-50}{3}=4\\)."),
+    numberQuestion("Si \\(y\\) pasa de \\(80\\) a \\(104\\) cuando \\(L\\) aumenta \\(6\\), calcula \\(PMg_L\\) promedio.", 4, "\\(\\frac{104-80}{6}=4\\)."),
     numberQuestion("Para \\(y=10L\\), calcula \\(PMg_L\\).", 10, "La derivada de \\(10L\\) respecto a \\(L\\) es \\(10\\)."),
-    textQuestion("Factores usados en proporción rígida: tecnología de...", "proporciones fijas", "Tipo Leontief."),
-    textQuestion("Isocuantas rectas corresponden a...", "sustitutos perfectos", "Sustitución constante."),
-    numberQuestion("Si triplicas insumos con rendimientos constantes, y se multiplica por...", 3, "Misma proporción.")
+    numberQuestion("Para \\(y=5K+2L\\), calcula \\(PMg_K\\).", 5, "La derivada respecto a \\(K\\) es \\(5\\)."),
+    numberQuestion("Para \\(y=LK\\), con \\(L=4\\) y \\(K=6\\), calcula \\(y\\).", 24, "\\(4\\cdot6=24\\)."),
+    numberQuestion("Con rendimientos constantes, si duplicas todos los insumos, \\(y\\) se multiplica por:", 2, "Rendimientos constantes implican el mismo factor de escala."),
+    numberQuestion("Con \\(f(tx)=t^2f(x)\\), si \\(t=3\\), \\(y\\) se multiplica por:", 9, "\\(3^2=9\\)."),
+    numberQuestion("Con \\(f(tx)=t^{0.5}f(x)\\), si \\(t=4\\), \\(y\\) se multiplica por:", 2, "\\(4^{0.5}=2\\)."),
+    numberQuestion("Para \\(y=x_1^{0.4}x_2^{0.4}\\), calcula \\(a+b\\).", 0.8, "\\(0.4+0.4=0.8\\)."),
+    numberQuestion("Para \\(y=x_1^{0.7}x_2^{0.5}\\), calcula \\(a+b\\).", 1.2, "\\(0.7+0.5=1.2\\)."),
+    numberQuestion("Si la RTS es \\(-4\\) y reduces \\(x_1\\) en \\(3\\), ¿cuánto debe aumentar \\(x_2\\) aproximadamente?", 12, "La magnitud es \\(4\\): \\(4\\cdot3=12\\)."),
+    numberQuestion("En proporciones fijas, se requieren \\(2\\) máquinas por unidad. Para \\(15\\) unidades, máquinas:", 30, "\\(2\\cdot15=30\\)."),
+    numberQuestion("Si \\(y=\\min\\{x_1,2x_2\\}\\) y \\(x_1=10\\), \\(x_2=8\\), calcula \\(y\\).", 10, "\\(\\min\\{10,16\\}=10\\)."),
+    numberQuestion("Si \\(y=3x_1+2x_2\\), \\(x_1=4\\), \\(x_2=5\\), calcula \\(y\\).", 22, "\\(3\\cdot4+2\\cdot5=22\\)."),
+    numberQuestion("Si \\(A=2\\), \\(L=9\\), \\(K=4\\) en \\(y=A\\sqrt{LK}\\), calcula \\(y\\).", 12, "\\(2\\sqrt{9\\cdot4}=2\\cdot6=12\\).")
   ],
   "semana-02-03": [
     numberQuestion("Si \\(p=8\\) y \\(PMg=3\\), calcula \\(p\\cdot PMg\\).", 24, "\\(8\\cdot3=24\\)."),
-    textQuestion("Si \\(p\\cdot PMg\\)>w, conviene usar...", "mas", "El aporte supera el costo."),
-    textQuestion("Si \\(p\\cdot PMg\\)<w, conviene usar...", "menos", "El costo supera el aporte."),
-    numberQuestion("\\(IT=900\\) y \\(CT=650\\). Calcula el beneficio.", 250, "\\(\\pi=900-650=250\\)."),
-    numberQuestion("Beneficio contable \\(500\\) y costo de oportunidad \\(180\\). Calcula el beneficio económico.", 320, "\\(500-180=320\\)."),
+    numberQuestion("Si \\(p=12\\) y \\(PMg=5\\), calcula \\(p\\cdot PMg\\).", 60, "\\(12\\cdot5=60\\)."),
     numberQuestion("Si \\(w=40\\) y \\(p=10\\), calcula el \\(PMg\\) óptimo.", 4, "\\(PMg=\\frac{w}{p}=\\frac{40}{10}=4\\)."),
-    textQuestion("Si \\(IMg>CMg\\), la producción debe...", "aumentar", "La unidad extra suma beneficio."),
-    textQuestion("Si \\(IMg<CMg\\), la producción debe...", "reducir", "La unidad extra resta beneficio."),
-    numberQuestion("Ingreso marginal \\(15\\) y costo marginal \\(11\\). Calcula el cambio en beneficio.", 4, "\\(15-11=4\\)."),
-    numberQuestion("Ingreso marginal \\(9\\) y costo marginal \\(14\\). Calcula el cambio en beneficio.", -5, "\\(9-14=-5\\).")
+    numberQuestion("Si \\(w=30\\) y \\(PMg=6\\), calcula \\(p\\) óptimo.", 5, "\\(p=\\frac{w}{PMg}=\\frac{30}{6}=5\\)."),
+    numberQuestion("\\(IT=900\\) y \\(CT=650\\). Calcula el beneficio.", 250, "\\(\\pi=900-650=250\\)."),
+    numberQuestion("\\(IT=1200\\) y \\(CT=875\\). Calcula el beneficio.", 325, "\\(1200-875=325\\)."),
+    numberQuestion("Beneficio contable \\(500\\) y costo de oportunidad \\(180\\). Calcula beneficio económico.", 320, "\\(500-180=320\\)."),
+    numberQuestion("Beneficio contable \\(760\\) y costo de oportunidad \\(250\\). Calcula beneficio económico.", 510, "\\(760-250=510\\)."),
+    numberQuestion("Ingreso marginal \\(15\\) y costo marginal \\(11\\). Calcula cambio en beneficio.", 4, "\\(15-11=4\\)."),
+    numberQuestion("Ingreso marginal \\(9\\) y costo marginal \\(14\\). Calcula cambio en beneficio.", -5, "\\(9-14=-5\\)."),
+    numberQuestion("Si \\(p=7\\), \\(y=100\\), \\(w_1x_1=250\\), \\(w_2x_2=180\\), calcula \\(\\pi\\).", 270, "\\(7\\cdot100-250-180=270\\)."),
+    numberQuestion("Si \\(p=6\\), \\(y=80\\), costos totales \\(350\\), calcula \\(\\pi\\).", 130, "\\(6\\cdot80-350=130\\)."),
+    numberQuestion("Para \\(y=3x_1+4x_2\\), \\(p=8\\). Calcula \\(w_1\\) óptimo si \\(PMg_1=3\\).", 24, "\\(w_1=pPMg_1=8\\cdot3=24\\)."),
+    numberQuestion("Para \\(PMg=2.5\\) y \\(p=20\\), calcula \\(w\\) óptimo.", 50, "\\(w=pPMg=20\\cdot2.5=50\\)."),
+    numberQuestion("Si el precio sube de \\(5\\) a \\(7\\) y \\(y=120\\), cambio directo en ingreso.", 240, "\\((7-5)\\cdot120=240\\)."),
+    numberQuestion("Si \\(VA=\\frac{B}{r}\\), \\(B=100\\), \\(r=0.1\\), calcula \\(VA\\).", 1000, "\\(100/0.1=1000\\)."),
+    numberQuestion("Si \\(VA=\\frac{B}{r}\\), \\(B=80\\), \\(r=0.05\\), calcula \\(VA\\).", 1600, "\\(80/0.05=1600\\)."),
+    numberQuestion("Si \\(pPMg=45\\) y \\(w=38\\), calcula la brecha \\(pPMg-w\\).", 7, "\\(45-38=7\\)."),
+    numberQuestion("Si \\(pPMg=32\\) y \\(w=50\\), calcula la brecha \\(pPMg-w\\).", -18, "\\(32-50=-18\\)."),
+    numberQuestion("Si \\(\\pi=440\\), \\(p=8\\), \\(w_2x_2=200\\), calcula \\(\\pi/p+w_2x_2/p\\).", 80, "\\(440/8+200/8=55+25=80\\).")
   ],
   "semana-04": [
-    numberQuestion("Si \\(w_1=10\\) y \\(w_2=5\\), pendiente de isocosto.", -2, "-\\(w_1/w_2\\)."),
-    numberQuestion("Si \\(C=300\\) y \\(w_2=6\\), calcula el intercepto vertical.", 50, "\\(\\frac{C}{w_2}=\\frac{300}{6}=50\\)."),
-    numberQuestion("\\(PMg_1=8\\) y \\(PMg_2=4\\). Calcula \\(RTS\\).", -2, "\\(-\\frac{8}{4}=-2\\)."),
-    textQuestion("Si \\(RTS=-2\\) y \\(-\\frac{w_1}{w_2}=-2\\), hay...", "tangencia", "Las pendientes son iguales."),
-    numberQuestion("\\(C=10x_1+5x_2\\), \\(x_1=4\\), \\(x_2=8\\). Costo.", 80, "40+40."),
-    numberQuestion("\\(1\\) médico y \\(4\\) enfermeras por paciente. Para \\(20\\) pacientes, calcula enfermeras.", 80, "\\(4\\cdot20=80\\)."),
-    numberQuestion("Costo médico \\(6000\\) y \\(4\\) enfermeras de \\(3000\\). Calcula el costo por paciente.", 18000, "\\(6000+4\\cdot3000=18000\\)."),
-    textQuestion("Solución de sustitutos perfectos suele ser de...", "esquina", "Se elige el factor más barato por unidad efectiva."),
-    numberQuestion("Si \\(w_1=8\\) y la tangencia requiere \\(RTS=-2\\), calcula \\(w_2\\).", 4, "\\(\\frac{w_1}{w_2}=2\\Rightarrow w_2=4\\)."),
-    textQuestion("Fijar y y buscar menor C es...", "minimizacion", "Problema de costos.")
+    numberQuestion("Si \\(w_1=10\\) y \\(w_2=5\\), calcula la pendiente de isocosto.", -2, "\\(-\\frac{10}{5}=-2\\)."),
+    numberQuestion("Si \\(w_1=12\\) y \\(w_2=4\\), calcula la pendiente de isocosto.", -3, "\\(-\\frac{12}{4}=-3\\)."),
+    numberQuestion("Si \\(C=300\\) y \\(w_2=6\\), calcula el intercepto vertical.", 50, "\\(\\frac{300}{6}=50\\)."),
+    numberQuestion("Si \\(C=500\\) y \\(w_1=25\\), calcula el intercepto horizontal.", 20, "\\(\\frac{500}{25}=20\\)."),
+    numberQuestion("Si \\(PMg_1=8\\) y \\(PMg_2=4\\), calcula \\(RTS\\).", -2, "\\(-\\frac{8}{4}=-2\\)."),
+    numberQuestion("Si \\(PMg_1=15\\) y \\(PMg_2=5\\), calcula \\(RTS\\).", -3, "\\(-\\frac{15}{5}=-3\\)."),
+    numberQuestion("Si \\(PMg_L=3\\) y \\(w=10\\), calcula \\(PMg_L/w\\).", 0.3, "\\(3/10=0.3\\)."),
+    numberQuestion("Si \\(PMg_K=5\\) y \\(r=20\\), calcula \\(PMg_K/r\\).", 0.25, "\\(5/20=0.25\\)."),
+    numberQuestion("\\(C=10x_1+5x_2\\), \\(x_1=4\\), \\(x_2=8\\). Calcula \\(C\\).", 80, "\\(10\\cdot4+5\\cdot8=80\\)."),
+    numberQuestion("\\(C=12x_1+3x_2\\), \\(x_1=5\\), \\(x_2=10\\). Calcula \\(C\\).", 90, "\\(12\\cdot5+3\\cdot10=90\\)."),
+    numberQuestion("Para \\(20\\) pacientes y \\(4\\) enfermeras por paciente, calcula enfermeras.", 80, "\\(20\\cdot4=80\\)."),
+    numberQuestion("Para \\(18\\) pacientes y \\(1\\) médico por paciente, calcula médicos.", 18, "\\(18\\cdot1=18\\)."),
+    numberQuestion("Costo médico \\(6000\\) y \\(4\\) enfermeras de \\(3000\\). Costo por paciente.", 18000, "\\(6000+4\\cdot3000=18000\\)."),
+    numberQuestion("Con costo por paciente \\(18000\\), calcula costo para \\(20\\) pacientes.", 360000, "\\(18000\\cdot20=360000\\)."),
+    numberQuestion("Si \\(w_1=8\\) y tangencia requiere \\(RTS=-2\\), calcula \\(w_2\\).", 4, "\\(w_1/w_2=2\\Rightarrow w_2=4\\)."),
+    numberQuestion("Si \\(w_2=6\\) y tangencia requiere \\(RTS=-3\\), calcula \\(w_1\\).", 18, "\\(w_1/w_2=3\\Rightarrow w_1=18\\)."),
+    numberQuestion("Si \\(C=240\\), \\(w_1=12\\), \\(w_2=6\\), calcula \\(x_2\\) cuando \\(x_1=10\\).", 20, "\\(x_2=240/6-(12/6)10=40-20=20\\)."),
+    numberQuestion("Si \\(C=180\\), \\(w_1=9\\), \\(w_2=3\\), calcula \\(x_2\\) cuando \\(x_1=8\\).", 36, "\\(x_2=180/3-(9/3)8=60-24=36\\)."),
+    numberQuestion("Si \\(PMg_1/w_1=0.4\\) y \\(PMg_2/w_2=0.25\\), calcula la diferencia.", 0.15, "\\(0.4-0.25=0.15\\)."),
+    numberQuestion("Si \\(PMg_1/w_1=0.2\\) y \\(PMg_2/w_2=0.5\\), calcula la diferencia.", -0.3, "\\(0.2-0.5=-0.3\\).")
   ],
   "semana-05": [
     numberQuestion("\\(C(y)=y^2+1\\). Calcula \\(CMg\\) en \\(y=5\\).", 10, "\\(CMg=2y=10\\)."),
-    numberQuestion("\\(F=100\\) e \\(y=20\\). Calcula \\(CFMe\\).", 5, "\\(CFMe=\\frac{100}{20}=5\\)."),
-    numberQuestion("\\(CMe=30\\) y \\(CVMe=22\\). Calcula \\(CFMe\\).", 8, "\\(CFMe=30-22=8\\)."),
-    numberQuestion("\\(CMg=12\\) y \\(CMe=16\\). Calcula \\(EC\\).", 0.75, "\\(EC=\\frac{12}{16}=0.75\\)."),
-    numberQuestion("\\(EC=0.75\\). Calcula \\(IEE\\).", 0.25, "\\(IEE=1-0.75=0.25\\)."),
-    textQuestion("IEE positivo indica...", "economias", "Economías de escala."),
-    numberQuestion("\\(CMg=24\\) y \\(CMe=12\\). Calcula \\(EC\\).", 2, "\\(EC=\\frac{24}{12}=2\\)."),
-    textQuestion("EC mayor que 1 indica...", "deseconomias", "Costo crece más que proporcionalmente."),
-    numberQuestion("C=500 e y=25. CMe.", 20, "500/25."),
-    textQuestion("Si \\(CMg<CMe\\), CMe...", "baja", "Marginal menor reduce promedio.")
+    numberQuestion("\\(C(y)=3y+50\\). Calcula \\(CMg\\).", 3, "La derivada de \\(3y+50\\) es \\(3\\)."),
+    numberQuestion("\\(F=100\\) e \\(y=20\\). Calcula \\(CFMe\\).", 5, "\\(100/20=5\\)."),
+    numberQuestion("\\(F=120\\) e \\(y=40\\). Calcula \\(CFMe\\).", 3, "\\(120/40=3\\)."),
+    numberQuestion("\\(CMe=30\\) y \\(CVMe=22\\). Calcula \\(CFMe\\).", 8, "\\(30-22=8\\)."),
+    numberQuestion("\\(CMe=45\\) y \\(CFMe=15\\). Calcula \\(CVMe\\).", 30, "\\(45-15=30\\)."),
+    numberQuestion("\\(CMg=12\\) y \\(CMe=16\\). Calcula \\(EC\\).", 0.75, "\\(12/16=0.75\\)."),
+    numberQuestion("\\(CMg=24\\) y \\(CMe=12\\). Calcula \\(EC\\).", 2, "\\(24/12=2\\)."),
+    numberQuestion("\\(EC=0.75\\). Calcula \\(IEE\\).", 0.25, "\\(1-0.75=0.25\\)."),
+    numberQuestion("\\(EC=1.2\\). Calcula \\(IEE\\).", -0.2, "\\(1-1.2=-0.2\\)."),
+    numberQuestion("\\(C=500\\) e \\(y=25\\). Calcula \\(CMe\\).", 20, "\\(500/25=20\\)."),
+    numberQuestion("\\(C=840\\) e \\(y=42\\). Calcula \\(CMe\\).", 20, "\\(840/42=20\\)."),
+    numberQuestion("\\(Cv=300\\) e \\(y=30\\). Calcula \\(CVMe\\).", 10, "\\(300/30=10\\)."),
+    numberQuestion("\\(Cv=560\\) e \\(y=70\\). Calcula \\(CVMe\\).", 8, "\\(560/70=8\\)."),
+    numberQuestion("Costos separados \\(200\\) y costo conjunto \\(150\\). Calcula ahorro.", 50, "\\(200-150=50\\)."),
+    numberQuestion("Si ahorro \\(50\\) y costo conjunto \\(150\\), calcula \\(EA\\).", 0.3333, "\\(EA=50/150=0.3333\\)."),
+    numberQuestion("Si \\(y\\) sube de \\(100\\) a \\(200\\) y \\(C\\) de \\(1000\\) a \\(1800\\), aumento de costo.", 800, "\\(1800-1000=800\\)."),
+    numberQuestion("Si \\(C_v=400\\), \\(F=100\\), \\(y=25\\), calcula \\(CMe\\).", 20, "\\((400+100)/25=20\\)."),
+    numberQuestion("Si \\(C_v=900\\), \\(F=300\\), \\(y=60\\), calcula \\(CMe\\).", 20, "\\((900+300)/60=20\\)."),
+    numberQuestion("Si \\(CMg=18\\) y \\(CMe=18\\), calcula \\(EC\\).", 1, "\\(18/18=1\\).")
   ]
 };
 
+function numericOptions(answer, index) {
+  const base = Number(answer);
+  const step = Math.max(1, Math.round(Math.abs(base) * 0.2));
+  const raw = [base, base + step, base - step, base + step * 2];
+  const unique = [];
+  raw.forEach((value) => {
+    const rounded = Number.isInteger(base) ? Math.round(value) : Number(value.toFixed(4));
+    if (!unique.includes(rounded)) unique.push(rounded);
+  });
+  while (unique.length < 4) unique.push(Number((base + unique.length + index + 1).toFixed(4)));
+  return rotateOptions(unique.slice(0, 4).map((value) => String(value)), index + String(answer).length);
+}
+
 function practiceBank(weekId) {
-  const rows = practiceBanks[weekId];
-  return [...rows, ...rows].slice(0, 20);
+  return practiceBanks[weekId].map((question, index) => {
+    const options = numericOptions(question.answer, index);
+    return {
+      type: "choice",
+      prompt: question.prompt,
+      options,
+      answer: options.indexOf(String(question.answer)),
+      explain: question.explain
+    };
+  });
 }
 
 function renderWeekSelects() {
@@ -601,7 +663,11 @@ function renderPracticeQuiz(weekId) {
   container.innerHTML = questions.map((question, index) => `
     <article class="question" data-practice="${index}">
       <header><h3>${index + 1}. ${escapeHtml(question.prompt)}</h3><strong>1 punto</strong></header>
-      <input type="${question.type === "number" ? "number" : "text"}" step="any" aria-label="Respuesta del ejercicio ${index + 1}" />
+      <div class="options">
+        ${question.options.map((option, optionIndex) => `
+          <label class="option"><input type="radio" name="practice-${weekId}-${index}" value="${optionIndex}" /><span>${escapeHtml(option)}</span></label>
+        `).join("")}
+      </div>
       <div class="feedback" hidden></div>
     </article>
   `).join("") + `<div class="check-row"><button class="check-btn" id="checkPractice">Calificar ejercicios</button></div>`;
@@ -610,19 +676,16 @@ function renderPracticeQuiz(weekId) {
     let score = 0;
     questions.forEach((question, index) => {
       const card = container.querySelector(`[data-practice="${index}"]`);
-      const value = card.querySelector("input").value;
+      const selected = container.querySelector(`input[name="practice-${weekId}-${index}"]:checked`);
       const feedback = card.querySelector(".feedback");
-      let correct = false;
-      if (question.type === "number") {
-        correct = Math.abs(Number(value) - question.answer) <= question.tolerance;
-      } else {
-        const clean = (text) => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-        correct = clean(value).includes(clean(question.answer));
-      }
+      const correct = selected && Number(selected.value) === question.answer;
       if (correct) score += 1;
       feedback.hidden = false;
       feedback.classList.toggle("wrong", !correct);
-      feedback.textContent = `${correct ? "Correcto." : "Ajusta tu procedimiento."} ${question.explain}`;
+      const correctAnswer = question.options[question.answer];
+      feedback.textContent = selected
+        ? `${correct ? "Correcto." : "Ajusta tu procedimiento."} Respuesta correcta: ${correctAnswer}. ${question.explain}`
+        : `Sin responder. Respuesta correcta: ${correctAnswer}. ${question.explain}`;
     });
     result.hidden = false;
     result.innerHTML = `<strong>Resultado: ${score}/${questions.length}</strong><p>${score >= 16 ? "Buen manejo práctico." : "Revisa fórmulas y ejemplos antes de repetir."}</p>`;

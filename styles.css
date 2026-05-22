@@ -202,6 +202,14 @@ p {
   overflow: hidden;
 }
 
+.workspace.exam-mode {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.workspace.exam-mode .sidebar {
+  display: none;
+}
+
 .sidebar {
   padding: 22px;
   border-right: 1px solid var(--line);
