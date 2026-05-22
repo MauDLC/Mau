@@ -339,7 +339,7 @@ function updateProgress() {
   const pct = Math.round((state.viewed.size / topics.length) * 100);
   progressText.textContent = `${pct}%`;
   progressBar.style.width = `${pct}%`;
-  progressHint.textContent = `${state.viewed.size} de ${topics.length} temas marcados como vistos.`;
+  progressHint.textContent = `${state.viewed.size} de ${topics.length} temas completados.`;
 }
 
 function activateSection(sectionId) {
@@ -363,7 +363,12 @@ function renderCourses() {
       <span>${escapeHtml(course.subtitle)}</span>
       <h2>${escapeHtml(course.title)}</h2>
       <p>${escapeHtml(course.description)}</p>
-      <strong>Entrar al curso</strong>
+      <div class="course-meta">
+        <span>📘 Guía</span>
+        <span>🧠 Teoría</span>
+        <span>✍️ Ejercicios</span>
+      </div>
+      <strong>Abrir plataforma</strong>
     </button>
   `).join("");
 }

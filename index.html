@@ -8,10 +8,32 @@
   </head>
   <body>
     <section id="coursesView" class="courses-view">
+      <header class="course-topbar">
+        <a class="brand" href="#coursesView" aria-label="MauStudy">
+          <span class="brand-mark">MS</span>
+          <span>
+            <strong>MauStudy</strong>
+            <small>Unidad 1</small>
+          </span>
+        </a>
+        <nav class="course-nav" aria-label="Vista de cursos">
+          <span>Cursos</span>
+          <span>Guía</span>
+          <span>Teoría</span>
+          <span>Ejercicios</span>
+        </nav>
+      </header>
       <div class="courses-head">
         <div>
           <p class="eyebrow">Mis cursos</p>
-          <h1>Selecciona un curso</h1>
+          <h1>EPC Economía de la Producción Competitiva</h1>
+          <p>Domina producción, costos y beneficios con teoría, gráficos y ejercicios.</p>
+          <div class="hero-badges" aria-label="Componentes del curso">
+            <span>📘 Guía</span>
+            <span>🧠 Teoría</span>
+            <span>✍️ Ejercicios</span>
+            <span>📈 Progreso</span>
+          </div>
         </div>
       </div>
       <div id="courseList" class="course-grid"></div>
@@ -20,10 +42,10 @@
     <div id="appShell" class="hidden">
     <header class="topbar">
       <a class="brand" href="#inicio" aria-label="Ir al inicio">
-        <span class="brand-mark">EPC</span>
+        <span class="brand-mark">MS</span>
         <span>
-          <strong>Economía de la Producción</strong>
-          <small>Guía propia de estudio</small>
+          <strong>MauStudy</strong>
+          <small>Unidad 1</small>
         </span>
       </a>
       <nav class="main-nav" aria-label="Secciones principales">
@@ -35,29 +57,60 @@
     </header>
 
     <main id="inicio">
-      <section class="intro">
+      <section class="intro hero">
         <div class="intro-copy">
-          <p class="eyebrow">Unidad 1 · Conceptos clave explicados</p>
-          <h1>Una guía clara para entender producción, beneficios y costos.</h1>
+          <p class="eyebrow">Plataforma personal de estudio</p>
+          <h1>EPC Economía de la Producción Competitiva</h1>
           <p>
-            Esta versión no resume diapositiva por diapositiva. Organiza la unidad como una guía didáctica con explicaciones propias, gráficos, fórmulas, ejemplos y práctica por semana.
+            Domina producción, costos y beneficios con teoría, gráficos y ejercicios.
           </p>
+          <div class="hero-badges" aria-label="Herramientas de estudio">
+            <span>📘 Guía</span>
+            <span>🧠 Teoría</span>
+            <span>✍️ Ejercicios</span>
+            <span>📈 Progreso</span>
+          </div>
         </div>
         <div class="progress-panel" aria-label="Progreso de estudio">
-          <span>Temas vistos</span>
-          <strong id="progressText">0%</strong>
+          <span>Progreso de la unidad</span>
+          <div class="progress-number"><strong id="progressText">0%</strong></div>
           <div class="progress-track"><div id="progressBar"></div></div>
           <p id="progressHint">Marca los temas como vistos para medir tu avance.</p>
+          <small>Avanza paso a paso en la unidad.</small>
         </div>
+      </section>
+
+      <section class="study-overview" aria-label="Resumen de la plataforma">
+        <article class="overview-card">
+          <span class="card-icon">📘</span>
+          <h2>Aprende</h2>
+          <p>Conceptos, fórmulas y ejemplos explicados con una ruta clara de estudio.</p>
+        </article>
+        <article class="overview-card">
+          <span class="card-icon">✍️</span>
+          <h2>Practica</h2>
+          <p>Preguntas teóricas y ejercicios numéricos por semana para reforzar dominio.</p>
+        </article>
+        <article class="overview-card">
+          <span class="card-icon">📈</span>
+          <h2>Mide tu avance</h2>
+          <p>Marca temas vistos y revisa resultados para saber dónde enfocar el repaso.</p>
+        </article>
       </section>
 
       <section class="workspace">
         <aside class="sidebar" aria-label="Temas de la guía">
           <h2>Temas clave</h2>
           <div id="topicList" class="module-list"></div>
-          <div class="sidebar-note">
+          <div class="sidebar-note study-path">
             <strong>Ruta sugerida</strong>
-            <p>Lee la explicación, mira el gráfico, revisa el ejemplo y resuelve los exámenes de esa semana.</p>
+            <ol>
+              <li><span>1</span> Lee la explicación</li>
+              <li><span>2</span> Mira el gráfico</li>
+              <li><span>3</span> Revisa el ejemplo</li>
+              <li><span>4</span> Resuelve teoría</li>
+              <li><span>5</span> Practica ejercicios</li>
+            </ol>
           </div>
         </aside>
 
@@ -65,7 +118,8 @@
           <div class="section-head">
             <div>
               <p class="eyebrow" id="topicEyebrow">Guía</p>
-              <h2 id="learnTitle">Conceptos explicados</h2>
+              <h2 id="learnTitle"><span class="title-icon">📘</span> Conceptos explicados</h2>
+              <p>Estudia la idea central, conecta la fórmula con el gráfico y revisa un ejemplo guiado.</p>
             </div>
             <button id="markTopic" class="primary-btn">Marcar tema visto</button>
           </div>
@@ -76,7 +130,8 @@
           <div class="section-head">
             <div>
               <p class="eyebrow">Examen de teoría</p>
-              <h2 id="theoryTitle">20 preguntas por semana</h2>
+              <h2 id="theoryTitle"><span class="title-icon">🧠</span> Examen de teoría</h2>
+              <p>Comprueba definiciones, intuición económica y condiciones de optimización.</p>
             </div>
             <div class="section-actions">
               <select id="theoryWeek" aria-label="Semana para examen de teoría"></select>
@@ -97,7 +152,8 @@
           <div class="section-head">
             <div>
               <p class="eyebrow">Examen de ejercicios</p>
-              <h2 id="practiceTitle">20 ejercicios por semana</h2>
+              <h2 id="practiceTitle"><span class="title-icon">✍️</span> Examen de ejercicios</h2>
+              <p>Aplica fórmulas con alternativas numéricas y revisa tus resultados por semana.</p>
             </div>
             <div class="section-actions">
               <select id="practiceWeek" aria-label="Semana para examen de ejercicios"></select>
