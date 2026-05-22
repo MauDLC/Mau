@@ -371,7 +371,8 @@ p {
   background: #fbfcfb;
 }
 
-.level-btn {
+.level-btn,
+.practice-level-btn {
   min-height: 38px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -381,7 +382,8 @@ p {
   cursor: pointer;
 }
 
-.level-btn.active {
+.level-btn.active,
+.practice-level-btn.active {
   color: #fff;
   border-color: var(--green-dark);
   background: var(--green-dark);
@@ -1176,6 +1178,12 @@ input:focus-visible {
   box-shadow: 0 10px 22px rgba(31, 104, 79, 0.22);
 }
 
+.nav-link#backToCourses {
+  color: #fff;
+  background: var(--green-dark);
+  box-shadow: 0 10px 22px rgba(31, 104, 79, 0.18);
+}
+
 main {
   width: min(1320px, 100%);
   margin: 0 auto;
@@ -1304,6 +1312,125 @@ main {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
   margin: 0 0 22px;
+}
+
+.study-hub {
+  display: grid;
+  gap: 16px;
+  margin: 0 0 22px;
+  padding: clamp(18px, 3vw, 26px);
+  border: 1px solid rgba(31, 104, 79, 0.11);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--shadow-soft);
+}
+
+.study-hub-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: end;
+}
+
+.study-hub h2 {
+  margin: 4px 0 6px;
+  color: var(--green-dark);
+  font-size: clamp(1.5rem, 2.6vw, 2.25rem);
+}
+
+.study-hub p {
+  max-width: 760px;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.week-tabs {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 4px 2px 10px;
+  scroll-snap-type: x proximity;
+}
+
+.week-tab {
+  flex: 0 0 min(240px, 74vw);
+  display: grid;
+  gap: 5px;
+  min-height: 86px;
+  padding: 14px 16px;
+  border: 1px solid rgba(31, 104, 79, 0.14);
+  border-radius: 16px;
+  color: var(--ink);
+  text-align: left;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(23, 32, 38, 0.05);
+  cursor: pointer;
+  scroll-snap-align: start;
+}
+
+.week-tab:hover {
+  border-color: rgba(47, 143, 107, 0.42);
+  transform: translateY(-1px);
+}
+
+.week-tab span {
+  color: var(--green-dark);
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.week-tab strong {
+  font-size: 0.95rem;
+  line-height: 1.25;
+}
+
+.week-tab.active {
+  color: #fff;
+  border-color: var(--green-dark);
+  background: linear-gradient(135deg, var(--green-dark), var(--green));
+  box-shadow: 0 16px 30px rgba(31, 104, 79, 0.18);
+}
+
+.week-tab.active span {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.week-mode-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid rgba(31, 104, 79, 0.12);
+  border-radius: 18px;
+  background: #edf5f0;
+}
+
+.week-mode-btn {
+  min-height: 42px;
+  padding: 9px 16px;
+  border: 0;
+  border-radius: 999px;
+  color: #47645a;
+  background: transparent;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.week-mode-btn:hover {
+  color: var(--green-dark);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.week-mode-btn.active {
+  color: #fff;
+  background: var(--green-dark);
+  box-shadow: 0 10px 20px rgba(31, 104, 79, 0.2);
+}
+
+.hidden-week-select {
+  display: none;
 }
 
 .overview-card {
@@ -1512,7 +1639,8 @@ main {
   background: #f1f7f4;
 }
 
-.level-btn {
+.level-btn,
+.practice-level-btn {
   min-height: 38px;
   border-color: transparent;
   border-radius: 999px;
@@ -1521,12 +1649,14 @@ main {
   font-weight: 850;
 }
 
-.level-btn:hover {
+.level-btn:hover,
+.practice-level-btn:hover {
   color: var(--green-dark);
   background: #fff;
 }
 
-.level-btn.active {
+.level-btn.active,
+.practice-level-btn.active {
   color: #fff;
   background: var(--green-dark);
   box-shadow: 0 10px 20px rgba(31, 104, 79, 0.2);
@@ -2146,10 +2276,38 @@ main {
   gap: 10px;
 }
 
+.options-short {
+  grid-template-columns: repeat(auto-fit, minmax(128px, max-content));
+  align-items: stretch;
+}
+
+.options-medium {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.options-long {
+  grid-template-columns: 1fr;
+}
+
 .option {
+  align-items: center;
+  width: 100%;
+  min-width: 0;
   border-color: rgba(31, 104, 79, 0.12);
   border-radius: 14px;
   background: #fff;
+  transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.options-short .option {
+  justify-content: flex-start;
+  padding: 10px 12px;
+}
+
+.option:hover {
+  border-color: rgba(47, 143, 107, 0.38);
+  background: #fbfffd;
+  transform: translateY(-1px);
 }
 
 .option:has(input:checked) {
@@ -2158,9 +2316,22 @@ main {
   box-shadow: inset 4px 0 0 var(--green);
 }
 
+.option.correct {
+  border-color: rgba(47, 143, 107, 0.8);
+  background: #eaf8f1;
+  box-shadow: inset 4px 0 0 var(--green-dark);
+}
+
+.option.incorrect {
+  border-color: rgba(191, 77, 66, 0.55);
+  background: #fff1ef;
+  box-shadow: inset 4px 0 0 var(--red);
+}
+
 .option input {
+  flex: 0 0 auto;
   accent-color: var(--green-dark);
-  margin-top: 0.25em;
+  margin-top: 0;
 }
 
 .feedback {
@@ -2172,6 +2343,19 @@ main {
 .feedback.wrong {
   border-color: rgba(184, 73, 63, 0.18);
   background: #fff3f1;
+}
+
+.exercise-graph {
+  margin: 8px 0 14px;
+  padding: 8px 0;
+  background: #fff;
+}
+
+.exercise-graph svg {
+  display: block;
+  width: min(620px, 100%);
+  height: auto;
+  background: #fff;
 }
 
 .result-box {
@@ -2187,9 +2371,15 @@ main {
 @media (max-width: 1040px) {
   .intro.hero,
   .study-overview,
+  .study-hub-head,
   .workspace,
   .guide-layout {
     grid-template-columns: 1fr;
+  }
+
+  .study-hub-head {
+    align-items: start;
+    flex-direction: column;
   }
 
   .sidebar {
@@ -2226,9 +2416,15 @@ main {
 
   .main-nav,
   .nav-link,
+  .week-mode-btn,
   .hero-badges span {
     flex: 0 0 auto;
     white-space: nowrap;
+  }
+
+  .week-mode-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
   }
 
   main {
@@ -2262,7 +2458,8 @@ main {
     border-radius: 18px;
   }
 
-  .level-btn {
+  .level-btn,
+  .practice-level-btn {
     flex: 1 1 calc(50% - 10px);
   }
 

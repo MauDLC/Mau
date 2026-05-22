@@ -137,8 +137,10 @@ let topics = [
 
 const state = {
   courseId: "economia-produccion",
+  weekId: weeks[0].id,
   topicId: topics[0].id,
   theoryLevel: "facil",
+  practiceLevel: "facil",
   viewed: new Set()
 };
 
@@ -150,6 +152,7 @@ const progressHint = document.querySelector("#progressHint");
 const coursesView = document.querySelector("#coursesView");
 const appShell = document.querySelector("#appShell");
 const courseList = document.querySelector("#courseList");
+const weekTabs = document.querySelector("#weekTabs");
 
 function typesetMath() {
   if (window.MathJax?.typesetPromise) {
@@ -158,7 +161,7 @@ function typesetMath() {
 }
 
 function currentTopic() {
-  return topics.find((topic) => topic.id === state.topicId) || topics[0];
+  return topics.find((topic) => topic.id === state.topicId) || topics.find((topic) => topic.week === state.weekId) || topics[0];
 }
 
 function weekLabel(weekId) {
@@ -427,13 +430,37 @@ function graphMath(type) {
 }
 
 function renderTopics() {
-  topicList.innerHTML = topics.map((topic, index) => `
+  const weekTopics = topics.filter((topic) => topic.week === state.weekId);
+  topicList.innerHTML = weekTopics.map((topic, index) => `
     <button class="module-card ${topic.id === state.topicId ? "active" : ""} ${state.viewed.has(topic.id) ? "done" : ""}" data-topic="${topic.id}">
       <small>${weekLabel(topic.week)}</small>
       <h3>${index + 1}. ${topic.title}</h3>
       <span>${topic.question}</span>
     </button>
   `).join("");
+}
+
+function renderWeekTabs() {
+  weekTabs.innerHTML = weeks.map((week) => `
+    <button class="week-tab ${week.id === state.weekId ? "active" : ""}" data-week="${week.id}">
+      <span>${escapeHtml(week.label)}</span>
+      <strong>${escapeHtml(week.title)}</strong>
+    </button>
+  `).join("");
+}
+
+function selectWeek(weekId) {
+  if (!weeks.some((week) => week.id === weekId)) return;
+  state.weekId = weekId;
+  const firstTopic = topics.find((topic) => topic.week === weekId) || topics[0];
+  state.topicId = firstTopic.id;
+  document.querySelector("#theoryWeek").value = weekId;
+  document.querySelector("#practiceWeek").value = weekId;
+  renderWeekTabs();
+  renderTopics();
+  renderGuide();
+  renderChoiceQuiz(weekId, state.theoryLevel);
+  renderPracticeQuiz(weekId, state.practiceLevel);
 }
 
 function renderMarketPowerWeekGuide() {
@@ -569,7 +596,7 @@ function updateProgress() {
 }
 
 function activateSection(sectionId) {
-  document.querySelectorAll(".nav-link").forEach((button) => {
+  document.querySelectorAll(".week-mode-btn").forEach((button) => {
     button.classList.toggle("active", button.dataset.section === sectionId);
   });
   document.querySelectorAll(".app-section").forEach((section) => {
@@ -611,16 +638,19 @@ function openCourse(courseId) {
   topics = selectedCourse.topics;
   theoryData = selectedCourse.theoryData;
   practiceBanks = selectedCourse.practiceBanks;
+  state.weekId = weeks[0].id;
   state.topicId = topics[0].id;
   state.theoryLevel = "facil";
+  state.practiceLevel = "facil";
   state.viewed = new Set();
   document.querySelector("#courseHeroTitle").textContent = selectedCourse.heroTitle;
   document.querySelector("#courseHeroSubtitle").textContent = selectedCourse.heroSubtitle;
   renderWeekSelects();
+  renderWeekTabs();
   renderTopics();
   renderGuide();
   renderChoiceQuiz(weeks[0].id, "facil");
-  renderPracticeQuiz(weeks[0].id);
+  renderPracticeQuiz(weeks[0].id, "facil");
   updateProgress();
   showOnly("app");
   activateSection("learn");
@@ -628,8 +658,8 @@ function openCourse(courseId) {
   typesetMath();
 }
 
-function optionQuestion(prompt, options, answer, explain) {
-  return { type: "choice", prompt, options, answer, explain };
+function optionQuestion(prompt, options, answer, explain, graph = "") {
+  return { type: "choice", prompt, options, answer, explain, graph };
 }
 
 function numberQuestion(prompt, answer, explain, tolerance = 0.01) {
@@ -810,7 +840,7 @@ function makeTheoryQuestion(row, index) {
 function theoryBank(weekId, level = state.theoryLevel) {
   const bank = theoryData[weekId];
   const levels = level === "todas" ? ["facil", "medio", "dificil"] : [level];
-  return levels.flatMap((difficulty) => bank[difficulty].map(makeTheoryQuestion));
+  return levels.flatMap((difficulty) => bank[difficulty].map(buildChoiceQuestion));
 }
 
 let practiceBanks = {
@@ -1155,13 +1185,129 @@ function makeMarketPracticeBanks(weeksList) {
   return banks;
 }
 
+function microGraphDemandMr({ capacity = false } = {}) {
+  return `
+    <figure class="exercise-graph">
+      <svg viewBox="0 0 620 360" role="img" aria-label="Demanda lineal e ingreso marginal">
+        <defs><marker id="exercise-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#111"/></marker></defs>
+        <line x1="72" y1="300" x2="570" y2="300" class="econ-axis" marker-end="url(#exercise-arrow)"/>
+        <line x1="72" y1="300" x2="72" y2="48" class="econ-axis" marker-end="url(#exercise-arrow)"/>
+        <text x="44" y="56" class="econ-var">P</text>
+        <text x="570" y="334" class="econ-var">Q</text>
+        <line x1="72" y1="72" x2="530" y2="300" class="econ-demand"/>
+        <line x1="72" y1="72" x2="300" y2="300" class="marginal-line"/>
+        <line x1="300" y1="300" x2="300" y2="72" class="econ-guide"/>
+        ${capacity ? '<line x1="420" y1="300" x2="420" y2="126" class="econ-guide"/><text x="392" y="326" class="econ-label">capacidad</text>' : ''}
+        <circle cx="300" cy="300" r="7" class="econ-point"/>
+        <text x="474" y="250" class="econ-label demand-text">Demanda</text>
+        <text x="226" y="226" class="econ-label mr-text">IMg</text>
+        <text x="286" y="326" class="econ-label">Q*</text>
+      </svg>
+    </figure>
+  `;
+}
+
+function choiceRow(prompt, correct, distractors, explain, graph = "") {
+  return { prompt, correct, distractors, explain, graph };
+}
+
+function buildChoiceQuestion(row, index) {
+  if (Array.isArray(row)) return makeTheoryQuestion(row, index);
+  const options = rotateOptions([row.correct, ...row.distractors], index + row.prompt.length);
+  return optionQuestion(row.prompt, options, options.indexOf(row.correct), row.explain, row.graph || "");
+}
+
+const marketWeek1Theory = {
+  facil: [
+    ["¿Qué mide la elasticidad precio de la demanda?", "La sensibilidad porcentual de la cantidad demandada ante cambios porcentuales del precio", ["La utilidad total del productor", "El costo fijo de la empresa", "La cantidad de empresas del mercado"], "La elasticidad compara cambios porcentuales, por eso permite medir sensibilidad sin depender de unidades."],
+    ["¿Por qué se suele usar \\(|\\varepsilon|\\) para clasificar elasticidades?", "Porque la elasticidad de demanda normalmente es negativa", ["Porque siempre es mayor que uno", "Porque elimina la demanda", "Porque convierte costos en precios"], "Precio y cantidad demandada se mueven en sentido contrario; el valor absoluto facilita clasificar."],
+    ["¿Cuál es la diferencia central entre pendiente y elasticidad?", "La pendiente usa cambios en unidades y la elasticidad usa cambios porcentuales", ["Son exactamente lo mismo", "La pendiente solo existe en monopolio", "La elasticidad mide costos fijos"], "La pendiente depende de unidades; la elasticidad permite comparar mercados."],
+    ["Si un bien tiene muchos sustitutos cercanos, su demanda tiende a ser:", "Más elástica", ["Perfectamente inelástica siempre", "Menos sensible", "Unitaria por definición"], "Con sustitutos, los consumidores pueden cambiar de producto cuando sube el precio."],
+    ["Una demanda inelástica cumple:", "\\(0<|\\varepsilon|<1\\)", ["\\(|\\varepsilon|>1\\)", "\\(|\\varepsilon|=\\infty\\)", "\\(|\\varepsilon|=1\\) siempre"], "Inelástica significa que la cantidad cambia proporcionalmente menos que el precio."],
+    ["Una demanda elástica cumple:", "\\(|\\varepsilon|>1\\)", ["\\(|\\varepsilon|=0\\)", "\\(0<|\\varepsilon|<1\\)", "\\(|\\varepsilon|=1\\) siempre"], "En demanda elástica, la cantidad responde más que proporcionalmente al precio."],
+    ["¿Qué significa demanda perfectamente inelástica?", "La cantidad no cambia aunque cambie el precio", ["Se demanda cualquier cantidad a un precio", "El precio nunca existe", "La curva siempre es horizontal"], "Es el caso límite \\(|\\varepsilon|=0\\)."],
+    ["¿Qué fuente aumenta el poder de mercado?", "Demanda poco elástica", ["Muchos sustitutos cercanos", "Entrada libre sin costos", "Competencia intensa"], "Si los consumidores reaccionan poco, la empresa puede sostener mayor margen."],
+    ["En una demanda lineal, la pendiente es:", "Constante", ["Siempre creciente", "Igual a la elasticidad en todos los puntos", "Cero en todos los puntos"], "La recta tiene pendiente constante, aunque la elasticidad cambia sobre la curva."],
+    ["El ingreso total se define como:", "\\(IT=p\\cdot q\\)", ["\\(IT=CT-p\\)", "\\(IT=IMg+CMg\\)", "\\(IT=q/p\\)"], "Ingreso total es precio multiplicado por cantidad vendida."]
+  ],
+  medio: [
+    ["Si la demanda es elástica y baja el precio, el ingreso total tiende a:", "Aumentar", ["Disminuir necesariamente", "Permanecer siempre igual", "Volverse negativo"], "En zona elástica, el aumento porcentual de cantidad supera la caída porcentual del precio."],
+    ["Si la demanda es inelástica y baja el precio, el ingreso total tiende a:", "Disminuir", ["Aumentar siempre", "Ser máximo necesariamente", "No depender de la cantidad"], "En zona inelástica, la cantidad aumenta poco y no compensa la reducción del precio."],
+    ["Cuando \\(|\\varepsilon|=1\\), el ingreso marginal es:", "Cero", ["Positivo", "Negativo", "Infinito"], "Con elasticidad unitaria el ingreso total está en su máximo y \\(IMg=0\\)."],
+    ["¿Por qué una empresa con poder de mercado no debería producir en la parte inelástica si maximiza beneficios?", "Porque vender más puede reducir ingreso total y además eleva costos", ["Porque ahí el precio sube al vender más", "Porque los costos desaparecen", "Porque la demanda es horizontal"], "En zona inelástica, \\(IMg<0\\), así que aumentar cantidad no ayuda al beneficio."],
+    ["En una demanda lineal, la parte alta de la curva suele ser:", "Elástica", ["Inelástica", "Perfectamente inelástica", "Sin precio"], "En la parte alta, el precio relativo es grande frente a la cantidad, por eso \\(|\\varepsilon|>1\\)."],
+    ["La relación \\(IMg=p(1-1/|\\varepsilon|)\\) implica que si \\(|\\varepsilon|>1\\):", "\\(IMg>0\\)", ["\\(IMg<0\\)", "\\(IMg=0\\) siempre", "\\(p=0\\)"], "Si \\(1/|\\varepsilon|<1\\), el término entre paréntesis es positivo."],
+    ["El poder de mercado suele ser mayor cuando:", "La demanda es poco elástica y hay pocos rivales", ["La entrada es libre y hay muchos sustitutos", "La demanda es perfectamente elástica", "Todas las firmas son precio-aceptantes"], "Pocos rivales y baja elasticidad facilitan márgenes sobre costo."],
+    ["¿Por qué el ingreso marginal está por debajo de la demanda con pendiente negativa?", "Porque vender más exige reducir el precio de unidades anteriores", ["Porque el costo medio es cero", "Porque la demanda no representa precio", "Porque el precio sube al vender más"], "El efecto sobre unidades inframarginales hace que el ingreso adicional sea menor que el precio."],
+    ["Si una empresa sube precio en una demanda inelástica, el ingreso total probablemente:", "Aumenta", ["Cae siempre", "Se vuelve cero", "No puede cambiar"], "La pérdida porcentual de cantidad es menor que el aumento porcentual del precio."],
+    ["La Escala Mínima Eficiente puede generar concentración si:", "Es grande respecto del tamaño de la demanda", ["Es cero", "Siempre está fuera del mercado", "No existen costos medios"], "Si la EME cubre gran parte del mercado, pocas firmas pueden operar eficientemente."]
+  ],
+  dificil: [
+    ["Dos mercados tienen la misma pendiente, pero uno mide cantidad en litros y otro en hectolitros. ¿Qué comparación es más confiable?", "Comparar elasticidades, no pendientes", ["Comparar solo pendientes", "Ignorar precios", "Usar costos fijos", "Asumir elasticidad cero"], "La pendiente cambia con unidades; la elasticidad usa porcentajes."],
+    ["Una firma enfrenta demanda poco elástica, pocos rivales y barreras de entrada. ¿Qué se espera sobre su poder de mercado?", "Será relativamente alto", ["Será nulo", "Será igual al de competencia perfecta", "No podrá influir precios"], "Esas condiciones reducen presión competitiva y sensibilidad del consumidor."],
+    ["Si una empresa baja precio y observa que \\(IT\\) cae, ¿en qué tramo probablemente estaba?", "Inelástico", ["Elástico", "Unitario con certeza", "Perfectamente elástico"], "En tramo inelástico, bajar precio no genera suficiente aumento de cantidad."],
+    ["¿Qué condición identifica el máximo ingreso total en una demanda lineal?", "\\(IMg=0\\)", ["\\(IMg=p\\)", "\\(P=0\\)", "\\(Q=0\\)"], "El ingreso total se maximiza donde su marginal es cero."],
+    ["En \\(p=a-bq\\), ¿por qué \\(IMg=a-2bq\\) tiene el doble de pendiente?", "Porque \\(IT=aq-bq^2\\) y su derivada duplica el coeficiente de \\(q^2\\)", ["Porque la demanda es horizontal", "Porque el costo marginal se duplica", "Porque \\(a=0\\)"], "Derivar \\(aq-bq^2\\) produce \\(a-2bq\\)."],
+    ["Si EME está muy cerca de \\(y^*\\), el mercado tiende a:", "Ser concentrado o monopólico", ["Tener muchas firmas pequeñas eficientes", "Ser perfectamente competitivo por definición", "No tener costos medios"], "Una escala eficiente grande frente a la demanda limita el número de firmas viables."],
+    ["Si EME es pequeña respecto de \\(y^*\\), el mercado tiende a permitir:", "Muchas empresas eficientes", ["Un único productor inevitable", "Demanda vertical", "Ingreso marginal siempre negativo"], "Varias firmas pueden alcanzar bajo costo medio sin cubrir todo el mercado."],
+    ["Una empresa produce donde \\(|\\varepsilon|<1\\) y \\(CMg>0\\). ¿Qué señal recibe?", "Reducir producción puede elevar ingresos y reducir costos", ["Debe aumentar producción", "Debe ignorar demanda", "Su beneficio ya es máximo necesariamente"], "En zona inelástica, vender más reduce ingreso total y aumenta costos."],
+    ["¿Cuál es la lectura correcta de demanda inversa como ingreso medio?", "Cada punto muestra el precio promedio por unidad vendida", ["Cada punto muestra costo fijo", "La curva es siempre igual al IMg", "No permite calcular IT"], "Como \\(IT/Q=p\\), la demanda inversa coincide con ingreso medio."],
+    ["Una firma con mayor poder de mercado puede tener margen alto solo si:", "Los consumidores no responden demasiado al precio o existen barreras estratégicas", ["La demanda es perfectamente elástica", "Hay infinitos sustitutos", "El ingreso marginal siempre es cero"], "El margen requiere que la demanda no discipline completamente el precio."]
+  ]
+};
+
+const marketWeek1Practice = {
+  facil: [
+    choiceRow("Si \\(|\\varepsilon|=1.5\\), la demanda es:", "Elástica", ["Inelástica", "Unitaria", "Perfectamente inelástica"], "Como \\(|\\varepsilon|>1\\), la cantidad responde más que proporcionalmente."),
+    choiceRow("Si \\(|\\varepsilon|=0.4\\), la demanda es:", "Inelástica", ["Elástica", "Unitaria", "Perfectamente elástica"], "Está entre cero y uno."),
+    choiceRow("Si \\(|\\varepsilon|=1\\), la demanda es:", "Unitaria", ["Elástica", "Inelástica", "Perfectamente inelástica"], "La variación porcentual de cantidad y precio es proporcionalmente igual."),
+    choiceRow("Con \\(P=12\\) y \\(Q=30\\), el ingreso total es:", "360", ["42", "2.5", "18"], "\\(IT=P\\cdot Q=12\\cdot30=360\\)."),
+    choiceRow("Con demanda \\(P=20-Q\\), si \\(Q=5\\), entonces \\(P\\) es:", "15", ["25", "10", "4"], "\\(P=20-5=15\\)."),
+    choiceRow("Con demanda \\(Q=100-5P\\), si \\(P=10\\), entonces \\(Q\\) es:", "50", ["90", "20", "500"], "\\(Q=100-5(10)=50\\)."),
+    choiceRow("Si \\(IT=500\\) y \\(Q=25\\), el precio promedio es:", "20", ["12.5", "25", "475"], "\\(p=IT/Q=500/25=20\\)."),
+    choiceRow("Si \\(P\\) sube 10% y \\(Q\\) baja 5%, \\(|\\varepsilon|\\) es:", "0.5", ["2", "1", "5"], "\\(|\\varepsilon|=5/10=0.5\\)."),
+    choiceRow("Si \\(P\\) sube 5% y \\(Q\\) baja 15%, \\(|\\varepsilon|\\) es:", "3", ["0.33", "1", "20"], "\\(|\\varepsilon|=15/5=3\\)."),
+    choiceRow("Si \\(IMg=0\\), el ingreso total está:", "En su máximo", ["En su mínimo siempre", "Sin relación con ventas", "Negativo"], "El marginal cero identifica el máximo de \\(IT\\) en el caso usual.")
+  ],
+  medio: [
+    choiceRow("De \\(P_1=10\\), \\(P_2=12\\), \\(Q_1=100\\), \\(Q_2=80\\). Elasticidad arco aproximada:", "-1.22", ["-0.82", "1.22", "-2.20"], "\\(\\Delta Q/\\Delta P=-20/2=-10\\), \\(\\bar P/\\bar Q=11/90\\), entonces \\(\\varepsilon\\approx-1.22\\)."),
+    choiceRow("Con \\(P_1=8\\), \\(Q_1=60\\), \\(P_2=10\\), \\(Q_2=50\\). \\(IT\\) pasa de:", "480 a 500", ["500 a 480", "60 a 50", "8 a 10"], "\\(8\\cdot60=480\\) y \\(10\\cdot50=500\\)."),
+    choiceRow("Si \\(|\\varepsilon|=2\\), al bajar precio se espera que \\(IT\\):", "Aumente", ["Disminuya", "No cambie", "Sea cero"], "En tramo elástico, vender más compensa la caída del precio."),
+    choiceRow("Si \\(|\\varepsilon|=0.6\\), al subir precio se espera que \\(IT\\):", "Aumente", ["Disminuya", "Sea cero", "No pueda calcularse"], "En tramo inelástico, la cantidad cae proporcionalmente menos que el precio sube."),
+    choiceRow("Para \\(P=8-Q\\), si \\(Q=3\\), \\(P\\) e \\(IT\\) son:", "\\(P=5\\), \\(IT=15\\)", ["\\(P=11\\), \\(IT=33\\)", "\\(P=3\\), \\(IT=5\\)", "\\(P=8\\), \\(IT=24\\)"], "\\(P=8-3=5\\), \\(IT=5\\cdot3=15\\)."),
+    choiceRow("Para \\(Q=200-10P\\), si \\(P=12\\), \\(Q\\) es:", "80", ["320", "188", "120"], "\\(Q=200-10(12)=80\\)."),
+    choiceRow("Si \\(IT\\) sube de 300 a 345 cuando \\(Q\\) sube de 20 a 23, el \\(IMg\\) promedio es:", "15", ["45", "3", "23"], "\\(IMg=\\Delta IT/\\Delta Q=45/3=15\\)."),
+    choiceRow("Si \\(IT\\) baja de 500 a 480 al aumentar \\(Q\\) de 50 a 55, el \\(IMg\\) promedio es:", "-4", ["4", "-20", "10"], "\\(IMg=-20/5=-4\\), señal de zona inelástica."),
+    choiceRow("Para \\(P=30-2Q\\), el ingreso marginal es:", "\\(IMg=30-4Q\\)", ["\\(IMg=30-2Q\\)", "\\(IMg=60-2Q\\)", "\\(IMg=2Q-30\\)"], "Si \\(P=a-bQ\\), entonces \\(IMg=a-2bQ\\)."),
+    choiceRow("Para \\(P=40-Q\\), el \\(Q\\) que maximiza \\(IT\\) es:", "20", ["40", "10", "0"], "\\(IMg=40-2Q=0\\Rightarrow Q=20\\).")
+  ],
+  dificil: [
+    choiceRow("Para \\(P=100-2Q\\), el ingreso marginal es:", "\\(IMg=100-4Q\\)", ["\\(IMg=100-2Q\\)", "\\(IMg=200-2Q\\)", "\\(IMg=50-Q\\)"], "Con demanda inversa lineal \\(P=a-bQ\\), \\(IMg=a-2bQ\\).", microGraphDemandMr()),
+    choiceRow("Con \\(P=100-2Q\\), el \\(Q\\) que maximiza ingreso total es:", "25", ["50", "20", "100"], "\\(IMg=100-4Q=0\\Rightarrow Q=25\\).", microGraphDemandMr()),
+    choiceRow("Con \\(P=100-2Q\\), si \\(Q=25\\), el precio es:", "50", ["25", "75", "100"], "\\(P=100-2(25)=50\\)."),
+    choiceRow("Para \\(P=60-Q\\), si la capacidad es \\(Q=40\\), el \\(IMg\\) en esa cantidad es:", "-20", ["20", "0", "60"], "\\(IMg=60-2Q=60-80=-20\\). La capacidad cae en tramo inelástico.", microGraphDemandMr({ capacity: true })),
+    choiceRow("Una empresa vende entradas con \\(P=120-0.5Q\\). El \\(Q\\) que maximiza \\(IT\\) es:", "120", ["240", "60", "180"], "\\(IMg=120-Q=0\\Rightarrow Q=120\\)."),
+    choiceRow("Con \\(P=120-0.5Q\\), si \\(Q=120\\), el precio es:", "60", ["120", "30", "0"], "\\(P=120-0.5(120)=60\\)."),
+    choiceRow("Con \\(P=80-Q\\), comparar \\(Q=20\\) y \\(Q=50\\): ¿dónde el \\(IMg\\) es negativo?", "\\(Q=50\\)", ["\\(Q=20\\)", "En ambos", "En ninguno"], "\\(IMg=80-2Q\\). En \\(Q=50\\), \\(IMg=-20\\)."),
+    choiceRow("Si una sala tiene capacidad 90 y demanda \\(P=150-Q\\), llenar toda la sala implica \\(IMg\\):", "-30", ["30", "0", "150"], "\\(IMg=150-2(90)=-30\\). Vender esa unidad adicional reduce \\(IT\\).", microGraphDemandMr({ capacity: true })),
+    choiceRow("Para \\(P=90-3Q\\), la demanda corta el eje \\(Q\\) en:", "30", ["15", "90", "270"], "El corte de demanda ocurre cuando \\(P=0\\): \\(90-3Q=0\\Rightarrow Q=30\\)."),
+    choiceRow("Para \\(P=90-3Q\\), el \\(IMg\\) corta el eje \\(Q\\) en:", "15", ["30", "45", "90"], "\\(IMg=90-6Q=0\\Rightarrow Q=15\\), la mitad del corte de demanda.")
+  ]
+};
+
+const marketTheoryData = makeMarketTheoryData(marketWeeks);
+marketTheoryData["pm-semana-01"] = marketWeek1Theory;
+
+const marketPracticeBanks = makeMarketPracticeBanks(marketWeeks);
+marketPracticeBanks["pm-semana-01"] = marketWeek1Practice;
+
 const courseContent = {
   "economia-produccion": productionCourse,
   "poder-mercado": {
     weeks: marketWeeks,
     topics: marketTopics,
-    theoryData: makeMarketTheoryData(marketWeeks),
-    practiceBanks: makeMarketPracticeBanks(marketWeeks),
+    theoryData: marketTheoryData,
+    practiceBanks: marketPracticeBanks,
     heroTitle: "Economía de la Empresa con Poder de Mercado",
     heroSubtitle: "Estudia monopolio, oligopolio, concentración, teoría de juegos e información asimétrica."
   }
@@ -1181,7 +1327,12 @@ function numericOptions(answer, index) {
 }
 
 function practiceBank(weekId) {
-  return practiceBanks[weekId].map((question, index) => {
+  const bank = practiceBanks[weekId];
+  if (!Array.isArray(bank)) {
+    const levels = state.practiceLevel === "todas" ? ["facil", "medio", "dificil"] : [state.practiceLevel];
+    return levels.flatMap((difficulty) => bank[difficulty].map(buildChoiceQuestion));
+  }
+  return bank.map((question, index) => {
     const options = numericOptions(question.answer, index);
     return {
       type: "choice",
@@ -1193,10 +1344,19 @@ function practiceBank(weekId) {
   });
 }
 
+function optionsLayoutClass(options) {
+  const longest = Math.max(...options.map((option) => option.length));
+  if (longest <= 18) return "options options-short";
+  if (longest <= 34) return "options options-medium";
+  return "options options-long";
+}
+
 function renderWeekSelects() {
   const options = weeks.map((week) => `<option value="${week.id}">${week.label} · ${week.title}</option>`).join("");
   document.querySelector("#theoryWeek").innerHTML = options;
   document.querySelector("#practiceWeek").innerHTML = options;
+  document.querySelector("#theoryWeek").value = state.weekId;
+  document.querySelector("#practiceWeek").value = state.weekId;
 }
 
 function renderChoiceQuiz(weekId, level = state.theoryLevel) {
@@ -1211,7 +1371,8 @@ function renderChoiceQuiz(weekId, level = state.theoryLevel) {
   container.innerHTML = questions.map((question, index) => `
     <article class="question" data-question="${index}">
       <header><h3>${index + 1}. ${escapeHtml(question.prompt)}</h3><strong>${level === "todas" ? "Todas" : level}</strong></header>
-      <div class="options">
+      ${question.graph || ""}
+      <div class="${optionsLayoutClass(question.options)}">
         ${question.options.map((option, optionIndex) => `
           <label class="option"><input type="radio" name="theory-${weekId}-${index}" value="${optionIndex}" /><span>${escapeHtml(option)}</span></label>
         `).join("")}
@@ -1239,6 +1400,10 @@ function renderChoiceQuiz(weekId, level = state.theoryLevel) {
       feedback.textContent = correct
         ? `Correcto. ${question.explain}`
         : `Incorrecto. La respuesta correcta es: ${correctAnswer}. ${question.explain}`;
+      card.querySelectorAll(".option").forEach((option, optionIndex) => {
+        option.classList.toggle("correct", optionIndex === question.answer);
+        option.classList.toggle("incorrect", selected && Number(selected.value) === optionIndex && !correct);
+      });
       card.classList.add("locked");
       card.querySelectorAll("input").forEach((input) => {
         input.disabled = true;
@@ -1264,6 +1429,10 @@ function renderChoiceQuiz(weekId, level = state.theoryLevel) {
       feedback.textContent = selected
         ? `${correct ? "Correcto." : "Revisa esta."} ${question.explain}`
         : `Sin responder. La respuesta correcta es: ${correctAnswer}. ${question.explain}`;
+      card.querySelectorAll(".option").forEach((option, optionIndex) => {
+        option.classList.toggle("correct", optionIndex === question.answer);
+        option.classList.toggle("incorrect", selected && Number(selected.value) === optionIndex && !correct);
+      });
       card.classList.add("locked");
       card.querySelectorAll("input").forEach((input) => {
         input.disabled = true;
@@ -1280,22 +1449,60 @@ function renderChoiceQuiz(weekId, level = state.theoryLevel) {
   typesetMath();
 }
 
-function renderPracticeQuiz(weekId) {
+function renderPracticeQuiz(weekId, level = state.practiceLevel) {
+  state.practiceLevel = level;
+  document.querySelectorAll(".practice-level-btn").forEach((button) => {
+    button.classList.toggle("active", button.dataset.practiceLevel === level);
+  });
   const questions = practiceBank(weekId);
   const container = document.querySelector("#practiceQuiz");
   const result = document.querySelector("#practiceResult");
   result.hidden = true;
   container.innerHTML = questions.map((question, index) => `
     <article class="question" data-practice="${index}">
-      <header><h3>${index + 1}. ${escapeHtml(question.prompt)}</h3><strong>1 punto</strong></header>
-      <div class="options">
+      <header><h3>${index + 1}. ${escapeHtml(question.prompt)}</h3><strong>${level === "todas" ? "Todas" : level}</strong></header>
+      ${question.graph || ""}
+      <div class="${optionsLayoutClass(question.options)}">
         ${question.options.map((option, optionIndex) => `
           <label class="option"><input type="radio" name="practice-${weekId}-${index}" value="${optionIndex}" /><span>${escapeHtml(option)}</span></label>
         `).join("")}
       </div>
+      <div class="question-actions"><button class="ghost-btn verify-practice" data-verify-practice="${index}">Verificar respuesta</button></div>
       <div class="feedback" hidden></div>
     </article>
   `).join("") + `<div class="check-row"><button class="check-btn" id="checkPractice">Calificar ejercicios</button></div>`;
+
+  container.querySelectorAll(".verify-practice").forEach((button) => {
+    button.addEventListener("click", () => {
+      const index = Number(button.dataset.verifyPractice);
+      const question = questions[index];
+      const card = container.querySelector(`[data-practice="${index}"]`);
+      const selected = container.querySelector(`input[name="practice-${weekId}-${index}"]:checked`);
+      const feedback = card.querySelector(".feedback");
+      const correct = selected && Number(selected.value) === question.answer;
+      feedback.hidden = false;
+      feedback.classList.toggle("wrong", !correct);
+      if (!selected) {
+        feedback.textContent = "Selecciona una alternativa antes de verificar. La explicación aparecerá aquí.";
+        return;
+      }
+      const correctAnswer = question.options[question.answer];
+      feedback.textContent = correct
+        ? `Correcto. ${question.explain}`
+        : `Incorrecto. La respuesta correcta es: ${correctAnswer}. ${question.explain}`;
+      card.querySelectorAll(".option").forEach((option, optionIndex) => {
+        option.classList.toggle("correct", optionIndex === question.answer);
+        option.classList.toggle("incorrect", selected && Number(selected.value) === optionIndex && !correct);
+        option.classList.add("locked");
+      });
+      card.querySelectorAll("input").forEach((input) => {
+        input.disabled = true;
+      });
+      button.disabled = true;
+      button.textContent = "Respuesta verificada";
+      typesetMath();
+    });
+  });
 
   document.querySelector("#checkPractice").addEventListener("click", () => {
     let score = 0;
@@ -1309,11 +1516,22 @@ function renderPracticeQuiz(weekId) {
       feedback.classList.toggle("wrong", !correct);
       const correctAnswer = question.options[question.answer];
       feedback.textContent = selected
-        ? `${correct ? "Correcto." : "Ajusta tu procedimiento."} Respuesta correcta: ${correctAnswer}. ${question.explain}`
+        ? (correct ? `Correcto. ${question.explain}` : `Ajusta tu procedimiento. Respuesta correcta: ${correctAnswer}. ${question.explain}`)
         : `Sin responder. Respuesta correcta: ${correctAnswer}. ${question.explain}`;
+      card.querySelectorAll(".option").forEach((option, optionIndex) => {
+        option.classList.toggle("correct", optionIndex === question.answer);
+        option.classList.toggle("incorrect", selected && Number(selected.value) === optionIndex && !correct);
+        option.classList.add("locked");
+      });
+      card.querySelectorAll("input").forEach((input) => {
+        input.disabled = true;
+      });
+      card.querySelector(".verify-practice").disabled = true;
+      card.querySelector(".verify-practice").textContent = "Respuesta verificada";
     });
+    document.querySelector("#checkPractice").disabled = true;
     result.hidden = false;
-    result.innerHTML = `<strong>Resultado: ${score}/${questions.length}</strong><p>${score >= 16 ? "Buen manejo práctico." : "Revisa fórmulas y ejemplos antes de repetir."}</p>`;
+    result.innerHTML = `<strong>Resultado: ${score}/${questions.length}</strong><p>${score >= Math.ceil(questions.length * 0.8) ? "Buen manejo práctico." : "Revisa fórmulas y ejemplos antes de repetir."}</p>`;
     typesetMath();
   });
   typesetMath();
@@ -1327,13 +1545,19 @@ topicList.addEventListener("click", (event) => {
   renderGuide();
 });
 
+weekTabs.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-week]");
+  if (!button) return;
+  selectWeek(button.dataset.week);
+});
+
 document.querySelector("#markTopic").addEventListener("click", () => {
   state.viewed.add(state.topicId);
   renderTopics();
   updateProgress();
 });
 
-document.querySelectorAll(".nav-link[data-section]").forEach((button) => {
+document.querySelectorAll(".week-mode-btn[data-section]").forEach((button) => {
   button.addEventListener("click", () => activateSection(button.dataset.section));
 });
 
@@ -1345,19 +1569,23 @@ courseList.addEventListener("click", (event) => {
 
 document.querySelector("#backToCourses").addEventListener("click", () => showOnly("courses"));
 
-document.querySelector("#theoryWeek").addEventListener("change", (event) => renderChoiceQuiz(event.target.value, state.theoryLevel));
-document.querySelector("#practiceWeek").addEventListener("change", (event) => renderPracticeQuiz(event.target.value));
-document.querySelector("#resetTheory").addEventListener("click", () => renderChoiceQuiz(document.querySelector("#theoryWeek").value, state.theoryLevel));
-document.querySelector("#resetPractice").addEventListener("click", () => renderPracticeQuiz(document.querySelector("#practiceWeek").value));
+document.querySelector("#theoryWeek").addEventListener("change", (event) => selectWeek(event.target.value));
+document.querySelector("#practiceWeek").addEventListener("change", (event) => selectWeek(event.target.value));
+document.querySelector("#resetTheory").addEventListener("click", () => renderChoiceQuiz(state.weekId, state.theoryLevel));
+document.querySelector("#resetPractice").addEventListener("click", () => renderPracticeQuiz(state.weekId, state.practiceLevel));
 document.querySelectorAll(".level-btn").forEach((button) => {
-  button.addEventListener("click", () => renderChoiceQuiz(document.querySelector("#theoryWeek").value, button.dataset.level));
+  button.addEventListener("click", () => renderChoiceQuiz(state.weekId, button.dataset.level));
+});
+document.querySelectorAll(".practice-level-btn").forEach((button) => {
+  button.addEventListener("click", () => renderPracticeQuiz(state.weekId, button.dataset.practiceLevel));
 });
 
 renderWeekSelects();
 renderCourses();
+renderWeekTabs();
 renderTopics();
 renderGuide();
-renderChoiceQuiz(weeks[0].id);
-renderPracticeQuiz(weeks[0].id);
+renderChoiceQuiz(state.weekId);
+renderPracticeQuiz(state.weekId);
 updateProgress();
 showOnly("courses");

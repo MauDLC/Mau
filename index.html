@@ -36,11 +36,8 @@
           <small>Unidad 1</small>
         </span>
       </a>
-      <nav class="main-nav" aria-label="Secciones principales">
-        <button id="backToCourses" class="nav-link" type="button">Cursos</button>
-        <button class="nav-link active" data-section="learn">Guía</button>
-        <button class="nav-link" data-section="theory">Teoría</button>
-        <button class="nav-link" data-section="practice">Ejercicios</button>
+      <nav class="main-nav" aria-label="Volver a cursos">
+        <button id="backToCourses" class="nav-link" type="button">Volver a cursos</button>
       </nav>
     </header>
 
@@ -86,6 +83,22 @@
         </article>
       </section>
 
+      <section class="study-hub" aria-label="Guía de estudio del curso">
+        <div class="study-hub-head">
+          <div>
+            <p class="eyebrow">Curso</p>
+            <h2>Guía de estudio</h2>
+            <p>Selecciona una semana y trabaja su guía, examen teórico o ejercicios prácticos desde un solo lugar.</p>
+          </div>
+        </div>
+        <div id="weekTabs" class="week-tabs" aria-label="Semanas del curso"></div>
+        <div class="week-mode-tabs" aria-label="Contenido de la semana">
+          <button class="week-mode-btn active" data-section="learn">Guía / teoría</button>
+          <button class="week-mode-btn" data-section="theory">Examen teórico</button>
+          <button class="week-mode-btn" data-section="practice">Ejercicios prácticos</button>
+        </div>
+      </section>
+
       <section class="workspace">
         <aside class="sidebar" aria-label="Temas de la guía">
           <h2>Temas clave</h2>
@@ -122,7 +135,7 @@
               <p>Comprueba definiciones, intuición económica y condiciones de optimización.</p>
             </div>
             <div class="section-actions">
-              <select id="theoryWeek" aria-label="Semana para examen de teoría"></select>
+              <select id="theoryWeek" class="hidden-week-select" aria-label="Semana para examen de teoría"></select>
               <button id="resetTheory" class="ghost-btn">Reiniciar</button>
             </div>
           </div>
@@ -144,9 +157,15 @@
               <p>Aplica fórmulas con alternativas numéricas y revisa tus resultados por semana.</p>
             </div>
             <div class="section-actions">
-              <select id="practiceWeek" aria-label="Semana para examen de ejercicios"></select>
+              <select id="practiceWeek" class="hidden-week-select" aria-label="Semana para examen de ejercicios"></select>
               <button id="resetPractice" class="ghost-btn">Reiniciar</button>
             </div>
+          </div>
+          <div class="level-tabs" aria-label="Nivel del examen de ejercicios">
+            <button class="practice-level-btn active" data-practice-level="facil">Fácil</button>
+            <button class="practice-level-btn" data-practice-level="medio">Medio</button>
+            <button class="practice-level-btn" data-practice-level="dificil">Difícil</button>
+            <button class="practice-level-btn" data-practice-level="todas">Todas</button>
           </div>
           <div id="practiceQuiz" class="quiz"></div>
           <div id="practiceResult" class="result-box" hidden></div>
