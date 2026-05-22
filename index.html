@@ -7,6 +7,17 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <section id="coursesView" class="courses-view">
+      <div class="courses-head">
+        <div>
+          <p class="eyebrow">Mis cursos</p>
+          <h1>Selecciona un curso</h1>
+        </div>
+      </div>
+      <div id="courseList" class="course-grid"></div>
+    </section>
+
+    <div id="appShell" class="hidden">
     <header class="topbar">
       <a class="brand" href="#inicio" aria-label="Ir al inicio">
         <span class="brand-mark">EPC</span>
@@ -16,6 +27,7 @@
         </span>
       </a>
       <nav class="main-nav" aria-label="Secciones principales">
+        <button id="backToCourses" class="nav-link" type="button">Cursos</button>
         <button class="nav-link active" data-section="learn">Guía</button>
         <button class="nav-link" data-section="theory">Teoría</button>
         <button class="nav-link" data-section="practice">Ejercicios</button>
@@ -97,6 +109,7 @@
         </section>
       </section>
     </main>
+    </div>
 
     <script>
       window.MathJax = {

@@ -5,6 +5,15 @@ const weeks = [
   { id: "semana-05", label: "Semana 05", title: "Geometría de costos" }
 ];
 
+const courses = [
+  {
+    id: "economia-produccion",
+    title: "Economía de la Producción Competitiva",
+    subtitle: "Unidad 1",
+    description: "Guía, teoría y ejercicios de producción, beneficios y costos."
+  }
+];
+
 const topics = [
   {
     id: "empresa-tecnologia",
@@ -25,7 +34,7 @@ const topics = [
     week: "semana-01",
     title: "Isocuantas, producto marginal y RTS",
     question: "¿Cómo sustituye la empresa un factor por otro sin cambiar producción?",
-    formulas: ["\\[PMg_i=\\frac{\\partial y}{\\partial x_i}\\]", "\\[RTS=-\\frac{PMg_1}{PMg_2}\\]"],
+    formulas: ["\\[\\operatorname{PMg}_i=\\frac{\\partial y}{\\partial x_i}\\]", "\\[\\operatorname{RTS}_{12}=-\\frac{\\operatorname{PMg}_1}{\\operatorname{PMg}_2}\\]"],
     explanation: [
       "Una isocuanta muestra combinaciones de factores que producen el mismo nivel de producto. Si te mueves sobre la misma isocuanta, cambias la mezcla de factores, pero no cambias y.",
       "El producto marginal mide cuánto aumenta y cuando sube un factor, manteniendo los demás constantes. Es una idea de corto plazo cuando algún factor no puede ajustarse.",
@@ -67,7 +76,7 @@ const topics = [
     week: "semana-02-03",
     title: "Maximización del beneficio",
     question: "¿Cuándo conviene producir o contratar más?",
-    formulas: ["\\[\\pi=p\\,y-w_1x_1-w_2x_2\\]", "\\[p\\cdot PMg_i=w_i\\]", "\\[IMg=CMg\\]"],
+    formulas: ["\\[\\pi=p\\,y-w_1x_1-w_2x_2\\]", "\\[p\\cdot \\operatorname{PMg}_i=w_i\\]", "\\[\\operatorname{IMg}=\\operatorname{CMg}\\]"],
     explanation: [
       "La empresa competitiva toma precios como datos. No decide el precio del mercado; decide cuánto producir y cuántos factores usar.",
       "La regla \\(p\\cdot PMg=w\\) dice que el valor monetario de lo que aporta la última unidad del factor debe igualar lo que cuesta.",
@@ -81,7 +90,7 @@ const topics = [
     week: "semana-04",
     title: "Minimización del costo",
     question: "¿Cómo producir una cantidad dada gastando lo mínimo?",
-    formulas: ["\\[\\min_{x_1,x_2} C=w_1x_1+w_2x_2\\quad\\text{s.a.}\\quad y=f(x_1,x_2)\\]", "\\[x_2=\\frac{C}{w_2}-\\frac{w_1}{w_2}x_1\\]", "\\[RTS=-\\frac{w_1}{w_2}\\]"],
+    formulas: ["\\[\\min_{x_1,x_2} C=w_1x_1+w_2x_2\\quad\\text{s.a.}\\quad y=f(x_1,x_2)\\]", "\\[x_2=\\frac{C}{w_2}-\\frac{w_1}{w_2}x_1\\]", "\\[\\operatorname{RTS}_{12}=-\\frac{w_1}{w_2}\\]"],
     explanation: [
       "La minimización del costo no pregunta cuánto producir. Esa cantidad ya está fijada. Pregunta cuál combinación de factores permite producirla al menor costo.",
       "La isocuanta representa la producción objetivo y la isocosto representa el gasto. El óptimo interior ocurre donde ambas curvas son tangentes.",
@@ -95,7 +104,7 @@ const topics = [
     week: "semana-05",
     title: "Costos de corto y largo plazo",
     question: "¿Cómo cambia el costo cuando aumenta la producción?",
-    formulas: ["\\[C(y)=C_v(y)+F\\]", "\\[CMe=CVMe+CFMe\\]", "\\[CMg=\\frac{\\partial C}{\\partial y}\\]"],
+    formulas: ["\\[C(y)=C_v(y)+F\\]", "\\[\\operatorname{CMe}=\\operatorname{CVMe}+\\operatorname{CFMe}\\]", "\\[\\operatorname{CMg}=\\frac{\\partial C}{\\partial y}\\]"],
     explanation: [
       "En el corto plazo hay factores fijos. Por eso el costo total se separa en costo variable y costo fijo.",
       "El costo fijo medio cae cuando aumenta y porque el mismo costo fijo se reparte entre más unidades.",
@@ -109,7 +118,7 @@ const topics = [
     week: "semana-05",
     title: "Economías de escala, alcance y aprendizaje",
     question: "¿Por qué algunas empresas se vuelven más eficientes al crecer?",
-    formulas: ["\\[EC=\\frac{CMg}{CMe}\\]", "\\[IEE=1-EC\\]", "\\[EA=\\frac{C(x)+C(y)-C(x,y)}{C(x,y)}\\]"],
+    formulas: ["\\[EC=\\frac{\\operatorname{CMg}}{\\operatorname{CMe}}\\]", "\\[IEE=1-EC\\]", "\\[EA=\\frac{C(x)+C(y)-C(x,y)}{C(x,y)}\\]"],
     explanation: [
       "Hay economías de escala cuando producir más reduce el costo medio o cuando duplicar producción cuesta menos que duplicar el costo.",
       "Las economías de alcance aparecen cuando producir dos bienes juntos cuesta menos que producirlos por separado.",
@@ -131,6 +140,9 @@ const guideView = document.querySelector("#guideView");
 const progressText = document.querySelector("#progressText");
 const progressBar = document.querySelector("#progressBar");
 const progressHint = document.querySelector("#progressHint");
+const coursesView = document.querySelector("#coursesView");
+const appShell = document.querySelector("#appShell");
+const courseList = document.querySelector("#courseList");
 
 function typesetMath() {
   if (window.MathJax?.typesetPromise) {
@@ -153,63 +165,133 @@ function escapeHtml(value = "") {
 }
 
 function graphSvg(type) {
+  const graphAssets = {
+    production: ["assets/graphs/graph-1.png", "Gráfico LaTeX de función de producción"],
+    isoquant: ["assets/graphs/graph-2.png", "Gráfico LaTeX de isocuanta e isocosto"],
+    returns: ["assets/graphs/graph-3.png", "Gráfico LaTeX de rendimientos de escala"],
+    opportunity: ["assets/graphs/graph-4.png", "Gráfico LaTeX de costo de oportunidad"],
+    profit: ["assets/graphs/graph-5.png", "Gráfico LaTeX de maximización del beneficio"],
+    costmin: ["assets/graphs/graph-6.png", "Gráfico LaTeX de minimización del costo"],
+    costcurves: ["assets/graphs/graph-7.png", "Gráfico LaTeX de costos medios y marginales"],
+    scale: ["assets/graphs/graph-8.png", "Gráfico LaTeX de escala y aprendizaje"]
+  };
+  const asset = graphAssets[type] || graphAssets.production;
+  if (asset) {
+    return `<img class="concept-chart latex-chart" src="${asset[0]}" alt="${asset[1]}" loading="lazy" />`;
+  }
+
   const common = `
     <defs>
-      <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
+        <path d="M 24 0 L 0 0 0 24" class="grid-line" />
+      </pattern>
+      <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
         <path d="M 0 0 L 10 5 L 0 10 z" class="arrow-head" />
       </marker>
     </defs>
-    <rect x="18" y="16" width="384" height="236" rx="14" class="graph-bg" />
-    <line x1="64" y1="220" x2="360" y2="220" class="axis" marker-end="url(#arrow)" />
-    <line x1="64" y1="220" x2="64" y2="44" class="axis" marker-end="url(#arrow)" />`;
+    <rect x="18" y="16" width="384" height="236" rx="10" class="graph-bg" />
+    <rect x="64" y="40" width="296" height="180" class="grid-box" />
+    <line x1="64" y1="220" x2="365" y2="220" class="axis" marker-end="url(#arrow)" />
+    <line x1="64" y1="220" x2="64" y2="35" class="axis" marker-end="url(#arrow)" />`;
   const graphs = {
     production: `${common}
-      <path d="M78 204 C118 176, 145 137, 184 106 C228 70, 285 56, 344 50" class="curve"/>
-      <line x1="112" y1="183" x2="112" y2="220" class="guide-line"/><line x1="112" y1="183" x2="64" y2="183" class="guide-line"/>
-      <text x="292" y="58" class="graph-label">producción</text><text x="342" y="244" class="axis-label">insumo</text><text x="30" y="52" class="axis-label">y</text>`,
+      <path d="M82 202 C116 178, 146 141, 184 112 C226 80, 284 62, 342 54" class="curve"/>
+      <circle cx="184" cy="112" r="4.5" class="point"/>
+      <line x1="184" y1="112" x2="184" y2="220" class="guide-line"/><line x1="184" y1="112" x2="64" y2="112" class="guide-line"/>
+      <text x="254" y="58" class="graph-label">producción</text><text x="338" y="242" class="axis-label">insumo</text><text x="34" y="46" class="axis-label">producto</text>`,
     isoquant: `${common}
-      <path d="M92 194 C132 130, 202 82, 330 58" class="curve"/>
-      <line x1="92" y1="62" x2="342" y2="205" class="cost-line"/>
-      <circle cx="204" cy="126" r="7" class="point"/><circle cx="204" cy="126" r="13" class="point-ring"/>
-      <text x="272" y="79" class="graph-label">isocuanta</text><text x="266" y="190" class="graph-label red">isocosto</text><text x="214" y="119" class="graph-label">óptimo</text>
-      <text x="344" y="244" class="axis-label">x₁</text><text x="32" y="52" class="axis-label">x₂</text>`,
+      <path d="M88 198 C126 147, 162 128, 202 128 C248 128, 294 92, 336 58" class="curve"/>
+      <line x1="82" y1="62" x2="344" y2="204" class="cost-line"/>
+      <circle cx="202" cy="127" r="4.8" class="point"/>
+      <line x1="202" y1="127" x2="202" y2="220" class="guide-line"/><line x1="202" y1="127" x2="64" y2="127" class="guide-line"/>
+      <text x="275" y="77" class="graph-label">isocuanta</text><text x="254" y="190" class="graph-label red">isocosto</text><text x="214" y="123" class="graph-label">tangencia</text>
+      <text x="344" y="242" class="axis-label">factor 1</text><text x="35" y="48" class="axis-label">factor 2</text>`,
     returns: `${common}
-      <path d="M82 196 L336 84" class="avg-curve"/>
-      <path d="M82 205 C145 170, 224 104, 338 50" class="curve"/>
-      <path d="M82 184 C150 132, 238 116, 338 111" class="var-curve"/>
-      <text x="275" y="55" class="graph-label">crecientes</text><text x="274" y="93" class="graph-label gold">constantes</text><text x="256" y="130" class="graph-label blue">decrecientes</text>
-      <text x="335" y="244" class="axis-label">escala</text><text x="30" y="52" class="axis-label">y</text>`,
+      <path d="M84 194 L340 86" class="avg-curve"/>
+      <path d="M84 204 C143 178, 226 105, 340 52" class="curve"/>
+      <path d="M84 180 C150 134, 236 116, 340 110" class="var-curve"/>
+      <text x="254" y="57" class="graph-label">crecientes</text><text x="268" y="93" class="graph-label gold">constantes</text><text x="242" y="127" class="graph-label blue">decrecientes</text>
+      <text x="335" y="242" class="axis-label">escala</text><text x="34" y="48" class="axis-label">producto</text>`,
     opportunity: `${common}
-      <rect x="96" y="110" width="70" height="110" rx="7" class="bar-a"/><rect x="230" y="78" width="70" height="142" rx="7" class="bar-b"/>
-      <line x1="166" y1="110" x2="230" y2="78" class="muted-line"/><text x="170" y="96" class="graph-label">costo de oportunidad</text>
-      <text x="88" y="244" class="axis-label">contable</text><text x="221" y="244" class="axis-label">económico</text>`,
+      <rect x="104" y="116" width="58" height="104" rx="4" class="bar-a"/><rect x="236" y="82" width="58" height="138" rx="4" class="bar-b"/>
+      <line x1="162" y1="116" x2="236" y2="82" class="muted-line"/><text x="170" y="100" class="graph-label">costo de oportunidad</text>
+      <text x="94" y="242" class="axis-label">beneficio contable</text><text x="218" y="242" class="axis-label">beneficio económico</text><text x="35" y="48" class="axis-label">monto</text>`,
     profit: `${common}
-      <path d="M82 190 C134 126, 214 86, 342 64" class="curve"/>
-      <line x1="88" y1="176" x2="340" y2="76" class="cost-line"/>
-      <circle cx="216" cy="101" r="7" class="point"/><circle cx="216" cy="101" r="13" class="point-ring"/>
-      <text x="232" y="99" class="graph-label">p·PMg = w</text><text x="286" y="72" class="graph-label">producto marginal</text>
-      <text x="338" y="244" class="axis-label">x</text><text x="32" y="52" class="axis-label">y</text>`,
+      <path d="M84 194 C132 136, 198 103, 340 66" class="curve"/>
+      <line x1="86" y1="176" x2="342" y2="90" class="cost-line"/>
+      <circle cx="210" cy="134" r="4.8" class="point"/>
+      <line x1="210" y1="134" x2="210" y2="220" class="guide-line"/><line x1="210" y1="134" x2="64" y2="134" class="guide-line"/>
+      <text x="224" y="132" class="graph-label">óptimo</text><text x="270" y="72" class="graph-label">producción</text><text x="248" y="102" class="graph-label red">isobeneficio</text>
+      <text x="342" y="242" class="axis-label">factor x</text><text x="35" y="48" class="axis-label">producto y</text>`,
     costmin: `${common}
-      <path d="M92 194 C132 130, 202 82, 330 58" class="curve"/>
-      <line x1="88" y1="58" x2="344" y2="206" class="cost-line"/>
-      <line x1="124" y1="88" x2="372" y2="232" class="muted-line"/>
-      <circle cx="204" cy="126" r="7" class="point"/><circle cx="204" cy="126" r="13" class="point-ring"/>
-      <text x="220" y="122" class="graph-label">costo mínimo</text><text x="266" y="191" class="graph-label red">isocosto menor</text>
-      <text x="344" y="244" class="axis-label">x₁</text><text x="32" y="52" class="axis-label">x₂</text>`,
+      <path d="M88 198 C126 147, 162 128, 202 128 C248 128, 294 92, 336 58" class="curve"/>
+      <line x1="82" y1="62" x2="344" y2="204" class="cost-line"/>
+      <line x1="118" y1="86" x2="370" y2="222" class="muted-line"/>
+      <circle cx="202" cy="127" r="4.8" class="point"/>
+      <text x="215" y="123" class="graph-label">mínimo costo</text><text x="264" y="192" class="graph-label red">isocosto menor</text><text x="276" y="76" class="graph-label">producto objetivo</text>
+      <text x="344" y="242" class="axis-label">factor 1</text><text x="35" y="48" class="axis-label">factor 2</text>`,
     costcurves: `${common}
-      <path d="M82 192 C132 116, 198 122, 340 190" class="avg-curve"/>
-      <path d="M84 204 C142 190, 220 50, 346 76" class="curve"/>
-      <path d="M82 172 C132 121, 202 139, 338 176" class="var-curve"/>
-      <circle cx="190" cy="121" r="5" class="point"/><text x="318" y="82" class="graph-label">CMg</text><text x="314" y="196" class="graph-label gold">CMe</text><text x="305" y="166" class="graph-label blue">CVMe</text>
-      <text x="340" y="244" class="axis-label">y</text><text x="30" y="52" class="axis-label">costo</text>`,
+      <path d="M86 188 C132 124, 184 116, 340 188" class="avg-curve"/>
+      <path d="M88 204 C146 190, 214 76, 346 70" class="curve"/>
+      <path d="M86 166 C134 126, 202 138, 340 174" class="var-curve"/>
+      <circle cx="184" cy="116" r="4.8" class="point"/>
+      <line x1="184" y1="116" x2="184" y2="220" class="guide-line"/>
+      <text x="318" y="75" class="graph-label">marginal</text><text x="314" y="194" class="graph-label gold">medio</text><text x="305" y="166" class="graph-label blue">variable medio</text><text x="196" y="112" class="graph-label">mínimo</text>
+      <text x="344" y="242" class="axis-label">producción y</text><text x="30" y="48" class="axis-label">costo</text>`,
     scale: `${common}
-      <path d="M86 82 C150 88, 236 112, 340 170" class="curve"/>
-      <path d="M86 176 C154 130, 238 104, 342 90" class="avg-curve"/>
-      <line x1="92" y1="176" x2="92" y2="220" class="guide-line"/><line x1="306" y1="96" x2="306" y2="220" class="guide-line"/>
-      <text x="226" y="82" class="graph-label">curva de aprendizaje</text><text x="236" y="180" class="graph-label gold">CMe con escala</text>
-      <text x="330" y="244" class="axis-label">experiencia</text><text x="30" y="52" class="axis-label">costo</text>`
+      <path d="M88 86 C154 91, 238 116, 340 170" class="curve"/>
+      <path d="M88 176 C154 132, 238 105, 340 88" class="avg-curve"/>
+      <line x1="92" y1="176" x2="92" y2="220" class="guide-line"/><line x1="306" y1="95" x2="306" y2="220" class="guide-line"/>
+      <text x="216" y="84" class="graph-label">curva de aprendizaje</text><text x="232" y="179" class="graph-label gold">CMe por escala</text>
+      <text x="320" y="242" class="axis-label">experiencia / escala</text><text x="30" y="48" class="axis-label">costo</text>`
   };
   return `<svg class="concept-chart" viewBox="0 0 420 270" role="img" aria-label="Gráfico conceptual">${graphs[type] || graphs.production}</svg>`;
+}
+
+function graphMath(type) {
+  const items = {
+    production: [
+      ["Función de producción", "\\[y=f(x)\\]"],
+      ["Lectura del punto", "\\[x=x_A\\quad\\Longrightarrow\\quad y=f(x_A)\\]"]
+    ],
+    isoquant: [
+      ["Isocuanta", "\\[f(x_1,x_2)=q_0\\]"],
+      ["Tangencia", "\\[\\operatorname{RTS}_{12}=-\\frac{\\operatorname{PMg}_1}{\\operatorname{PMg}_2}=-\\frac{w_1}{w_2}\\]"]
+    ],
+    returns: [
+      ["Crecientes", "\\[f(t x_1,t x_2)>t f(x_1,x_2)\\]"],
+      ["Constantes", "\\[f(t x_1,t x_2)=t f(x_1,x_2)\\]"],
+      ["Decrecientes", "\\[f(t x_1,t x_2)<t f(x_1,x_2)\\]"]
+    ],
+    opportunity: [
+      ["Beneficio económico", "\\[\\pi_e=IT-C_{contable}-C_{oportunidad}\\]"],
+      ["Costo económico", "\\[CE=C_{contable}+C_{oportunidad}\\]"]
+    ],
+    profit: [
+      ["Regla del insumo", "\\[p\\cdot \\operatorname{PMg}_i=w_i\\]"],
+      ["Regla de producción", "\\[\\operatorname{IMg}=\\operatorname{CMg}\\]"]
+    ],
+    costmin: [
+      ["Isocosto", "\\[C=w_1x_1+w_2x_2\\]"],
+      ["Condición de mínimo costo", "\\[\\operatorname{RTS}_{12}=-\\frac{w_1}{w_2}\\]"]
+    ],
+    costcurves: [
+      ["Costo total", "\\[C(y)=C_v(y)+F\\]"],
+      ["Costo marginal", "\\[\\operatorname{CMg}=\\frac{\\partial C}{\\partial y}\\]"],
+      ["Cruce relevante", "\\[\\operatorname{CMg}=\\operatorname{CMe}\\quad\\text{en el mínimo de }\\operatorname{CMe}\\]"]
+    ],
+    scale: [
+      ["Elasticidad costo-producto", "\\[EC=\\frac{\\operatorname{CMg}}{\\operatorname{CMe}}\\]"],
+      ["Economías de escala", "\\[IEE=1-EC>0\\]"]
+    ]
+  };
+
+  return (items[type] || items.production).map(([label, formula]) => `
+    <div class="math-legend-item">
+      <span>${escapeHtml(label)}</span>
+      <div>${escapeHtml(formula)}</div>
+    </div>
+  `).join("");
 }
 
 function renderTopics() {
@@ -241,6 +323,10 @@ function renderGuide() {
       <aside class="formula-box visual-guide">
         <h3>Gráfico</h3>
         ${graphSvg(topic.graph)}
+        <div class="math-legend" aria-label="Lectura matemática del gráfico">
+          <h3>Lectura matemática</h3>
+          ${graphMath(topic.graph)}
+        </div>
         <h3>Fórmulas clave</h3>
         ${topic.formulas.map((formula) => `<div class="formula">${escapeHtml(formula)}</div>`).join("")}
       </aside>
@@ -264,6 +350,30 @@ function activateSection(sectionId) {
     section.classList.toggle("active", section.id === sectionId);
   });
   document.querySelector(".workspace")?.classList.toggle("exam-mode", sectionId !== "learn");
+}
+
+function showOnly(view) {
+  coursesView.classList.toggle("hidden", view !== "courses");
+  appShell.classList.toggle("hidden", view !== "app");
+}
+
+function renderCourses() {
+  courseList.innerHTML = courses.map((course) => `
+    <button class="course-card" data-course="${course.id}">
+      <span>${escapeHtml(course.subtitle)}</span>
+      <h2>${escapeHtml(course.title)}</h2>
+      <p>${escapeHtml(course.description)}</p>
+      <strong>Entrar al curso</strong>
+    </button>
+  `).join("");
+}
+
+function openCourse(courseId) {
+  if (courseId !== "economia-produccion") return;
+  showOnly("app");
+  activateSection("learn");
+  window.scrollTo({ top: 0, behavior: "instant" });
+  typesetMath();
 }
 
 function optionQuestion(prompt, options, answer, explain) {
@@ -708,9 +818,17 @@ document.querySelector("#markTopic").addEventListener("click", () => {
   updateProgress();
 });
 
-document.querySelectorAll(".nav-link").forEach((button) => {
+document.querySelectorAll(".nav-link[data-section]").forEach((button) => {
   button.addEventListener("click", () => activateSection(button.dataset.section));
 });
+
+courseList.addEventListener("click", (event) => {
+  const card = event.target.closest("[data-course]");
+  if (!card) return;
+  openCourse(card.dataset.course);
+});
+
+document.querySelector("#backToCourses").addEventListener("click", () => showOnly("courses"));
 
 document.querySelector("#theoryWeek").addEventListener("change", (event) => renderChoiceQuiz(event.target.value, state.theoryLevel));
 document.querySelector("#practiceWeek").addEventListener("change", (event) => renderPracticeQuiz(event.target.value));
@@ -721,8 +839,10 @@ document.querySelectorAll(".level-btn").forEach((button) => {
 });
 
 renderWeekSelects();
+renderCourses();
 renderTopics();
 renderGuide();
 renderChoiceQuiz(weeks[0].id);
 renderPracticeQuiz(weeks[0].id);
 updateProgress();
+showOnly("courses");

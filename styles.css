@@ -23,6 +23,67 @@ body {
   background: var(--paper);
 }
 
+.hidden {
+  display: none !important;
+}
+
+.courses-view {
+  min-height: 100vh;
+  padding: clamp(22px, 5vw, 56px);
+}
+
+.courses-head h1 {
+  font-size: clamp(2rem, 4vw, 3.4rem);
+}
+
+.form-error {
+  margin: 0;
+  color: var(--red);
+  font-weight: 800;
+}
+
+.courses-view {
+  background: var(--paper);
+}
+
+.courses-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+}
+
+.course-card {
+  display: grid;
+  gap: 12px;
+  min-height: 230px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  text-align: left;
+  color: var(--ink);
+  background: #fff;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+
+.course-card span {
+  color: var(--green-dark);
+  font-weight: 850;
+}
+
+.course-card p {
+  margin: 0;
+  color: var(--muted);
+}
+
 button,
 input {
   font: inherit;
@@ -416,7 +477,8 @@ p {
   background: #fbfcfb;
 }
 
-.visual-guide > svg {
+.visual-guide > svg,
+.visual-guide > img {
   width: 100%;
   height: auto;
   margin: 8px 0 18px;
@@ -426,8 +488,46 @@ p {
   background: #fff;
 }
 
+.math-legend {
+  display: grid;
+  gap: 10px;
+  margin: 2px 0 20px;
+}
+
+.math-legend h3 {
+  margin-top: 2px;
+}
+
+.math-legend-item {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfb;
+}
+
+.math-legend-item span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.math-legend-item mjx-container {
+  margin: 2px 0 !important;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  font-size: 88% !important;
+}
+
 .concept-chart {
   display: block;
+}
+
+.latex-chart {
+  object-fit: contain;
 }
 
 .slide-main {
@@ -569,7 +669,7 @@ mjx-container[jax="SVG"] svg {
 
 .axis {
   stroke: #41525d;
-  stroke-width: 2.2;
+  stroke-width: 1.45;
   stroke-linecap: round;
 }
 
@@ -580,7 +680,7 @@ mjx-container[jax="SVG"] svg {
 .curve {
   fill: none;
   stroke: var(--green-dark);
-  stroke-width: 4.5;
+  stroke-width: 2.15;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -588,7 +688,7 @@ mjx-container[jax="SVG"] svg {
 .avg-curve {
   fill: none;
   stroke: var(--gold);
-  stroke-width: 4.2;
+  stroke-width: 2.05;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -596,37 +696,39 @@ mjx-container[jax="SVG"] svg {
 .var-curve {
   fill: none;
   stroke: var(--blue);
-  stroke-width: 4.2;
+  stroke-width: 2.05;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .cost-line {
   stroke: var(--red);
-  stroke-width: 3.5;
+  stroke-width: 1.9;
   stroke-linecap: round;
 }
 
 .point {
   fill: var(--red);
+  stroke: #fff;
+  stroke-width: 1.6;
 }
 
 .point-ring {
   fill: none;
-  stroke: rgba(191, 77, 66, 0.24);
-  stroke-width: 8;
+  stroke: rgba(191, 77, 66, 0.18);
+  stroke-width: 4;
 }
 
 .muted-line {
   stroke: #9aabb5;
-  stroke-width: 2;
+  stroke-width: 1.25;
   stroke-dasharray: 7 7;
   stroke-linecap: round;
 }
 
 .guide-line {
   stroke: rgba(65, 82, 93, 0.3);
-  stroke-width: 1.8;
+  stroke-width: 1;
   stroke-dasharray: 5 6;
 }
 
@@ -635,16 +737,26 @@ mjx-container[jax="SVG"] svg {
   stroke: #dfe8e4;
 }
 
+.grid-box {
+  fill: url(#grid);
+}
+
+.grid-line {
+  fill: none;
+  stroke: #e5ece9;
+  stroke-width: 0.7;
+}
+
 .graph-label,
 .axis-label {
   fill: #24343d;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 750;
 }
 
 .axis-label {
   fill: #60717d;
-  font-size: 12px;
+  font-size: 10px;
 }
 
 .graph-label.red {
