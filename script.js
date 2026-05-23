@@ -8,12 +8,14 @@ let weeks = [
 const courses = [
   {
     id: "economia-produccion",
+    acronym: "EPC",
     title: "Economía de la Producción Competitiva",
     subtitle: "Unidad 1",
     description: "Guía, teoría y ejercicios de producción, beneficios y costos."
   },
   {
     id: "poder-mercado",
+    acronym: "EPM",
     title: "Economía de la Empresa con Poder de Mercado",
     subtitle: "Unidades 1-4",
     description: "Monopolio, oligopolio, teoría de juegos, concentración e información asimétrica."
@@ -1068,7 +1070,7 @@ function showOnly(view) {
 
 function renderCourses() {
   courseList.innerHTML = courses.map((course) => `
-    <button class="course-card" data-course="${course.id}">
+    <button class="course-card" data-course="${course.id}" data-acronym="${escapeHtml(course.acronym)}">
       <span>${escapeHtml(course.subtitle)}</span>
       <h2>${escapeHtml(course.title)}</h2>
       <p>${escapeHtml(course.description)}</p>
@@ -1844,7 +1846,7 @@ const courseContent = {
     topics: marketTopics,
     theoryData: marketTheoryData,
     practiceBanks: marketPracticeBanks,
-    heroTitle: "Economía de la Empresa con Poder de Mercado",
+    heroTitle: "EPM Economía de la Empresa con Poder de Mercado",
     heroSubtitle: "Estudia monopolio, oligopolio, concentración, teoría de juegos e información asimétrica."
   }
 };

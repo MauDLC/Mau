@@ -1065,7 +1065,7 @@ input:focus-visible {
 }
 
 .course-card::before {
-  content: "EPC";
+  content: attr(data-acronym);
   display: grid;
   place-items: center;
   width: 54px;
