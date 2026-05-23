@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "graphs:build": "node scripts/build-econ-graphs.mjs"
+  }
+}

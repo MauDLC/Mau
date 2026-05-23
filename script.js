@@ -552,14 +552,383 @@ function renderMarketPowerWeekGuide() {
   `;
 }
 
+function economicGraphScales({ width = 640, height = 420, pad = 58, xMax = 100, yMax = 100 } = {}) {
+  const plotW = width - pad * 2;
+  const plotH = height - pad * 2;
+  return {
+    width,
+    height,
+    pad,
+    xMax,
+    yMax,
+    x: (value) => pad + (value / xMax) * plotW,
+    y: (value) => height - pad - (value / yMax) * plotH
+  };
+}
+
+function econLine(scale, x1, y1, x2, y2, className) {
+  return `<line x1="${scale.x(x1)}" y1="${scale.y(y1)}" x2="${scale.x(x2)}" y2="${scale.y(y2)}" class="${className}"/>`;
+}
+
+function econGuide(scale, x1, y1, x2, y2) {
+  return econLine(scale, x1, y1, x2, y2, "econ-guide");
+}
+
+function econPoint(scale, x, y, label = "", dx = 6, dy = -8) {
+  return `<circle cx="${scale.x(x)}" cy="${scale.y(y)}" r="5" class="econ-point"/>${label ? econLabel(scale, x, y, label, dx, dy) : ""}`;
+}
+
+function econLabel(scale, x, y, text, dx = 0, dy = 0, className = "econ-label") {
+  return `<text x="${scale.x(x) + dx}" y="${scale.y(y) + dy}" class="${className}">${text}</text>`;
+}
+
+function econPolygon(scale, points, className) {
+  return `<polygon points="${points.map(([x, y]) => `${scale.x(x)},${scale.y(y)}`).join(" ")}" class="${className}"/>`;
+}
+
+function econRect(scale, x1, y1, x2, y2, className) {
+  const left = Math.min(scale.x(x1), scale.x(x2));
+  const top = Math.min(scale.y(y1), scale.y(y2));
+  return `<rect x="${left}" y="${top}" width="${Math.abs(scale.x(x2)-scale.x(x1))}" height="${Math.abs(scale.y(y2)-scale.y(y1))}" class="${className}"/>`;
+}
+
+function econAxes(scale, id, yLabel = "P", xLabel = "Y") {
+  return `<defs><marker id="${id}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#111"/></marker></defs>
+    <line x1="${scale.pad}" y1="${scale.height - scale.pad}" x2="${scale.width - scale.pad + 20}" y2="${scale.height - scale.pad}" class="econ-axis" marker-end="url(#${id})"/>
+    <line x1="${scale.pad}" y1="${scale.height - scale.pad}" x2="${scale.pad}" y2="${scale.pad - 22}" class="econ-axis" marker-end="url(#${id})"/>
+    <text x="${scale.pad - 30}" y="${scale.pad - 14}" class="econ-var">${yLabel}</text>
+    <text x="${scale.width - scale.pad + 20}" y="${scale.height - scale.pad + 34}" class="econ-var">${xLabel}</text>`;
+}
+
+function economicGraphCard(title, description, svg, note = "") {
+  return `<figure class="economic-graph-card">
+    <figcaption>
+      <strong>${title}</strong>
+      <span>${description}</span>
+    </figcaption>
+    ${svg}
+    ${note ? `<p>${note}</p>` : ""}
+  </figure>`;
+}
+
+function latexGraphCard(title, description, fileName, alt, note = "") {
+  return economicGraphCard(
+    title,
+    description,
+    `<img class="econ-svg-img" src="public/econ-graphs/${fileName}.svg" alt="${alt}" loading="lazy">`,
+    note
+  );
+}
+
+function latexGraphPairCard(title, description, graphs, note = "") {
+  const images = graphs.map((graph) => `
+    <img class="econ-svg-img" src="public/econ-graphs/${graph.file}.svg" alt="${graph.alt}" loading="lazy">
+  `).join("");
+  return economicGraphCard(title, description, `<div class="mini-graph-grid">${images}</div>`, note);
+}
+
+function economicSvg(id, inner, ariaLabel, options = {}) {
+  const scale = economicGraphScales(options);
+  return `<svg viewBox="0 0 ${scale.width} ${scale.height}" role="img" aria-label="${ariaLabel}">${econAxes(scale, id, options.yLabel || "P", options.xLabel || "Y")}${inner(scale)}</svg>`;
+}
+
 function monopolySvg(kind) {
-  const arrow = `<defs><marker id="mono-arrow-${kind}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#111"/></marker></defs>`;
-  const axes = `${arrow}<line x1="78" y1="330" x2="690" y2="330" class="econ-axis" marker-end="url(#mono-arrow-${kind})"/><line x1="78" y1="330" x2="78" y2="50" class="econ-axis" marker-end="url(#mono-arrow-${kind})"/><text x="48" y="58" class="econ-var">P</text><text x="690" y="365" class="econ-var">Y</text>`;
-  if (kind === "max") return `<figure class="econ-diagram mono-chart"><figcaption>Maximización: producir hasta IMg = CMg</figcaption><svg viewBox="0 0 760 410" role="img" aria-label="Maximización del monopolista">${axes}<line x1="118" y1="82" x2="610" y2="292" class="econ-mr"/><path d="M120 286C230 260 334 218 438 166C510 132 578 108 638 96" class="econ-mc"/><circle cx="392" cy="176" r="7" class="econ-point"/><line x1="392" y1="176" x2="392" y2="330" class="econ-guide"/><text x="368" y="360" class="econ-label">Ym</text><text x="520" y="116" class="econ-label mc-text">CMg</text><text x="552" y="280" class="econ-label mr-text">IMg</text><text x="146" y="184" class="econ-label good-zone">IMg &gt; CMg</text><text x="454" y="218" class="econ-label bad-zone">IMg &lt; CMg</text><text x="300" y="150" class="econ-label">IMg = CMg</text></svg></figure>`;
-  if (kind === "linear") return `<figure class="econ-diagram mono-chart"><figcaption>Demanda lineal, IMg y beneficio</figcaption><svg viewBox="0 0 760 430" role="img" aria-label="Demanda lineal e ingreso marginal del monopolio">${axes}<rect x="78" y="170" width="306" height="104" class="profit-area"/><line x1="108" y1="72" x2="650" y2="310" class="econ-demand"/><line x1="108" y1="72" x2="382" y2="330" class="econ-mr"/><line x1="110" y1="274" x2="640" y2="274" class="econ-cme-flat"/><line x1="110" y1="222" x2="640" y2="222" class="econ-mc-flat"/><circle cx="384" cy="222" r="7" class="econ-point"/><line x1="384" y1="222" x2="384" y2="330" class="econ-guide"/><line x1="78" y1="170" x2="384" y2="170" class="econ-guide"/><line x1="78" y1="274" x2="384" y2="274" class="econ-guide"/><text x="45" y="174" class="econ-label">Pm</text><text x="42" y="278" class="econ-label">CMe</text><text x="364" y="360" class="econ-label">Ym</text><text x="560" y="286" class="econ-label demand-text">Demanda</text><text x="268" y="278" class="econ-label">Beneficio</text><text x="296" y="300" class="econ-label mr-text">IMg</text><text x="560" y="216" class="econ-label mc-text">CMg</text></svg></figure>`;
-  if (kind === "exercise") return `<figure class="econ-diagram mono-chart"><figcaption>Ejemplo: D(p)=100-2p, C(y)=2y</figcaption><svg viewBox="0 0 760 430" role="img" aria-label="Ejercicio de monopolio con demanda D(p)=100-2p">${axes}<rect x="78" y="170" width="350" height="132" class="profit-area"/><line x1="108" y1="74" x2="640" y2="314" class="econ-demand"/><line x1="108" y1="74" x2="440" y2="330" class="econ-mr"/><line x1="108" y1="302" x2="640" y2="302" class="econ-mc-flat"/><circle cx="428" cy="302" r="7" class="econ-point"/><line x1="428" y1="302" x2="428" y2="330" class="econ-guide"/><line x1="78" y1="170" x2="428" y2="170" class="econ-guide"/><circle cx="428" cy="170" r="7" class="econ-point"/><text x="46" y="174" class="econ-label">26</text><text x="44" y="306" class="econ-label">2</text><text x="412" y="360" class="econ-label">48</text><text x="528" y="274" class="econ-label demand-text">P = 50 - y/2</text><text x="300" y="258" class="econ-label mr-text">IMg = 50 - y</text><text x="520" y="296" class="econ-label mc-text">CMg = 2</text><text x="220" y="232" class="econ-label">π = 1152</text></svg></figure>`;
-  if (kind === "welfare") return `<figure class="econ-diagram mono-chart"><figcaption>Ineficiencia asignativa del monopolio</figcaption><svg viewBox="0 0 760 430" role="img" aria-label="Excedentes y pérdida irrecuperable">${axes}<polygon points="78,78 78,168 390,168" class="consumer-area"/><polygon points="78,168 390,168 390,252 78,252" class="producer-area"/><polygon points="390,252 540,252 390,168" class="deadweight-area"/><line x1="110" y1="76" x2="650" y2="318" class="econ-demand"/><line x1="110" y1="76" x2="390" y2="330" class="econ-mr"/><line x1="110" y1="252" x2="650" y2="252" class="econ-mc-flat"/><line x1="390" y1="168" x2="390" y2="330" class="econ-guide"/><line x1="540" y1="252" x2="540" y2="330" class="econ-guide"/><line x1="78" y1="168" x2="390" y2="168" class="econ-guide"/><circle cx="390" cy="252" r="7" class="econ-point"/><circle cx="540" cy="252" r="7" class="econ-point"/><text x="44" y="172" class="econ-label">Pm</text><text x="44" y="256" class="econ-label">Pc</text><text x="370" y="360" class="econ-label">Ym</text><text x="522" y="360" class="econ-label">Yc</text><text x="150" y="136" class="econ-label">EC</text><text x="168" y="222" class="econ-label">EP</text><text x="430" y="225" class="econ-label">PIE</text><text x="568" y="300" class="econ-label demand-text">Demanda</text><text x="560" y="246" class="econ-label mc-text">CMg</text></svg></figure>`;
-  return `<figure class="econ-diagram mono-chart"><figcaption>Aumento del costo marginal</figcaption><svg viewBox="0 0 760 430" role="img" aria-label="Aumento de costo marginal en monopolio">${axes}<line x1="108" y1="74" x2="650" y2="318" class="econ-demand"/><line x1="108" y1="74" x2="392" y2="330" class="econ-mr"/><line x1="110" y1="278" x2="650" y2="278" class="econ-mc-flat"/><line x1="110" y1="222" x2="650" y2="222" class="econ-mc-flat cost-shift"/><line x1="333" y1="222" x2="333" y2="330" class="econ-guide"/><line x1="392" y1="278" x2="392" y2="330" class="econ-guide"/><line x1="78" y1="176" x2="333" y2="176" class="econ-guide"/><line x1="78" y1="152" x2="392" y2="152" class="econ-guide"/><circle cx="333" cy="222" r="7" class="econ-point"/><circle cx="392" cy="278" r="7" class="econ-point"/><text x="316" y="360" class="econ-label">Y2</text><text x="374" y="360" class="econ-label">Y1</text><text x="42" y="180" class="econ-label">P2</text><text x="42" y="156" class="econ-label">P1</text><text x="560" y="216" class="econ-label mc-text">CMg2</text><text x="560" y="272" class="econ-label mc-text">CMg1</text><text x="500" y="300" class="econ-label demand-text">Demanda</text><text x="430" y="114" class="econ-label">Sube P, baja Y</text></svg></figure>`;
+  const graphMap = {
+    max: {
+      title: "Elección de producción",
+      description: "El monopolista expande producción mientras el ingreso marginal supere al costo marginal.",
+      file: "monopoly-production",
+      alt: "Diagrama TikZ de elección de producción del monopolio con IMg, CMg y y estrella",
+      note: "El óptimo se ubica donde la contribución marginal neta se vuelve cero."
+    },
+    linear: {
+      title: "Equilibrio y beneficios",
+      description: "La cantidad se determina por IMg = CMg; el precio se lee sobre la demanda.",
+      file: "monopoly-linear-demand-profit",
+      alt: "Diagrama TikZ de demanda lineal, ingreso marginal, costos y beneficio del monopolista",
+      note: "El rectángulo sombreado muestra \\((P_m-CMe)Y_m\\)."
+    },
+    exercise: {
+      title: "Ejercicio 1",
+      description: "Demanda inversa, ingreso marginal y beneficio del monopolista.",
+      file: "exercise-1-monopoly",
+      alt: "Diagrama TikZ del ejercicio D de p igual a 100 menos 2p y C de y igual a 2y",
+      note: "El equilibrio se obtiene de \\(50-y=2\\), por eso \\(y=48\\) y \\(P=26\\)."
+    },
+    welfare: {
+      title: "Ineficiencia asignativa",
+      description: "El monopolio cobra más y vende menos que la asignación competitiva.",
+      file: "monopoly-deadweight-loss",
+      alt: "Diagrama TikZ de monopolio, excedentes y pérdida irrecuperable de eficiencia",
+      note: "El triángulo sombreado es excedente que desaparece: no lo recibe ni el consumidor ni el productor."
+    },
+    producerloss: {
+      title: "Ejercicio 4",
+      description: "Separación entre transferencia al productor y pérdida de eficiencia.",
+      file: "exercise-4-surplus",
+      alt: "Diagrama TikZ de excedente del productor y pérdida de excedente del consumidor",
+      note: "El área A cambia de manos; el área B se pierde para la sociedad."
+    },
+    perfect: {
+      title: "Demanda perfectamente elástica",
+      description: "Cuando la firma enfrenta una demanda horizontal, el precio disciplina el margen.",
+      file: "perfectly-elastic-demand",
+      alt: "Diagrama TikZ de demanda perfectamente elástica e intersección con costo marginal",
+      note: "El resultado se aproxima a competencia perfecta porque \\(P=IMg\\)."
+    }
+  };
+  if (graphMap[kind]) {
+    const graph = graphMap[kind];
+    return latexGraphCard(graph.title, graph.description, graph.file, graph.alt, graph.note);
+  }
+  if (kind === "nosupply") {
+    return latexGraphPairCard(
+      "La oferta en monopolio",
+      "No existe una curva de oferta única: el resultado depende de la forma de la demanda.",
+      [
+        { file: "monopoly-no-supply-a", alt: "Diagrama TikZ donde cambia el precio sin cambiar la cantidad en monopolio" },
+        { file: "monopoly-no-supply-b", alt: "Diagrama TikZ donde cambia la cantidad sin cambiar el precio en monopolio" }
+      ],
+      "Una misma condición de costos puede asociarse con cambios de precio, cantidad o ambos."
+    );
+  }
+  if (kind === "cost") {
+    return latexGraphPairCard(
+      "Aumento del costo marginal",
+      "El alza de costos desplaza el óptimo: sube el precio y baja la cantidad.",
+      [
+        { file: "marginal-cost-increase-consumer-surplus", alt: "Diagrama TikZ del efecto de un aumento del costo marginal en el excedente del consumidor" },
+        { file: "marginal-cost-increase-profit", alt: "Diagrama TikZ del efecto de un aumento del costo marginal en el beneficio del monopolista" }
+      ],
+      "Al aumentar CMg, cae el excedente del consumidor y también se reduce el margen total disponible."
+    );
+  }
+  return "";
+
+  if (kind === "max") {
+    const svg = economicSvg("mono-max-arrow", (s) => {
+      const yStar = 52;
+      const cStar = 44;
+      return `
+        ${econLine(s, 8, 82, 94, 10, "econ-mr")}
+        <path d="M${s.x(7)} ${s.y(18)} C ${s.x(24)} ${s.y(24)}, ${s.x(38)} ${s.y(34)}, ${s.x(52)} ${s.y(44)} C ${s.x(70)} ${s.y(58)}, ${s.x(84)} ${s.y(70)}, ${s.x(96)} ${s.y(82)}" class="econ-mc"/>
+        ${econGuide(s, yStar, cStar, yStar, 0)}
+        ${econPoint(s, yStar, cStar, "IMg = CMg", 8, -8)}
+        ${econLabel(s, yStar, 0, "y*", -8, 24)}
+        ${econLabel(s, 18, 55, "CMg < IMg", 0, 0, "econ-label good-zone")}
+        ${econLabel(s, 15, 48, "sigo produciendo", 0, 0, "econ-label good-zone")}
+        ${econLabel(s, 66, 35, "CMg > IMg", 0, 0, "econ-label bad-zone")}
+        ${econLabel(s, 66, 28, "no sigo produciendo", 0, 0, "econ-label bad-zone")}
+        ${econLabel(s, 86, 16, "IMg", 0, 0, "econ-label mr-text")}
+        ${econLabel(s, 86, 82, "CMg", 0, 0, "econ-label mc-text")}
+      `;
+    }, "Elección de producción del monopolio", { yLabel: "C", xLabel: "y" });
+    return economicGraphCard("Elección de producción", "El monopolista expande producción mientras el ingreso marginal supere al costo marginal.", svg, "El óptimo se ubica donde la contribución marginal neta se vuelve cero.");
+  }
+
+  if (kind === "linear") {
+    const svg = economicSvg("mono-linear-arrow", (s) => {
+      const ym = 44, pm = 64, cme = 36, cmg = 48;
+      return `
+        ${econRect(s, 0, cme, ym, pm, "profit-area")}
+        ${econLine(s, 6, 88, 96, 12, "econ-demand")}
+        ${econLine(s, 6, 88, 52, 0, "econ-mr")}
+        <path d="M${s.x(7)} ${s.y(46)} C ${s.x(22)} ${s.y(26)}, ${s.x(38)} ${s.y(30)}, ${s.x(52)} ${s.y(38)} C ${s.x(66)} ${s.y(48)}, ${s.x(80)} ${s.y(55)}, ${s.x(94)} ${s.y(58)}" class="econ-cme"/>
+        <path d="M${s.x(8)} ${s.y(24)} C ${s.x(30)} ${s.y(30)}, ${s.x(52)} ${s.y(48)}, ${s.x(94)} ${s.y(72)}" class="econ-mc"/>
+        ${econGuide(s, ym, 0, ym, pm)}
+        ${econGuide(s, 0, pm, ym, pm)}
+        ${econGuide(s, 0, cme, ym, cme)}
+        ${econPoint(s, ym, pm, "Pm", 8, -8)}
+        ${econPoint(s, ym, cme, "CMe", 8, 14)}
+        ${econPoint(s, ym, cmg, "", 0, 0)}
+        ${econLabel(s, ym, 0, "ym", -8, 24)}
+        ${econLabel(s, 70, 33, "Demanda", 0, 0, "econ-label demand-text")}
+        ${econLabel(s, 42, 12, "IMg", 0, 0, "econ-label mr-text")}
+        ${econLabel(s, 79, 74, "CMg", 0, 0, "econ-label mc-text")}
+        ${econLabel(s, 78, 54, "CMe", 0, 0, "econ-label cme-text")}
+        ${econLabel(s, 17, 51, "Beneficio", 0, 0)}
+      `;
+    }, "Equilibrio y beneficios con demanda lineal");
+    return economicGraphCard("Equilibrio y beneficios", "La cantidad se determina por IMg = CMg; el precio se lee sobre la demanda.", svg, "El rectángulo sombreado muestra \\((P_m-CMe)Y_m\\).");
+  }
+
+  if (kind === "exercise") {
+    const svg = economicSvg("mono-ex-arrow", (s) => {
+      const ym = 48, pm = 26, c = 2;
+      return `
+        ${econRect(s, 0, c, ym, pm, "profit-area")}
+        ${econLine(s, 0, 50, 100, 0, "econ-demand")}
+        ${econLine(s, 0, 50, 50, 0, "econ-mr")}
+        ${econLine(s, 0, c, 100, c, "econ-mc-flat")}
+        ${econGuide(s, ym, 0, ym, pm)}
+        ${econGuide(s, 0, pm, ym, pm)}
+        ${econGuide(s, 0, c, ym, c)}
+        ${econPoint(s, ym, pm, "P=26", 8, -8)}
+        ${econPoint(s, ym, c, "CMe=2", 8, 16)}
+        ${econLabel(s, ym, 0, "y=48", -14, 24)}
+        ${econLabel(s, 64, 18, "P = 50 - y/2", 0, 0, "econ-label demand-text")}
+        ${econLabel(s, 33, 15, "IMg = 50 - y", 0, 0, "econ-label mr-text")}
+        ${econLabel(s, 73, c, "CMg = CMe = 2", 0, -6, "econ-label mc-text")}
+        ${econLabel(s, 18, 15, "π = (26 - 2)48 = 1,152", 0, 0)}
+      `;
+    }, "Ejercicio D(p)=100-2p y C(y)=2y", { yMax: 55 });
+    return economicGraphCard("Ejercicio 1", "Demanda inversa, ingreso marginal y beneficio del monopolista.", svg, "El equilibrio se obtiene de \\(50-y=2\\), por eso \\(y=48\\) y \\(P=26\\).");
+  }
+
+  if (kind === "nosupply") {
+    const mini = (variant) => economicSvg(`mono-nosupply-${variant}`, (s) => {
+      if (variant === "a") {
+        const y = 48;
+        return `
+          ${econLine(s, 5, 88, 95, 22, "econ-demand")}
+          ${econLine(s, 5, 72, 95, 6, "econ-demand secondary-demand")}
+          ${econLine(s, 5, 88, 48, 0, "econ-mr")}
+          ${econLine(s, 5, 72, 48, 0, "econ-mr secondary-mr")}
+          <path d="M${s.x(10)} ${s.y(18)} C ${s.x(30)} ${s.y(26)}, ${s.x(48)} ${s.y(38)}, ${s.x(80)} ${s.y(58)}" class="econ-mc"/>
+          ${econGuide(s, y, 0, y, 60)}
+          ${econGuide(s, 0, 60, y, 60)}
+          ${econGuide(s, 0, 44, y, 44)}
+          ${econPoint(s, y, 60, "P1", 8, -6)}
+          ${econPoint(s, y, 44, "P2", 8, 12)}
+          ${econLabel(s, y, 0, "y1,2", -12, 24)}
+          ${econLabel(s, 78, 32, "D1", 0, 0, "econ-label demand-text")}
+          ${econLabel(s, 80, 17, "D2", 0, 0, "econ-label demand-text")}
+        `;
+      }
+      return `
+        ${econLine(s, 5, 84, 95, 20, "econ-demand")}
+        ${econLine(s, 12, 98, 94, 30, "econ-demand secondary-demand")}
+        ${econLine(s, 5, 84, 48, 0, "econ-mr")}
+        ${econLine(s, 12, 98, 58, 0, "econ-mr secondary-mr")}
+        <path d="M${s.x(10)} ${s.y(22)} C ${s.x(34)} ${s.y(30)}, ${s.x(54)} ${s.y(40)}, ${s.x(82)} ${s.y(60)}" class="econ-mc"/>
+        ${econGuide(s, 42, 0, 42, 54)}
+        ${econGuide(s, 56, 0, 56, 54)}
+        ${econGuide(s, 0, 54, 56, 54)}
+        ${econPoint(s, 42, 54, "P1,2", 8, -8)}
+        ${econPoint(s, 56, 54, "", 0, 0)}
+        ${econLabel(s, 42, 0, "y1", -7, 24)}
+        ${econLabel(s, 56, 0, "y2", -7, 24)}
+        ${econLabel(s, 78, 31, "D1", 0, 0, "econ-label demand-text")}
+        ${econLabel(s, 79, 44, "D2", 0, 0, "econ-label demand-text")}
+      `;
+    }, variant === "a" ? "Precio cambia sin cambiar cantidad" : "Cantidad cambia sin cambiar precio", { width: 560, height: 360, yMax: 100 });
+    return economicGraphCard("La oferta en monopolio", "No existe una curva de oferta única: el resultado depende de la forma de la demanda.", `<div class="mini-graph-grid">${mini("a")}${mini("b")}</div>`, "Una misma condición de costos puede asociarse con cambios de precio, cantidad o ambos.");
+  }
+
+  if (kind === "welfare") {
+    const svg = economicSvg("mono-welfare-arrow", (s) => {
+      const ym = 42, yc = 70, pm = 68, pc = 38, cme = 30;
+      return `
+        ${econPolygon(s, [[0, 92], [0, pm], [ym, pm]], "consumer-area")}
+        ${econRect(s, 0, cme, ym, pm, "producer-area")}
+        ${econPolygon(s, [[ym, pm], [yc, pc], [ym, pc]], "deadweight-area")}
+        ${econLine(s, 5, 92, 96, 14, "econ-demand")}
+        ${econLine(s, 5, 92, 52, 0, "econ-mr")}
+        <path d="M${s.x(8)} ${s.y(24)} C ${s.x(30)} ${s.y(28)}, ${s.x(50)} ${s.y(38)}, ${s.x(94)} ${s.y(58)}" class="econ-mc"/>
+        <path d="M${s.x(8)} ${s.y(42)} C ${s.x(24)} ${s.y(26)}, ${s.x(42)} ${s.y(30)}, ${s.x(58)} ${s.y(38)} C ${s.x(76)} ${s.y(46)}, ${s.x(88)} ${s.y(50)}, ${s.x(96)} ${s.y(52)}" class="econ-cme"/>
+        ${econGuide(s, ym, 0, ym, pm)}
+        ${econGuide(s, yc, 0, yc, pc)}
+        ${econGuide(s, 0, pm, ym, pm)}
+        ${econGuide(s, 0, pc, yc, pc)}
+        ${econPoint(s, ym, pm, "A", 7, -8)}
+        ${econPoint(s, ym, pc, "B", 7, 14)}
+        ${econPoint(s, yc, pc, "C", 7, -8)}
+        ${econPoint(s, ym, cme, "E", 7, 14)}
+        ${econPoint(s, yc, 0, "F", 6, -8)}
+        ${econPoint(s, 0, pm, "H", 8, -8)}
+        ${econLabel(s, 0, pm, "Pm", -34, 4)}
+        ${econLabel(s, 0, pc, "Pc", -34, 4)}
+        ${econLabel(s, ym, 0, "ym", -8, 24)}
+        ${econLabel(s, yc, 0, "yc", -8, 24)}
+        ${econLabel(s, 14, 79, "Excedente del consumidor", 0, 0)}
+        ${econLabel(s, 13, 48, "Excedente del productor", 0, 0)}
+        ${econLabel(s, 48, 50, "Pérdida", 0, 0)}
+        ${econLabel(s, 48, 44, "irrecuperable", 0, 0)}
+        ${econLabel(s, 72, 28, "Demanda", 0, 0, "econ-label demand-text")}
+        ${econLabel(s, 43, 10, "IMg", 0, 0, "econ-label mr-text")}
+        ${econLabel(s, 78, 56, "CMg", 0, 0, "econ-label mc-text")}
+        ${econLabel(s, 79, 49, "CMe", 0, 0, "econ-label cme-text")}
+      `;
+    }, "Monopolio e ineficiencia asignativa");
+    return economicGraphCard("Ineficiencia asignativa", "El monopolio cobra más y vende menos que la asignación competitiva.", svg, "El triángulo sombreado es excedente que desaparece: no lo recibe ni el consumidor ni el productor.");
+  }
+
+  if (kind === "producerloss") {
+    const svg = economicSvg("mono-prod-loss-arrow", (s) => {
+      const ym = 45, yc = 76, pm = 66, pc = 30;
+      return `
+        ${econRect(s, 0, pc, ym, pm, "producer-area")}
+        ${econPolygon(s, [[ym, pm], [yc, pc], [ym, pc]], "deadweight-area")}
+        ${econLine(s, 5, 88, 96, 14, "econ-demand")}
+        ${econLine(s, 5, 88, 52, 0, "econ-mr")}
+        ${econLine(s, 4, pc, 96, pc, "econ-mc-flat")}
+        ${econGuide(s, ym, 0, ym, pm)}
+        ${econGuide(s, yc, 0, yc, pc)}
+        ${econGuide(s, 0, pm, ym, pm)}
+        ${econGuide(s, 0, pc, yc, pc)}
+        ${econPoint(s, ym, pm, "Pm", 8, -8)}
+        ${econPoint(s, ym, pc, "A", 8, 14)}
+        ${econPoint(s, yc, pc, "B", 8, -8)}
+        ${econLabel(s, ym, 0, "ym", -8, 24)}
+        ${econLabel(s, yc, 0, "yc", -8, 24)}
+        ${econLabel(s, 16, 49, "A", 0, 0)}
+        ${econLabel(s, 52, 45, "B", 0, 0)}
+        ${econLabel(s, 56, 76, "Pérdida excedente consumidor = A + B", 0, 0)}
+        ${econLabel(s, 56, 69, "Pérdida eficiencia social = B", 0, 0)}
+        ${econLabel(s, 73, 31, "Demanda", 0, 0, "econ-label demand-text")}
+        ${econLabel(s, 74, pc, "CMg = CMe", 0, -6, "econ-label mc-text")}
+      `;
+    }, "Excedente del productor y pérdida de excedente");
+    return economicGraphCard("Ejercicio 4", "Separación entre transferencia al productor y pérdida de eficiencia.", svg, "El área A cambia de manos; el área B se pierde para la sociedad.");
+  }
+
+  if (kind === "cost") {
+    const graph = (id, profit = false) => economicSvg(`mono-cost-${id}`, (s) => {
+      const y1 = 52, y2 = 40, p1 = 55, p2 = 64, c1 = 26, c2 = 38;
+      return `
+        ${profit ? econRect(s, 0, c1, y1, p1, "producer-area") + econRect(s, 0, c2, y2, p2, "profit-area") : econPolygon(s, [[0, 88], [0, p1], [y1, p1]], "consumer-area") + econPolygon(s, [[0, 88], [0, p2], [y2, p2]], "consumer-area after-area")}
+        ${econLine(s, 5, 88, 96, 12, "econ-demand")}
+        ${econLine(s, 5, 88, 52, 0, "econ-mr")}
+        ${econLine(s, 4, c1, 96, c1, "econ-mc-flat")}
+        ${econLine(s, 4, c2, 96, c2, "econ-mc-flat cost-shift")}
+        ${econGuide(s, y1, 0, y1, p1)}
+        ${econGuide(s, y2, 0, y2, p2)}
+        ${econGuide(s, 0, p1, y1, p1)}
+        ${econGuide(s, 0, p2, y2, p2)}
+        ${econPoint(s, y1, p1, "P1", 8, 10)}
+        ${econPoint(s, y2, p2, "P2", 8, -8)}
+        ${econLabel(s, y1, 0, "Y1", -8, 24)}
+        ${econLabel(s, y2, 0, "Y2", -8, 24)}
+        ${econLabel(s, 72, c1, "CMg1", 0, -6, "econ-label mc-text")}
+        ${econLabel(s, 72, c2, "CMg2", 0, -6, "econ-label mc-text")}
+        ${econLabel(s, 70, 26, "Demanda", 0, 0, "econ-label demand-text")}
+        ${econLabel(s, 32, 16, "IMg", 0, 0, "econ-label mr-text")}
+        ${profit ? econLabel(s, 16, 45, "beneficio menor", 0, 0) : econLabel(s, 12, 78, "EC disminuye", 0, 0)}
+      `;
+    }, profit ? "Beneficio antes y después" : "Excedente del consumidor antes y después");
+    return economicGraphCard("Aumento del costo marginal", "El alza de costos desplaza el óptimo: sube el precio y baja la cantidad.", `<div class="mini-graph-grid">${graph("cs", false)}${graph("profit", true)}</div>`, "Al aumentar CMg, cae el excedente del consumidor y también se reduce el margen total disponible.");
+  }
+
+  if (kind === "perfect") {
+    const svg = economicSvg("mono-perfect-arrow", (s) => {
+      const p = 46, y = 56;
+      return `
+        ${econLine(s, 5, p, 96, p, "econ-demand")}
+        <path d="M${s.x(8)} ${s.y(20)} C ${s.x(24)} ${s.y(24)}, ${s.x(42)} ${s.y(35)}, ${s.x(y)} ${s.y(p)} C ${s.x(72)} ${s.y(58)}, ${s.x(88)} ${s.y(72)}, ${s.x(96)} ${s.y(82)}" class="econ-mc"/>
+        ${econGuide(s, y, 0, y, p)}
+        ${econGuide(s, 0, p, y, p)}
+        ${econPoint(s, y, p, "equilibrio", 8, -8)}
+        ${econLabel(s, 7, p, "D = IMg", 0, -8, "econ-label demand-text")}
+        ${econLabel(s, 82, 78, "CMg", 0, 0, "econ-label mc-text")}
+        ${econLabel(s, 0, p, "Pm", -34, 4)}
+        ${econLabel(s, y, 0, "Ym", -8, 24)}
+        ${econLabel(s, 36, 24, "No existe pérdida irrecuperable de eficiencia", 0, 0)}
+      `;
+    }, "Demanda perfectamente elástica");
+    return economicGraphCard("Demanda perfectamente elástica", "Cuando la firma enfrenta una demanda horizontal, el precio disciplina el margen.", svg, "El resultado se aproxima a competencia perfecta porque \\(P=IMg\\).");
+  }
+
+  return "";
 }
 
 function renderMonopolyWeekGuide() {
@@ -593,6 +962,7 @@ function renderMonopolyWeekGuide() {
         <div class="section-heading"><span>03</span><h3>Decisión de precio y elasticidad</h3><p>El precio elegido depende de la elasticidad. En el óptimo con poder de mercado, el monopolista opera en el tramo elástico de la demanda.</p></div>
         <div class="formula-highlight"><div><strong>Regla de markup</strong>\[p(y)=\frac{CMg}{1-\frac{1}{|\varepsilon|}}\]</div><div><strong>Lectura</strong>\[P>CMg\quad\text{si la demanda no es perfectamente elástica}\]</div></div>
         <aside class="key-idea"><strong>Idea clave</strong><p>Si la demanda es inelástica, aumentar la cantidad reduce el ingreso total y además aumenta costos; por eso no es consistente con maximización de beneficios. Si la demanda es perfectamente elástica, el margen desaparece y el resultado se acerca a competencia perfecta.</p></aside>
+        ${monopolySvg("perfect")}
       </section>
 
       <section class="guide-section">
@@ -611,11 +981,13 @@ function renderMonopolyWeekGuide() {
         <div class="section-heading"><span>06</span><h3>Oferta en monopolio</h3><p>En monopolio no existe una curva de oferta independiente. La cantidad elegida depende simultáneamente del costo marginal y de la forma de la demanda.</p></div>
         <div class="text-columns"><p>En competencia perfecta, la curva de oferta se relaciona directamente con el costo marginal porque la empresa toma el precio como dado.</p><p>En monopolio, el mismo costo marginal puede generar distintos precios y cantidades si cambia la demanda. Por eso no hay una relación única precio-cantidad que pueda llamarse oferta.</p></div>
         <div class="cause-grid"><article class="cause-card"><h4>Cambia precio, no cantidad</h4><p>Una rotación de demanda puede mantener el punto \(IMg=CMg\) en la misma cantidad.</p></article><article class="cause-card"><h4>Cambia cantidad, no precio</h4><p>Otra demanda puede desplazar la cantidad elegida sin modificar el precio observado.</p></article><article class="cause-card"><h4>Cambian ambos</h4><p>En general, precio y cantidad se mueven juntos porque dependen de demanda y costos.</p></article></div>
+        ${monopolySvg("nosupply")}
       </section>
 
       <section class="guide-section">
         <div class="section-heading"><span>07</span><h3>Ineficiencia asignativa</h3><p>El monopolio restringe producción respecto de competencia perfecta: \(Y_m<Y_c\) y \(P_m>P_c\). La diferencia genera pérdida irrecuperable de eficiencia.</p></div>
         ${monopolySvg("welfare")}
+        ${monopolySvg("producerloss")}
       </section>
 
       <section class="guide-section">

@@ -1,0 +1,20 @@
+\documentclass[tikz,border=6pt]{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\definecolor{demand}{HTML}{1F4E79}
+\definecolor{mc}{HTML}{B23A32}
+\definecolor{point}{HTML}{C5161D}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[width=12cm,height=7cm,axis lines=middle,xmin=0,xmax=10,ymin=0,ymax=10,xtick=\empty,ytick=\empty,xlabel={$Y$},ylabel={$P$},axis line style={->,thick},label style={font=\large},tick style={draw=none},clip=false]
+\addplot[domain=.5:9.5,samples=2,very thick,demand] {5} node[pos=.18,above,font=\small] {$D=IMg$};
+\addplot[domain=.6:9,samples=80,very thick,mc] {1+.22*x+.055*x^2} node[pos=.9,above left,font=\small] {$CMg$};
+\addplot[dashed,thick,demand] coordinates {(6.1,0) (6.1,5) (0,5)};
+\addplot[only marks,mark=*,mark size=2.6pt,point] coordinates {(6.1,5)};
+\node[left,font=\small] at (axis cs:0,5) {$P_m$};
+\node[below,font=\small] at (axis cs:6.1,0) {$Y_m$};
+\node[above right,font=\small] at (axis cs:6.1,5) {equilibrio};
+\node[font=\small] at (axis cs:5,2.2) {No existe perdida irrecuperable};
+\end{axis}
+\end{tikzpicture}
+\end{document}

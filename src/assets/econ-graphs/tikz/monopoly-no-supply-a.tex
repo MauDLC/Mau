@@ -1,0 +1,25 @@
+\documentclass[tikz,border=6pt]{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\definecolor{demand}{HTML}{1F4E79}
+\definecolor{mr}{HTML}{7EA6C8}
+\definecolor{mc}{HTML}{B23A32}
+\definecolor{point}{HTML}{C5161D}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[width=8.8cm,height=6.2cm,axis lines=middle,xmin=0,xmax=10,ymin=0,ymax=10,xtick=\empty,ytick=\empty,xlabel={$y$},ylabel={$P$},axis line style={->,thick},label style={font=\large},tick style={draw=none},clip=false]
+\addplot[domain=.5:9.3,samples=2,very thick,demand] {9-.45*x} node[pos=.9,above right,font=\small] {$D_1$};
+\addplot[domain=.5:9.3,samples=2,very thick,demand,dashed] {7.7-.25*x} node[pos=.9,below right,font=\small] {$D_2$};
+\addplot[domain=.5:8.2,samples=2,very thick,mr] {9-.9*x} node[pos=.78,below,font=\small] {$IMg_1$};
+\addplot[domain=.5:8.8,samples=2,very thick,mr,dashed] {7.7-.5*x} node[pos=.8,below,font=\small] {$IMg_2$};
+\addplot[domain=.5:9.3,samples=80,very thick,mc] {1+.18*x+.055*x^2} node[pos=.86,above,font=\small] {$CMg$};
+\addplot[dashed,thick,demand] coordinates {(5,0) (5,6.75) (0,6.75)};
+\addplot[dashed,thick,demand] coordinates {(0,6.45) (5,6.45)};
+\addplot[only marks,mark=*,mark size=2.4pt,point] coordinates {(5,6.75) (5,6.45)};
+\node[left,font=\small] at (axis cs:0,6.75) {$P_1$};
+\node[left,font=\small] at (axis cs:0,6.45) {$P_2$};
+\node[below,font=\small] at (axis cs:5,0) {$y_{1,2}$};
+\node[font=\small] at (axis cs:5.3,9.5) {Cambia precio, no cantidad};
+\end{axis}
+\end{tikzpicture}
+\end{document}

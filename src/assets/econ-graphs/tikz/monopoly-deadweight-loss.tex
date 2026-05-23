@@ -1,0 +1,39 @@
+\documentclass[tikz,border=6pt]{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\definecolor{demand}{HTML}{1F4E79}
+\definecolor{mr}{HTML}{7EA6C8}
+\definecolor{mc}{HTML}{B23A32}
+\definecolor{ac}{HTML}{2F7D55}
+\definecolor{point}{HTML}{C5161D}
+\definecolor{cs}{HTML}{B7D6F2}
+\definecolor{ps}{HTML}{97D4A4}
+\definecolor{dw}{HTML}{E98B73}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[width=12cm,height=7cm,axis lines=middle,xmin=0,xmax=10,ymin=0,ymax=10,xtick=\empty,ytick=\empty,xlabel={$y$},ylabel={$P,C$},axis line style={->,thick},label style={font=\large},tick style={draw=none},clip=false]
+\path[fill=cs,opacity=.25] (axis cs:0,9) -- (axis cs:0,6.2) -- (axis cs:4,6.2) -- cycle;
+\path[fill=ps,opacity=.22] (axis cs:0,3.1) rectangle (axis cs:4,6.2);
+\path[fill=dw,opacity=.28] (axis cs:4,6.2) -- (axis cs:7,4.1) -- (axis cs:4,4.1) -- cycle;
+\addplot[domain=.5:9.3,samples=2,very thick,demand] {9-.7*x} node[pos=.88,above right,font=\small] {Demanda};
+\addplot[domain=.5:6.4,samples=2,very thick,mr] {9-1.4*x} node[pos=.78,below,font=\small] {$IMg$};
+\addplot[domain=.5:9.2,samples=100,very thick,mc] {1.4+.3*x+.035*x^2} node[pos=.88,above,font=\small] {$CMg$};
+\addplot[domain=.7:9.2,samples=100,very thick,ac] {2.2+.055*(x-4)^2+.09*x} node[pos=.82,below right,font=\small] {$CMe$};
+\addplot[dashed,thick,demand] coordinates {(4,0) (4,6.2) (0,6.2)};
+\addplot[dashed,thick,demand] coordinates {(7,0) (7,4.1) (0,4.1)};
+\addplot[only marks,mark=*,mark size=2.4pt,point] coordinates {(4,6.2) (4,4.1) (7,4.1) (4,3.1) (0,6.2) (7,0)};
+\node[above right,font=\small] at (axis cs:4,6.2) {A};
+\node[below right,font=\small] at (axis cs:4,4.1) {B};
+\node[above right,font=\small] at (axis cs:7,4.1) {C};
+\node[below right,font=\small] at (axis cs:4,3.1) {E};
+\node[below,font=\small] at (axis cs:7,0) {F};
+\node[left,font=\small] at (axis cs:0,6.2) {$P_m$};
+\node[left,font=\small] at (axis cs:0,4.1) {$P_c$};
+\node[below,font=\small] at (axis cs:4,0) {$y_m$};
+\node[below,font=\small] at (axis cs:7,0) {$y_c$};
+\node[font=\small] at (axis cs:1.45,7.4) {EC};
+\node[font=\small] at (axis cs:1.7,4.75) {EP};
+\node[font=\small] at (axis cs:5.25,4.95) {PIE};
+\end{axis}
+\end{tikzpicture}
+\end{document}

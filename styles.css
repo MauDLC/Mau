@@ -1925,9 +1925,70 @@ main {
   background: #fff;
 }
 
+.economic-graph-card {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: clamp(14px, 2vw, 18px);
+  border: 1px solid rgba(31, 104, 79, 0.12);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 14px 34px rgba(23, 32, 38, 0.07);
+}
+
+.economic-graph-card figcaption {
+  display: grid;
+  gap: 4px;
+}
+
+.economic-graph-card figcaption strong {
+  color: var(--green-dark);
+  font-size: 1rem;
+}
+
+.economic-graph-card figcaption span,
+.economic-graph-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.economic-graph-card svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 860px;
+  margin: 0 auto;
+  background: #fff;
+}
+
+.econ-svg-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 860px;
+  margin: 0 auto;
+  background: #fff;
+}
+
+.mini-graph-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.mini-graph-grid svg {
+  max-width: none;
+}
+
+.mini-graph-grid .econ-svg-img {
+  max-width: none;
+}
+
 .econ-axis {
   stroke: #111;
-  stroke-width: 3;
+  stroke-width: 2.4;
   stroke-linecap: square;
 }
 
@@ -1938,32 +1999,32 @@ main {
 }
 
 .econ-var {
-  font-size: 28px;
+  font-size: 17px;
   font-style: italic;
 }
 
 .econ-label {
-  font-size: 22px;
+  font-size: 12px;
 }
 
 .econ-demand {
   stroke: #123d73;
-  stroke-width: 5;
+  stroke-width: 2.8;
   stroke-linecap: round;
 }
 
 .econ-cme {
   fill: none;
-  stroke: #111;
-  stroke-width: 5;
+  stroke: #2f8f6b;
+  stroke-width: 2.8;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .econ-guide {
   stroke: #123d73;
-  stroke-width: 2.5;
-  stroke-dasharray: 8 7;
+  stroke-width: 1.5;
+  stroke-dasharray: 5 5;
 }
 
 .econ-point {
@@ -1987,30 +2048,30 @@ main {
 
 .econ-mr {
   stroke: #5f8fbd;
-  stroke-width: 4;
+  stroke-width: 2.4;
 }
 
 .econ-mc {
   stroke: #be3f35;
-  stroke-width: 4.5;
+  stroke-width: 2.7;
 }
 
 .econ-cme-flat {
   stroke: #2f8f6b;
-  stroke-width: 4;
+  stroke-width: 2.4;
 }
 
 .econ-mc-flat {
   stroke: #be3f35;
-  stroke-width: 4;
+  stroke-width: 2.4;
 }
 
 .cost-shift {
-  stroke-width: 4.5;
+  stroke-width: 2.8;
 }
 
 .profit-area {
-  fill: rgba(47, 143, 107, 0.16);
+  fill: rgba(47, 143, 107, 0.18);
   stroke: rgba(47, 143, 107, 0.24);
 }
 
@@ -2019,12 +2080,16 @@ main {
 }
 
 .producer-area {
-  fill: rgba(47, 143, 107, 0.18);
+  fill: rgba(47, 143, 107, 0.16);
 }
 
 .deadweight-area {
-  fill: rgba(203, 91, 54, 0.28);
+  fill: rgba(203, 91, 54, 0.22);
   stroke: rgba(203, 91, 54, 0.42);
+}
+
+.after-area {
+  fill: rgba(77, 132, 185, 0.1);
 }
 
 .good-zone {
@@ -2037,6 +2102,27 @@ main {
 
 .mc-text {
   fill: #a43b32;
+}
+
+.mr-text {
+  fill: #4d7fae;
+}
+
+.demand-text {
+  fill: #123d73;
+}
+
+.cme-text {
+  fill: #237553;
+}
+
+.secondary-demand {
+  stroke: #6c8194;
+  stroke-dasharray: 0;
+}
+
+.secondary-mr {
+  stroke: #9db9d1;
 }
 
 .wide-chart {
@@ -2457,6 +2543,7 @@ main {
   .source-grid,
   .cause-grid,
   .mr-grid,
+  .mini-graph-grid,
   .chart-pair,
   .text-columns {
     grid-template-columns: 1fr;
