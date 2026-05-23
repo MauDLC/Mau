@@ -459,11 +459,12 @@ function renderWeekTabs() {
 }
 
 function isFinanceUnifiedExamWeek() {
-  return state.courseId === "analisis-estados-financieros" && state.weekId === "aef-semana-01";
+  return state.courseId === "analisis-estados-financieros";
 }
 
 function configureWeekModeTabs() {
-  const unifiedExam = isFinanceUnifiedExamWeek();
+  const isFinanceWeek = isFinanceUnifiedExamWeek();
+  const hasPractice = practiceBank(state.weekId).length > 0;
   const learnButton = document.querySelector('.week-mode-btn[data-section="learn"]');
   const theoryButton = document.querySelector('.week-mode-btn[data-section="theory"]');
   const practiceButton = document.querySelector('.week-mode-btn[data-section="practice"]');
@@ -475,28 +476,31 @@ function configureWeekModeTabs() {
 
   if (learnButton) {
     learnButton.hidden = false;
-    learnButton.textContent = unifiedExam ? "Guía" : "Guía / teoría";
+    learnButton.textContent = isFinanceWeek ? "Guía" : "Guía / teoría";
   }
-  if (practiceButton) practiceButton.hidden = unifiedExam;
+  if (practiceButton) {
+    practiceButton.hidden = isFinanceWeek && !hasPractice;
+    practiceButton.textContent = isFinanceWeek ? "Práctica" : "Ejercicios prácticos";
+  }
   if (theoryButton) {
     theoryButton.hidden = false;
-    theoryButton.textContent = unifiedExam ? "Examen" : "Examen teórico";
+    theoryButton.textContent = isFinanceWeek ? "Examen" : "Examen teórico";
   }
 
-  if (theoryEyebrow) theoryEyebrow.textContent = unifiedExam ? weekLabel(state.weekId) : "Examen de teoría";
+  if (theoryEyebrow) theoryEyebrow.textContent = isFinanceWeek ? weekLabel(state.weekId) : "Examen de teoría";
   if (theoryTitle) {
-    theoryTitle.innerHTML = unifiedExam
+    theoryTitle.innerHTML = isFinanceWeek
       ? '<span class="title-icon">🧠</span> Examen'
       : '<span class="title-icon">🧠</span> Examen de teoría';
   }
   if (theoryIntro) {
-    theoryIntro.textContent = unifiedExam
+    theoryIntro.textContent = isFinanceWeek
       ? (topic.intro || "Practica los conceptos principales de la semana con preguntas de opción múltiple.")
       : "Comprueba definiciones, intuición económica y condiciones de optimización.";
   }
   if (hubIntro) {
-    hubIntro.textContent = unifiedExam
-      ? "Selecciona la semana, revisa su guía breve y resuelve el examen desde una estructura simple."
+    hubIntro.textContent = isFinanceWeek
+      ? "Selecciona la semana, estudia su guía y resuelve el examen o la práctica cuando corresponda."
       : "Selecciona una semana y trabaja su guía, examen teórico o ejercicios prácticos desde un solo lugar.";
   }
 }
@@ -1308,6 +1312,11 @@ function renderGuide() {
   if (state.courseId === "analisis-estados-financieros") {
     if (state.weekId === "aef-semana-01") {
       guideView.innerHTML = renderFinanceWeek1Guide();
+      typesetMath();
+      return;
+    }
+    if (financeWeekGuides[state.weekId]) {
+      guideView.innerHTML = renderGenericFinanceGuide(topic);
       typesetMath();
       return;
     }
@@ -2268,25 +2277,163 @@ const marketPracticeBanks = makeMarketPracticeBanks(marketWeeks);
 marketPracticeBanks["pm-semana-01"] = marketWeek1Practice;
 marketPracticeBanks["pm-semana-02"] = marketWeek2Practice;
 
+const financeWeekGuides = {
+  "aef-semana-02": {
+    title: "Semana 2: Elementos contables, cuentas contables y estados financieros",
+    subtitle: "Activos, pasivos, patrimonio, ingresos, gastos y su relación con los estados financieros.",
+    intro: "Esta semana construye el vocabulario base de la contabilidad. La meta es reconocer qué elemento contable representa cada cuenta y en qué estado financiero debe presentarse.",
+    objectives: ["Distinguir elementos del Estado de Situación Financiera y del Estado de Resultados Integrales.", "Clasificar cuentas como activo, pasivo, patrimonio, ingreso o gasto.", "Entender cómo las cuentas contables alimentan los estados financieros.", "Relacionar inversión, financiamiento y desempeño económico."],
+    blocks: [
+      ["Elementos del Estado de Situación Financiera", "Activos, pasivos y patrimonio explican la posición financiera de la empresa. Los activos muestran recursos controlados; los pasivos, financiamiento de terceros; y el patrimonio, financiamiento de propietarios y resultados acumulados."],
+      ["Elementos del Estado de Resultados Integrales", "Ingresos y gastos explican el desempeño. Los ingresos representan recursos generados por actividades de la empresa; los gastos son recursos consumidos para generar esos ingresos."],
+      ["Cuentas contables", "Las cuentas son etiquetas ordenadas que permiten registrar, acumular y presentar información. Una cuenta de inventarios no comunica lo mismo que una cuenta por pagar o un ingreso por ventas."],
+      ["Relación con estados financieros", "Las cuentas de activo, pasivo y patrimonio se presentan en el Estado de Situación Financiera. Las cuentas de ingresos y gastos se presentan en el Estado de Resultados Integrales."]
+    ],
+    tables: [
+      ["Elemento contable", [["Activo", "Bienes, recursos y derechos controlados por la empresa."], ["Pasivo", "Obligaciones con terceros que financian activos."], ["Patrimonio", "Aportes y resultados atribuibles a los propietarios."], ["Ingresos", "Recursos generados por la actividad del negocio."], ["Gastos", "Recursos consumidos para generar ingresos."]]]
+    ],
+    key: "La primera habilidad contable es clasificar bien: si una cuenta se clasifica mal, el estado financiero comunica mal la realidad económica."
+  },
+  "aef-semana-03": {
+    title: "Semana 3: Estructura de estados financieros - Estado de resultados",
+    subtitle: "Ventas, costo de ventas, gastos por función, resultado operativo y utilidad neta.",
+    intro: "Esta semana se enfoca en el Estado de Resultados Integrales: el estado que resume si la empresa ganó o perdió durante un periodo.",
+    objectives: ["Comprender la estructura del Estado de Resultados Integrales.", "Diferenciar ingresos por ventas, otros ingresos e ingresos financieros.", "Clasificar gastos por función y por naturaleza.", "Interpretar ganancia bruta, operativa y neta."],
+    blocks: [
+      ["Qué informa", "Cuantifica la utilidad o pérdida del negocio al comparar ingresos y gastos del periodo. Su resultado se conecta con patrimonio mediante resultados acumulados."],
+      ["Ventas netas", "Parten de ventas brutas y se ajustan por descuentos, devoluciones, rebajas y bonificaciones. Es la base para evaluar la actividad principal."],
+      ["Costo de ventas y ganancia bruta", "El costo de ventas representa el costo de los bienes vendidos o servicios prestados. La ganancia bruta muestra cuánto queda antes de gastos operativos."],
+      ["Gastos por función", "Los gastos administrativos se vinculan con la gestión; los gastos de ventas con la comercialización; los financieros con deuda e intereses."]
+    ],
+    tables: [
+      ["Lectura del resultado", [["Ventas netas", "Ingreso principal del giro del negocio."], ["Ganancia bruta", "Ventas netas menos costo de ventas."], ["Ganancia operativa", "Resultado luego de gastos de administración y ventas."], ["Utilidad antes de impuestos", "Resultado antes del impuesto a las ganancias."], ["Utilidad neta", "Resultado final atribuible al periodo."]]]
+    ],
+    key: "El Estado de Resultados no solo dice si hubo ganancia: muestra dónde se generó o perdió valor dentro del periodo."
+  },
+  "aef-semana-04": {
+    title: "Semana 4: Estructura de estados financieros - Estado de situación financiera",
+    subtitle: "Activos, pasivos, patrimonio, encabezado y ecuación contable.",
+    intro: "Esta semana trabaja el Estado de Situación Financiera, que muestra la posición financiera de la empresa a una fecha específica.",
+    objectives: ["Reconocer la estructura básica del Estado de Situación Financiera.", "Distinguir decisiones de inversión y financiamiento.", "Clasificar activos y pasivos corrientes y no corrientes.", "Verificar la igualdad entre activo y pasivo más patrimonio."],
+    blocks: [
+      ["Estructura básica", "El activo representa decisiones de inversión; el pasivo y el patrimonio representan decisiones de financiamiento."],
+      ["Encabezado correcto", "Debe incluir nombre del negocio, nombre del estado financiero, fecha o periodo cubierto y unidad monetaria."],
+      ["Activo corriente y no corriente", "El corriente se espera realizar, vender o consumir en el ciclo normal o dentro de 12 meses. El no corriente permanece por más tiempo, como propiedades, planta, equipo e intangibles."],
+      ["Pasivo y patrimonio", "El pasivo recoge obligaciones con terceros. El patrimonio incluye capital, reservas y resultados acumulados."]
+    ],
+    formulas: ["\\[Activo = Pasivo + Patrimonio\\]", "\\[Total\\ Activo = Total\\ Pasivo + Total\\ Patrimonio\\]"],
+    tables: [
+      ["Estructura del ESF", [["Activo corriente", "Efectivo, cuentas por cobrar, inventarios."], ["Activo no corriente", "Inversiones, propiedad planta y equipo, intangibles."], ["Pasivo corriente", "Sobregiros, tributos y cuentas por pagar de corto plazo."], ["Pasivo no corriente", "Préstamos u obligaciones mayores a un año."], ["Patrimonio", "Capital, reservas y resultados acumulados."]]]
+    ],
+    key: "El Estado de Situación Financiera siempre debe cuadrar: los recursos de la empresa se financian con terceros o con propietarios."
+  },
+  "aef-semana-05": {
+    title: "Semana 5: Estado de Flujo de Efectivo",
+    subtitle: "Efectivo, equivalentes, operación, inversión, financiamiento y análisis de liquidez.",
+    intro: "Esta semana estudia cómo se mueve el efectivo. El resultado contable puede ser positivo, pero la empresa también necesita efectivo para pagar obligaciones.",
+    objectives: ["Definir efectivo, equivalentes y flujos de efectivo.", "Clasificar flujos en operación, inversión y financiamiento.", "Entender la importancia del efectivo para cubrir obligaciones.", "Leer el Estado de Flujo de Efectivo como herramienta de análisis."],
+    blocks: [
+      ["Objetivo del EFE", "Brinda información sobre los cambios históricos en efectivo y equivalentes, clasificados por procedencia."],
+      ["Actividades de operación", "Son las relacionadas con la fuente principal de ingresos y gastos del negocio: cobros a clientes, pagos a proveedores, empleados e impuestos."],
+      ["Actividades de inversión", "Incluyen adquisición y disposición de activos de largo plazo, inversiones, activos fijos e intangibles."],
+      ["Actividades de financiamiento", "Producen cambios en el tamaño y composición del capital propio y obligaciones: préstamos, aportes, dividendos o pagos de deuda."]
+    ],
+    tables: [
+      ["Clasificación de flujos", [["Operación", "Cobros por ventas y pagos ordinarios del giro."], ["Inversión", "Compra o venta de activos de largo plazo."], ["Financiamiento", "Préstamos, aportes de capital, dividendos y pagos de deuda."]]]
+    ],
+    key: "El flujo de efectivo responde una pregunta crítica: ¿la empresa genera dinero suficiente y en el momento adecuado para operar y cumplir compromisos?"
+  },
+  "aef-semana-06": {
+    title: "Semana 6: Análisis vertical y horizontal de estados financieros",
+    subtitle: "Estructura, tendencias, variaciones absolutas y porcentuales.",
+    intro: "Esta semana convierte datos contables en información útil. El análisis vertical mira estructura; el horizontal mira evolución.",
+    objectives: ["Comprender el objetivo del análisis financiero.", "Distinguir análisis vertical y horizontal.", "Calcular porcentajes de estructura y variaciones.", "Interpretar cambios en cuentas relevantes."],
+    blocks: [
+      ["Análisis financiero", "Aplica herramientas a los estados financieros para obtener relaciones significativas y útiles para la toma de decisiones."],
+      ["Análisis vertical", "Toma una base como 100% y calcula cuánto representa cada cuenta respecto de esa base. En el ESF suele usarse total activo; en el ERI, ventas."],
+      ["Análisis horizontal", "Compara una cuenta entre periodos para medir aumento o disminución absoluta y relativa."],
+      ["Cuidado interpretativo", "Un aumento de inventarios o cuentas por cobrar puede deberse a crecimiento, política comercial o problemas de gestión. El porcentaje necesita contexto."]
+    ],
+    formulas: ["\\[Análisis\\ vertical=\\frac{Cuenta}{Base}\\times 100\\]", "\\[Variación\\ absoluta=Valor\\ actual-Valor\\ anterior\\]", "\\[Variación\\ porcentual=\\frac{Valor\\ actual-Valor\\ anterior}{Valor\\ anterior}\\times 100\\]"],
+    tables: [
+      ["Comparación de técnicas", [["Vertical", "Analiza composición interna de un periodo."], ["Horizontal", "Analiza tendencia entre periodos."], ["Ratios", "Relacionan cuentas para evaluar liquidez, solvencia o rentabilidad."]]]
+    ],
+    key: "El análisis vertical muestra peso relativo; el horizontal muestra cambio. Juntos ayudan a detectar dónde mirar con más detalle."
+  },
+  "aef-semana-07": {
+    title: "Semana 7: Indicadores financieros de liquidez y solvencia",
+    subtitle: "Ratios, limitaciones, liquidez general, prueba ácida, endeudamiento y cobertura.",
+    intro: "Esta semana introduce ratios financieros. Los indicadores resumen relaciones entre cuentas, pero deben interpretarse con contexto y comparaciones.",
+    objectives: ["Definir qué es un ratio financiero.", "Reconocer limitaciones de los ratios.", "Calcular e interpretar ratios de liquidez.", "Calcular e interpretar ratios de solvencia."],
+    blocks: [
+      ["Qué es un ratio", "Un ratio es una razón o cociente que relaciona dos cuentas del Estado de Situación Financiera, del Estado de Resultados o de ambos."],
+      ["Limitaciones", "Los ratios usan información histórica, pueden estar afectados por manipulación contable, son estáticos y deben analizarse de forma integral."],
+      ["Liquidez", "Mide la capacidad para cumplir obligaciones de corto plazo. Incluye liquidez general, prueba ácida, prueba defensiva y capital de trabajo neto."],
+      ["Solvencia", "Mide el grado de endeudamiento y la capacidad para cumplir pagos durante la vida de una deuda."]
+    ],
+    formulas: ["\\[Liquidez\\ general=\\frac{Activo\\ corriente}{Pasivo\\ corriente}\\]", "\\[Prueba\\ ácida=\\frac{Activo\\ corriente-Inventarios}{Pasivo\\ corriente}\\]", "\\[Capital\\ de\\ trabajo\\ neto=Activo\\ corriente-Pasivo\\ corriente\\]", "\\[Grado\\ de\\ endeudamiento=\\frac{Pasivo\\ total}{Activo\\ total}\\]", "\\[Endeudamiento\\ patrimonial=\\frac{Pasivo\\ total}{Patrimonio\\ total}\\]", "\\[Cobertura\\ de\\ intereses=\\frac{EBIT}{Gastos\\ financieros}\\]"],
+    tables: [
+      ["Ratios principales", [["Liquidez general", "Capacidad general de cubrir pasivos corrientes."], ["Prueba ácida", "Liquidez sin depender de inventarios."], ["Capital de trabajo neto", "Exceso de activo corriente sobre pasivo corriente."], ["Grado de endeudamiento", "Proporción de activos financiada por acreedores."], ["Cobertura de intereses", "Veces que EBIT cubre gastos financieros."]]]
+    ],
+    key: "Un ratio aislado nunca cuenta toda la historia. Debe compararse contra periodos, sector, estrategia y calidad de la información."
+  }
+};
+
+function renderGenericFinanceGuide(topic) {
+  const guide = financeWeekGuides[topic.week];
+  if (!guide) return "";
+  return `
+    <article class="week-guide finance-guide">
+      <section class="week-hero">
+        <span class="eyebrow">${escapeHtml(weekLabel(topic.week))} · Análisis financiero</span>
+        <h2>${escapeHtml(guide.title)}</h2>
+        <p class="week-subtitle">${escapeHtml(guide.subtitle)}</p>
+        <p>${escapeHtml(guide.intro)}</p>
+      </section>
+      <section class="guide-section">
+        <div class="section-heading"><span>01</span><h3>Objetivos de aprendizaje</h3><p>Usa esta sección como checklist antes del examen o antes de resolver casos.</p></div>
+        <div class="objective-grid">${guide.objectives.map((item, index) => `<article><strong>${index + 1}. ${escapeHtml(item.split(" ")[0])}</strong><p>${escapeHtml(item)}</p></article>`).join("")}</div>
+      </section>
+      <section class="guide-section">
+        <div class="section-heading"><span>02</span><h3>Ideas centrales</h3><p>Resumen didáctico de los conceptos que ordenan la semana.</p></div>
+        <div class="source-grid">${guide.blocks.map(([title, text]) => `<article class="study-card"><div class="card-icon">${escapeHtml(title.slice(0, 2))}</div><h4>${escapeHtml(title)}</h4><p>${escapeHtml(text)}</p></article>`).join("")}</div>
+      </section>
+      ${guide.formulas ? `<section class="guide-section"><div class="section-heading"><span>03</span><h3>Fórmulas clave</h3><p>Estas relaciones son las que más se usan para resolver ejercicios y leer estados financieros.</p></div><div class="formula-highlight">${guide.formulas.map((formula) => `<div>${escapeHtml(formula)}</div>`).join("")}</div></section>` : ""}
+      <section class="guide-section">
+        <div class="section-heading"><span>${guide.formulas ? "04" : "03"}</span><h3>Mapa de clasificación</h3><p>Ordena los conceptos para leerlos como parte de un estado financiero.</p></div>
+        ${guide.tables.map(([title, rows]) => `<div class="finance-ledger-card"><h4>${escapeHtml(title)}</h4><dl>${rows.map(([term, desc]) => `<div><dt>${escapeHtml(term)}</dt><dd>${escapeHtml(desc)}</dd></div>`).join("")}</dl></div>`).join("")}
+      </section>
+      <section class="guide-section summary-guide">
+        <div class="section-heading"><span>${guide.formulas ? "05" : "04"}</span><h3>Idea clave para estudiar</h3><p>${escapeHtml(guide.key)}</p></div>
+      </section>
+    </article>
+  `;
+}
+
 const financeWeeks = [
   { id: "aef-semana-01", label: "Semana 01", title: "Marco Conceptual y NIC 1" },
-  { id: "aef-semana-02", label: "Semana 02", title: "Estado de resultados" },
-  { id: "aef-semana-03", label: "Semana 03", title: "Flujo de efectivo" },
-  { id: "aef-semana-04", label: "Semana 04", title: "Ratios financieros" },
-  { id: "aef-semana-05", label: "Semana 05", title: "Diagnóstico financiero" }
+  { id: "aef-semana-02", label: "Semana 02", title: "Elementos contables y cuentas" },
+  { id: "aef-semana-03", label: "Semana 03", title: "Estado de resultados" },
+  { id: "aef-semana-04", label: "Semana 04", title: "Estado de situación financiera" },
+  { id: "aef-semana-05", label: "Semana 05", title: "Estado de flujo de efectivo" },
+  { id: "aef-semana-06", label: "Semana 06", title: "Análisis vertical y horizontal" },
+  { id: "aef-semana-07", label: "Semana 07", title: "Liquidez y solvencia" }
 ];
 
-const financeTopics = financeWeeks.map((week) => ({
-  id: `${week.id}-estructura`,
-  week: week.id,
-  title: week.id === "aef-semana-01" ? "Semana 1: Marco Conceptual de la Información Financiera y NIC 1" : week.title,
-  question: "Contenido pendiente por desarrollar.",
-  intro: week.id === "aef-semana-01" ? "Esta semana refuerza la comprensión del Marco Conceptual, la hipótesis de negocio en marcha, las características cualitativas de la información financiera y la presentación de estados financieros según NIC 1." : "",
-  formulas: [],
-  explanation: [],
-  example: "",
-  graph: ""
-}));
+const financeTopics = financeWeeks.map((week) => {
+  const guide = financeWeekGuides[week.id];
+  return {
+    id: `${week.id}-estructura`,
+    week: week.id,
+    title: week.id === "aef-semana-01" ? "Semana 1: Marco Conceptual de la Información Financiera y NIC 1" : (guide?.title || week.title),
+    question: guide?.subtitle || "Contenido pendiente por desarrollar.",
+    intro: week.id === "aef-semana-01" ? "Esta semana refuerza la comprensión del Marco Conceptual, la hipótesis de negocio en marcha, las características cualitativas de la información financiera y la presentación de estados financieros según NIC 1." : (guide?.intro || ""),
+    formulas: [],
+    explanation: [],
+    example: "",
+    graph: ""
+  };
+});
 
 const emptyLevelBank = () => ({ facil: [], medio: [], dificil: [] });
 const financeTheoryData = Object.fromEntries(financeWeeks.map((week) => [week.id, emptyLevelBank()]));
@@ -2328,6 +2475,222 @@ financeTheoryData["aef-semana-01"] = {
     choiceRow("La pérdida por un fenómeno natural ocurrida de forma eventual se clasifica, según el PDF, como:", "Otros gastos operativos", ["Costo de ventas", "Gasto administrativo", "Capital emitido"], "Correcta: el PDF incluye pérdidas por fenómenos naturales entre otros gastos operativos eventuales. Costo de ventas se vincula a bienes vendidos; gastos administrativos a gestión principal; capital emitido es patrimonio."),
     choiceRow("¿Por qué las notas son clave ante políticas contables y gestión de riesgos?", "Porque revelan bases de preparación, políticas contables y objetivos o políticas de gestión de riesgos", ["Porque eliminan la necesidad del estado de situación financiera", "Porque solo registran ventas diarias", "Porque sustituyen la representación fiel"], "Correcta: el PDF menciona bases de preparación, políticas contables y gestión de riesgos como información de notas. Las demás alternativas exageran o distorsionan su función."),
     choiceRow("Una entidad omite un cambio de vida útil con impacto material. ¿Qué característica fundamental se compromete junto con la relevancia/materialidad?", "Representación fiel", ["Comparabilidad únicamente", "Comprensibilidad únicamente", "Capital emitido"], "Correcta: la omisión de información material impide representar fielmente el fenómeno económico. Comparabilidad y comprensibilidad pueden verse afectadas, pero la característica fundamental comprometida por la omisión es representación fiel; capital emitido no es característica cualitativa.")
+  ]
+};
+
+financeTheoryData["aef-semana-02"] = {
+  facil: [
+    choiceRow("¿Qué elemento representa recursos controlados por la empresa?", "Activo", ["Pasivo", "Patrimonio", "Gasto"], "Los activos son bienes, recursos o derechos controlados de los que se esperan beneficios económicos."),
+    choiceRow("¿Qué elemento representa obligaciones con terceros?", "Pasivo", ["Ingreso", "Activo", "Reserva"], "Los pasivos son deudas u obligaciones que requerirán salida de recursos."),
+    choiceRow("¿Dónde se presentan ingresos y gastos?", "Estado de Resultados Integrales", ["Estado de Situación Financiera", "Notas únicamente", "Estado de cambios en el patrimonio"], "Ingresos y gastos explican el desempeño del periodo."),
+    choiceRow("El patrimonio representa principalmente:", "Financiamiento de los propietarios y resultados acumulados", ["Solo ventas", "Solo efectivo", "Solo deudas bancarias"], "Capital, reservas y resultados acumulados son partidas patrimoniales."),
+    choiceRow("Una cuenta por cobrar comercial normalmente es:", "Activo", ["Pasivo", "Gasto", "Patrimonio"], "Es un derecho de cobro controlado por la empresa.")
+  ],
+  medio: [
+    choiceRow("¿Por qué activo y pasivo pertenecen al Estado de Situación Financiera?", "Porque describen posición financiera a una fecha", ["Porque miden solo utilidad", "Porque se cancelan cada periodo", "Porque no tienen saldo"], "El ESF muestra recursos y obligaciones en una fecha determinada."),
+    choiceRow("Una venta de bienes del giro del negocio se clasifica como:", "Ingreso de actividad principal", ["Pasivo corriente", "Activo no corriente", "Reserva legal"], "Las ventas del giro generan ingresos ordinarios."),
+    choiceRow("El costo de ventas se asocia con:", "Recursos consumidos para generar ingresos", ["Aportes de accionistas", "Cobros de clientes", "Préstamos recibidos"], "Los gastos consumen recursos para producir ingresos."),
+    choiceRow("¿Qué error afecta más la lectura de estados financieros?", "Clasificar una cuenta en el elemento equivocado", ["Usar títulos claros", "Separar corriente y no corriente", "Mostrar notas"], "Una mala clasificación distorsiona el estado financiero."),
+    choiceRow("Un préstamo bancario recibido normalmente se registra como:", "Pasivo", ["Ingreso por ventas", "Gasto administrativo", "Activo intangible"], "Genera obligación de pago a un tercero.")
+  ],
+  dificil: [
+    choiceRow("Si se registra un préstamo recibido como ingreso, el principal problema es que:", "Se sobrestima el desempeño y se oculta una obligación", ["Se reduce el activo sin razón", "Aumenta el gasto financiero automáticamente", "No cambia nada"], "Un préstamo financia, no representa ingreso por desempeño."),
+    choiceRow("Una cuenta puede afectar indirectamente otro estado porque:", "Los estados financieros están conectados entre sí", ["Cada estado es independiente siempre", "Las cuentas no tienen saldos", "Las notas reemplazan a los estados"], "El resultado afecta patrimonio y las cuentas alimentan estados distintos."),
+    choiceRow("La clasificación corriente/no corriente sirve para evaluar:", "Horizonte de realización o pago", ["Solo rentabilidad", "Solo dividendos", "Solo impuestos"], "Permite distinguir corto y largo plazo."),
+    choiceRow("Si una empresa compra maquinaria al contado, aumenta:", "Activo no corriente y disminuye efectivo", ["Ingreso y patrimonio", "Pasivo corriente y gasto", "Solo utilidad neta"], "Cambia la composición del activo, no necesariamente el resultado."),
+    choiceRow("La diferencia entre gasto y activo depende de si:", "El recurso se consume ahora o generará beneficios futuros", ["La cuenta tiene nombre largo", "Siempre se paga en efectivo", "Pertenece al patrimonio"], "Un activo conserva beneficio futuro; un gasto se consume en el periodo.")
+  ]
+};
+
+financeTheoryData["aef-semana-03"] = {
+  facil: [
+    choiceRow("¿Qué estado muestra utilidad o pérdida del periodo?", "Estado de Resultados Integrales", ["Estado de Situación Financiera", "Estado de flujos únicamente", "Notas"], "El ERI compara ingresos y gastos del periodo."),
+    choiceRow("Las ventas brutas menos descuentos y rebajas dan:", "Ventas netas", ["Costo de ventas", "Pasivo corriente", "Capital social"], "Las deducciones comerciales reducen ventas brutas."),
+    choiceRow("Costo de ventas corresponde a:", "Costo de bienes vendidos o servicios prestados", ["Intereses recibidos", "Aportes de accionistas", "Efectivo disponible"], "Es el costo asociado a lo vendido."),
+    choiceRow("Si ingresos superan gastos, hay:", "Ganancia", ["Pérdida", "Pasivo", "Reserva obligatoria siempre"], "Resultado positivo implica ganancia."),
+    choiceRow("Los gastos financieros incluyen:", "Intereses por préstamos", ["Ventas del giro", "Inventarios", "Capital emitido"], "Se relacionan con financiamiento y deuda.")
+  ],
+  medio: [
+    choiceRow("La ganancia bruta se obtiene con:", "Ventas netas menos costo de ventas", ["Activo menos pasivo", "Ventas menos patrimonio", "EBIT menos efectivo"], "Mide margen antes de gastos operativos."),
+    choiceRow("Gastos de administración se relacionan con:", "Gestión interna de la empresa", ["Producción directa de bienes", "Aportes de socios", "Cobro de préstamos"], "Son gastos de gestión administrativa."),
+    choiceRow("Gastos de ventas se vinculan con:", "Comercialización y distribución", ["Solo deuda bancaria", "Compra de maquinaria", "Reservas de capital"], "Son gastos para vender y distribuir."),
+    choiceRow("¿Por qué el ERI se salda al cierre?", "Porque mide desempeño de un periodo", ["Porque no tiene importancia", "Porque siempre es cero", "Porque reemplaza al ESF"], "Las cuentas de resultado se cierran para iniciar otro periodo."),
+    choiceRow("El resultado neto se conecta con:", "Resultados acumulados del patrimonio", ["Solo efectivo", "Solo cuentas por pagar", "Solo notas"], "La utilidad o pérdida impacta el patrimonio.")
+  ],
+  dificil: [
+    choiceRow("Si ventas suben pero la utilidad neta cae, una explicación posible es:", "Aumento proporcional mayor de costos o gastos", ["Siempre mejora rentabilidad", "No hay gastos", "El ESF desaparece"], "El resultado depende de márgenes y gastos, no solo ventas."),
+    choiceRow("Clasificar intereses de deuda como gasto de ventas distorsiona:", "La lectura de operación y financiamiento", ["El nombre de la empresa", "La moneda usada", "La fecha únicamente"], "Los intereses son financieros, no de comercialización."),
+    choiceRow("Una ganancia operativa positiva con utilidad neta negativa puede indicar:", "Carga financiera o impuestos altos", ["Ventas inexistentes", "Activo corriente negativo siempre", "Que no hay costos"], "Después de la operación vienen partidas financieras e impuestos."),
+    choiceRow("El análisis por función agrupa gastos según:", "Área o propósito dentro de la empresa", ["Fecha de pago únicamente", "Color del comprobante", "Número de factura"], "Administración, ventas y costo de ventas son funciones."),
+    choiceRow("Una correcta presentación del ERI importa porque:", "Permite evaluar rentabilidad y rendimiento con información fiel", ["Oculta gastos", "Evita revelar ingresos", "Sustituye todas las notas"], "La estructura facilita interpretación y comparabilidad.")
+  ]
+};
+
+financeTheoryData["aef-semana-04"] = {
+  facil: [
+    choiceRow("El Estado de Situación Financiera muestra:", "Situación financiera en una fecha", ["Solo ventas del año", "Solo flujos de efectivo", "Solo notas"], "Es una fotografía financiera a una fecha determinada."),
+    choiceRow("La ecuación contable básica es:", "Activo = Pasivo + Patrimonio", ["Ingreso = Activo + Gasto", "Pasivo = Ventas - Costos", "Patrimonio = Gasto"], "Los recursos se financian con terceros o propietarios."),
+    choiceRow("Activos corrientes se esperan realizar en:", "Ciclo normal o dentro de 12 meses", ["Más de diez años siempre", "Nunca", "Solo al liquidar"], "Ese criterio separa corto plazo."),
+    choiceRow("Pasivos no corrientes vencen:", "En periodos mayores a un año", ["Dentro de una semana siempre", "Nunca se pagan", "Solo con ventas"], "Son obligaciones de largo plazo."),
+    choiceRow("El encabezado del ESF debe incluir:", "Nombre del negocio, estado, fecha y moneda", ["Solo logo", "Solo utilidad", "Solo firma"], "El encabezado contextualiza el estado financiero.")
+  ],
+  medio: [
+    choiceRow("Activo se relaciona con decisiones de:", "Inversión", ["Solo reparto de dividendos", "Solo ventas", "Solo publicidad"], "Los activos muestran en qué invierte la empresa."),
+    choiceRow("Pasivo y patrimonio se relacionan con decisiones de:", "Financiamiento", ["Producción física", "Precio de venta únicamente", "Costo de ventas"], "Indican cómo se financian los activos."),
+    choiceRow("Si total activo no iguala pasivo más patrimonio:", "El estado no cuadra", ["Siempre está bien", "Significa mayor rentabilidad", "No importa"], "La ecuación contable debe cumplirse."),
+    choiceRow("Propiedad, planta y equipo normalmente es:", "Activo no corriente", ["Pasivo corriente", "Gasto financiero", "Ingreso ordinario"], "Son activos de permanencia prolongada."),
+    choiceRow("Cuentas por pagar comerciales normalmente son:", "Pasivo corriente", ["Activo intangible", "Ingreso financiero", "Capital social"], "Son obligaciones de corto plazo con proveedores.")
+  ],
+  dificil: [
+    choiceRow("Un aumento fuerte de cuentas por cobrar puede indicar:", "Más ventas a crédito o problemas de cobranza", ["Siempre mejor liquidez", "Menos ventas necesariamente", "No tiene interpretación"], "Debe analizarse con contexto comercial y cobranza."),
+    choiceRow("Un ESF permite evaluar liquidez porque:", "Muestra activos y pasivos corrientes", ["Muestra solo ingresos", "No tiene pasivos", "Solo muestra utilidad"], "La comparación corriente ayuda a evaluar corto plazo."),
+    choiceRow("Financiar activos de largo plazo con pasivos de muy corto plazo puede generar:", "Riesgo de liquidez", ["Menor riesgo siempre", "Mayor efectivo automático", "Desaparición del pasivo"], "Hay descalce entre vencimientos y recuperación."),
+    choiceRow("Patrimonio no es deuda con terceros porque:", "Representa participación residual de propietarios", ["No tiene relación con la empresa", "Siempre se paga en 12 meses", "Es ingreso por ventas"], "Los propietarios tienen derecho residual."),
+    choiceRow("La fecha del ESF es importante porque:", "La posición financiera cambia con el tiempo", ["Solo decora el documento", "No afecta interpretación", "Es igual al periodo de ventas"], "El ESF es a una fecha, no un flujo anual.")
+  ]
+};
+
+financeTheoryData["aef-semana-05"] = {
+  facil: [
+    choiceRow("El Estado de Flujo de Efectivo clasifica flujos en:", "Operación, inversión y financiamiento", ["Activo, pasivo y patrimonio", "Ventas, costos e impuestos", "Corriente y no corriente solamente"], "Esas son las tres actividades del EFE."),
+    choiceRow("Efectivo incluye:", "Efectivo y depósitos bancarios a la vista", ["Solo inventarios", "Solo maquinaria", "Solo patrimonio"], "Es dinero disponible de forma inmediata."),
+    choiceRow("Equivalentes al efectivo son:", "Inversiones de corto plazo de gran liquidez", ["Activos fijos", "Pasivos no corrientes", "Gastos administrativos"], "Deben convertirse rápidamente en efectivo."),
+    choiceRow("Cobros por ventas pertenecen a:", "Operación", ["Inversión", "Financiamiento", "Patrimonio"], "Provienen del giro del negocio."),
+    choiceRow("Compra de maquinaria suele ser actividad de:", "Inversión", ["Operación", "Financiamiento", "Ingreso ordinario"], "Implica adquisición de activo de largo plazo.")
+  ],
+  medio: [
+    choiceRow("Pago de dividendos normalmente es actividad de:", "Financiamiento", ["Operación", "Inversión", "Costo de ventas"], "Afecta capital propio y relación con propietarios."),
+    choiceRow("Pago a proveedores de mercaderías pertenece a:", "Operación", ["Inversión", "Financiamiento", "Patrimonio"], "Es pago ordinario del giro."),
+    choiceRow("Obtención de préstamo bancario pertenece a:", "Financiamiento", ["Operación", "Inversión", "Gasto de ventas"], "Cambia obligaciones financieras."),
+    choiceRow("Venta de activo fijo pertenece a:", "Inversión", ["Operación", "Financiamiento", "Costo de ventas"], "Es disposición de activo de largo plazo."),
+    choiceRow("¿Por qué el EFE es útil aunque exista utilidad neta?", "Porque muestra capacidad real de generar efectivo", ["Porque reemplaza todos los estados", "Porque ignora deudas", "Porque solo muestra ventas"], "La utilidad no siempre implica caja disponible.")
+  ],
+  dificil: [
+    choiceRow("Una empresa rentable puede tener problemas si:", "No convierte ventas en efectivo a tiempo", ["Tiene ingresos contables", "Presenta notas", "Clasifica activos"], "La liquidez depende de cobros y pagos efectivos."),
+    choiceRow("Un flujo operativo negativo persistente puede indicar:", "Problemas en el giro o capital de trabajo", ["Mayor solvencia siempre", "Ausencia de deuda", "Mejor rentabilidad automática"], "La operación debería sostener el efectivo del negocio."),
+    choiceRow("Comprar activos fijos puede reducir caja hoy pero:", "Apoyar capacidad productiva futura", ["Siempre ser gasto financiero", "No afectar inversión", "Ser ingreso ordinario"], "Es una salida de inversión con beneficio esperado."),
+    choiceRow("Una reclasificación incorrecta entre operación e inversión afecta:", "La lectura de la fuente real de caja", ["Solo el color del reporte", "La ecuación contable básica", "El nombre legal"], "El usuario necesita saber de dónde viene el efectivo."),
+    choiceRow("El EFE ayuda a responder:", "Si la empresa puede cubrir obligaciones con efectivo", ["Solo cuánto vendió", "Solo qué activos posee", "Solo cuál es el capital social"], "El efectivo es clave para pagos y continuidad.")
+  ]
+};
+
+financeTheoryData["aef-semana-06"] = {
+  facil: [
+    choiceRow("El análisis vertical mide:", "Peso de cada cuenta respecto de una base", ["Solo cambio entre años", "Solo utilidad neta", "Solo deuda bancaria"], "Convierte cuentas en porcentajes de estructura."),
+    choiceRow("En el ERI, la base frecuente del análisis vertical es:", "Ventas", ["Pasivo corriente", "Capital social", "Inventarios"], "Las partidas se expresan como porcentaje de ventas."),
+    choiceRow("El análisis horizontal mide:", "Variación entre periodos", ["Composición interna de un solo periodo", "Solo notas", "Solo efectivo"], "Compara valores de distintos años."),
+    choiceRow("La variación absoluta es:", "Valor actual menos valor anterior", ["Valor actual dividido entre ventas", "Activo más pasivo", "Utilidad por patrimonio"], "Mide cambio en unidades monetarias."),
+    choiceRow("El análisis financiero convierte datos en:", "Información útil", ["Publicidad", "Comprobantes", "Inventarios físicos"], "Busca medidas y relaciones para decidir.")
+  ],
+  medio: [
+    choiceRow("Si efectivo es 1,500 y activo total 30,000, su análisis vertical es:", "5%", ["20%", "2%", "50%"], "\\(1,500/30,000=0.05=5\\%\\)."),
+    choiceRow("Si ventas pasan de 100,000 a 120,000, la variación absoluta es:", "20,000", ["120%", "80,000", "10,000"], "\\(120,000-100,000=20,000\\)."),
+    choiceRow("Si ventas pasan de 100,000 a 120,000, la variación porcentual es:", "20%", ["120%", "80%", "2%"], "\\((120,000-100,000)/100,000=20\\%\\)."),
+    choiceRow("Una cuenta por cobrar que sube fuerte puede sugerir:", "Mayor crédito, más ventas o cobranza débil", ["Siempre menor riesgo", "Cero ventas", "No requiere análisis"], "El cambio necesita interpretación cualitativa."),
+    choiceRow("El análisis vertical del ESF suele usar como base:", "Total activo", ["Gasto financiero", "Ventas netas siempre", "Resultado neto"], "Permite ver estructura de activos y financiamiento.")
+  ],
+  dificil: [
+    choiceRow("Si el margen bruto baja de 43% a 35%, puede indicar:", "Mayor peso del costo de ventas", ["Menor costo relativo", "Más patrimonio", "Menor activo total"], "El costo de ventas absorbió más ventas."),
+    choiceRow("Una variación porcentual muy alta en una cuenta pequeña debe interpretarse:", "Con cuidado, mirando también el monto absoluto", ["Como siempre decisiva", "Como error seguro", "Sin comparar"], "Porcentajes grandes pueden venir de bases pequeñas."),
+    choiceRow("El análisis horizontal y vertical juntos permiten:", "Ver estructura y tendencia", ["Eliminar notas", "Sustituir auditoría", "Garantizar rentabilidad"], "Son herramientas complementarias."),
+    choiceRow("Un aumento de inventarios puede representar:", "Expectativa de ventas, cobertura de precios o mala gestión", ["Siempre éxito", "Siempre fraude", "Solo pago de deuda"], "El contexto define interpretación."),
+    choiceRow("Una limitación del análisis financiero es:", "Depende de calidad y contexto de la información", ["No usa estados financieros", "No permite comparar", "No sirve para decisiones"], "Las herramientas no reemplazan el juicio.")
+  ]
+};
+
+financeTheoryData["aef-semana-07"] = {
+  facil: [
+    choiceRow("Un ratio financiero es:", "Un cociente que relaciona cuentas", ["Una nota legal", "Un asiento contable", "Un inventario físico"], "Ratio significa razón o proporción."),
+    choiceRow("La liquidez mide:", "Capacidad de cumplir obligaciones de corto plazo", ["Solo rentabilidad", "Solo ventas", "Solo patrimonio"], "Se enfoca en compromisos inmediatos."),
+    choiceRow("Liquidez general se calcula como:", "Activo corriente / Pasivo corriente", ["Pasivo total / Activo total", "EBIT / Intereses", "Ventas / Inventario"], "Es el ratio corriente."),
+    choiceRow("Prueba ácida excluye principalmente:", "Inventarios", ["Efectivo", "Pasivos", "Patrimonio"], "Busca activos más líquidos."),
+    choiceRow("Solvencia mide:", "Grado de endeudamiento y capacidad de pago de deuda", ["Solo ventas diarias", "Solo caja chica", "Solo descuentos"], "Evalúa estructura financiera y deuda.")
+  ],
+  medio: [
+    choiceRow("Una limitación de los ratios es que:", "Usan información histórica", ["Siempre predicen el futuro perfecto", "No usan cuentas", "Eliminan el juicio"], "Deben interpretarse con contexto."),
+    choiceRow("Si activo corriente es 200 y pasivo corriente 100, liquidez general es:", "2.0", ["0.5", "100", "300"], "\\(200/100=2\\)."),
+    choiceRow("Si activo corriente es 200, inventarios 50 y pasivo corriente 100, prueba ácida es:", "1.5", ["2.5", "0.5", "150"], "\\((200-50)/100=1.5\\)."),
+    choiceRow("Capital de trabajo neto se calcula como:", "Activo corriente - Pasivo corriente", ["Pasivo total / Patrimonio", "Ventas - costo", "EBIT / gastos financieros"], "Mide exceso monetario corriente."),
+    choiceRow("Cobertura de intereses relaciona:", "EBIT y gastos financieros", ["Inventarios y ventas", "Activo y patrimonio", "Efectivo y notas"], "Indica cuántas veces EBIT cubre intereses.")
+  ],
+  dificil: [
+    choiceRow("Una liquidez general mayor a 1 no garantiza liquidez real si:", "Los activos corrientes no son fácilmente realizables", ["No hay inventarios", "El pasivo es cero", "Hay notas"], "La calidad del activo corriente importa."),
+    choiceRow("Un alto endeudamiento puede ser útil pero riesgoso porque:", "La deuda puede ser barata, pero aumenta compromisos fijos", ["Siempre elimina intereses", "Nunca exige pagos", "Aumenta efectivo infinito"], "La deuda apalanca pero puede presionar solvencia."),
+    choiceRow("Si pasivo total es 600 y activo total 1,000, grado de endeudamiento es:", "60%", ["40%", "1.67", "600%"], "\\(600/1,000=60\\%\\)."),
+    choiceRow("Si EBIT es 300 y gastos financieros 75, cobertura de intereses es:", "4 veces", ["0.25 veces", "225 veces", "375 veces"], "\\(300/75=4\\)."),
+    choiceRow("Un ratio debe compararse con:", "Sector, historia de la empresa y estrategia", ["Solo el nombre de la cuenta", "Nada más", "Color del reporte"], "El número aislado puede engañar.")
+  ]
+};
+
+financePracticeBanks["aef-semana-05"] = {
+  facil: [
+    choiceRow("Cobro a clientes por ventas se clasifica como:", "Operación", ["Inversión", "Financiamiento", "Patrimonio"], "Proviene de la actividad principal."),
+    choiceRow("Compra de equipo de cómputo para uso de la empresa:", "Inversión", ["Operación", "Financiamiento", "Ingreso"], "Es adquisición de activo de largo plazo."),
+    choiceRow("Préstamo bancario recibido:", "Financiamiento", ["Operación", "Inversión", "Gasto"], "Aumenta obligaciones financieras."),
+    choiceRow("Pago de sueldos:", "Operación", ["Inversión", "Financiamiento", "Patrimonio"], "Es pago ordinario del negocio."),
+    choiceRow("Pago de dividendos:", "Financiamiento", ["Operación", "Inversión", "Costo de ventas"], "Se relaciona con propietarios.")
+  ],
+  medio: [
+    choiceRow("Si efectivo inicial es 50 y el aumento neto de efectivo es 30, efectivo final:", "80", ["20", "30", "50"], "\\(50+30=80\\)."),
+    choiceRow("Operación +40, inversión -25, financiamiento +10. Flujo neto:", "25", ["75", "-25", "5"], "\\(40-25+10=25\\)."),
+    choiceRow("Operación -10, inversión -30, financiamiento +50. Flujo neto:", "10", ["90", "-90", "-10"], "\\(-10-30+50=10\\)."),
+    choiceRow("Venta de maquinaria por efectivo se clasifica como:", "Inversión", ["Operación", "Financiamiento", "Gasto financiero"], "Es disposición de activo de largo plazo."),
+    choiceRow("Pago de impuesto a la renta normalmente:", "Operación", ["Inversión", "Financiamiento", "Patrimonio"], "Es salida ordinaria vinculada al desempeño.")
+  ],
+  dificil: [
+    choiceRow("Si utilidad es positiva pero operación es negativa, una alerta posible es:", "La empresa no está convirtiendo resultados en caja", ["No existe problema posible", "Siempre mejora liquidez", "La deuda desaparece"], "El efectivo operativo negativo exige revisar cobros y pagos."),
+    choiceRow("Un fuerte flujo positivo por financiamiento puede indicar:", "Entrada de deuda o capital", ["Ventas de clientes necesariamente", "Menor deuda siempre", "Compra de inventarios"], "Financiamiento recoge fondos de terceros o propietarios."),
+    choiceRow("Flujo operativo +100, capex -160, deuda nueva +80. Efectivo neto:", "20", ["340", "-140", "80"], "\\(100-160+80=20\\)."),
+    choiceRow("Si flujo de inversión es negativo por compra de activos, puede ser:", "Señal de crecimiento o reposición", ["Siempre mala señal", "Siempre ingreso operativo", "Error contable seguro"], "Depende de estrategia y capacidad futura."),
+    choiceRow("Una reclasificación de deuda recibida como operación causaría:", "Lectura equivocada de generación de caja del giro", ["Mejor presentación automática", "Menor activo fijo", "Más ventas reales"], "Inflaría operación con financiamiento.")
+  ]
+};
+
+financePracticeBanks["aef-semana-06"] = {
+  facil: [
+    choiceRow("Cuenta 20,000 y base 100,000. Análisis vertical:", "20%", ["5%", "80%", "120%"], "\\(20,000/100,000=20\\%\\)."),
+    choiceRow("Cuenta 15,000 y base 60,000. Porcentaje:", "25%", ["15%", "40%", "4%"], "\\(15,000/60,000=25\\%\\)."),
+    choiceRow("Valor actual 80 y anterior 50. Variación absoluta:", "30", ["130", "-30", "62.5"], "\\(80-50=30\\)."),
+    choiceRow("Valor actual 120 y anterior 100. Variación porcentual:", "20%", ["120%", "80%", "2%"], "\\((120-100)/100=20\\%\\)."),
+    choiceRow("Ventas 200, costo 120. Costo sobre ventas:", "60%", ["40%", "120%", "80%"], "\\(120/200=60\\%\\).")
+  ],
+  medio: [
+    choiceRow("Activo total 500, inventarios 125. Peso de inventarios:", "25%", ["20%", "40%", "75%"], "\\(125/500=25\\%\\)."),
+    choiceRow("Ventas 1,000, utilidad neta 120. Margen neto vertical:", "12%", ["8.3%", "120%", "88%"], "\\(120/1,000=12\\%\\)."),
+    choiceRow("Cuentas por cobrar suben de 200 a 260. Variación %:", "30%", ["60%", "23.1%", "130%"], "\\((260-200)/200=30\\%\\)."),
+    choiceRow("Gastos bajan de 400 a 320. Variación %:", "-20%", ["20%", "-80%", "125%"], "\\((320-400)/400=-20\\%\\)."),
+    choiceRow("Una partida representa 8% en 2023 y 12% en 2024. Cambio en puntos porcentuales:", "4 p.p.", ["20 p.p.", "50 p.p.", "96 p.p."], "\\(12\\%-8\\%=4\\) puntos porcentuales.")
+  ],
+  dificil: [
+    choiceRow("Ventas 500, costo 350. Margen bruto:", "30%", ["70%", "150%", "43%"], "Ganancia bruta es 150; \\(150/500=30\\%\\)."),
+    choiceRow("Activo total sube de 800 a 1,000. Variación porcentual:", "25%", ["20%", "80%", "125%"], "\\((1000-800)/800=25\\%\\)."),
+    choiceRow("Si inventarios pasan de 10% a 22% del activo, la lectura más prudente es:", "Investigar causa operativa antes de concluir", ["Siempre excelente", "Siempre fraude", "Ignorar"], "El porcentaje orienta preguntas, no conclusiones automáticas."),
+    choiceRow("Una utilidad neta pasa de 16% a 10% de ventas. Esto indica:", "Deterioro de margen neto", ["Mejora del margen", "Mayor activo corriente", "Menor deuda seguro"], "La empresa retiene menos utilidad por cada sol vendido."),
+    choiceRow("Si una cuenta sube de 2 a 10, la variación porcentual es alta porque:", "La base anterior es pequeña", ["El cálculo vertical no existe", "No hay variación", "El activo desapareció"], "\\((10-2)/2=400\\%\\).")
+  ]
+};
+
+financePracticeBanks["aef-semana-07"] = {
+  facil: [
+    choiceRow("Activo corriente 300 y pasivo corriente 150. Liquidez general:", "2.0", ["0.5", "150", "450"], "\\(300/150=2\\)."),
+    choiceRow("Activo corriente 500, inventarios 100, pasivo corriente 200. Prueba ácida:", "2.0", ["2.5", "0.4", "3.0"], "\\((500-100)/200=2\\)."),
+    choiceRow("Activo corriente 400 y pasivo corriente 250. Capital de trabajo neto:", "150", ["650", "1.6", "-150"], "\\(400-250=150\\)."),
+    choiceRow("Pasivo total 600 y activo total 1,200. Endeudamiento:", "50%", ["200%", "60%", "20%"], "\\(600/1200=50\\%\\)."),
+    choiceRow("EBIT 240 y gastos financieros 60. Cobertura:", "4 veces", ["0.25 veces", "300 veces", "180 veces"], "\\(240/60=4\\).")
+  ],
+  medio: [
+    choiceRow("Activo corriente 180, inventarios 60, pasivo corriente 120. Prueba ácida:", "1.0", ["1.5", "0.5", "2.0"], "\\((180-60)/120=1\\)."),
+    choiceRow("Pasivo total 300 y patrimonio 200. Endeudamiento patrimonial:", "1.5", ["0.67", "500", "60%"], "\\(300/200=1.5\\)."),
+    choiceRow("Gastos financieros 40 y pasivos con costo 800. Costo de deuda:", "5%", ["20%", "2%", "50%"], "\\(40/800=5\\%\\)."),
+    choiceRow("Patrimonio 450 y activo total 900. Grado de propiedad:", "50%", ["2", "45%", "150%"], "\\(450/900=50\\%\\)."),
+    choiceRow("Activo corriente 90 y pasivo corriente 120. Liquidez general:", "0.75", ["1.33", "30", "2.10"], "\\(90/120=0.75\\).")
+  ],
+  dificil: [
+    choiceRow("Liquidez general 2.5 pero inventarios son casi todo el activo corriente. Riesgo:", "La liquidez puede estar sobreestimada", ["No hay riesgo posible", "La empresa no tiene pasivos", "La solvencia es infinita"], "Inventarios pueden tardar en convertirse en efectivo."),
+    choiceRow("Cobertura de intereses baja de 5 a 1.2. Lectura:", "Menor holgura para pagar intereses", ["Mejor solvencia siempre", "No cambia riesgo", "Mayor liquidez automática"], "Menos veces de cobertura aumenta presión financiera."),
+    choiceRow("Pasivo total 700, activo 1,000, patrimonio 300. Endeudamiento patrimonial:", "2.33", ["0.70", "0.43", "1.30"], "\\(700/300=2.33\\)."),
+    choiceRow("Activo corriente 1,000, inventarios 700, pasivo corriente 500. Liquidez general y ácida:", "2.0 y 0.6", ["0.6 y 2.0", "1.4 y 2.0", "2.0 y 1.4"], "LG \\(=1000/500=2\\); PA \\(=(1000-700)/500=0.6\\)."),
+    choiceRow("Un alto endeudamiento con flujos estables puede ser:", "Manejable, pero debe revisarse cobertura y vencimientos", ["Siempre quiebra inmediata", "Siempre óptimo", "Irrelevante"], "La interpretación depende de flujos, costo de deuda y calendario.")
   ]
 };
 
