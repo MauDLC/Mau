@@ -19,6 +19,13 @@ const courses = [
     title: "Economía de la Empresa con Poder de Mercado",
     subtitle: "Unidades 1-4",
     description: "Monopolio, oligopolio, teoría de juegos, concentración e información asimétrica."
+  },
+  {
+    id: "analisis-estados-financieros",
+    acronym: "AEF",
+    title: "Análisis de Estados Financieros",
+    subtitle: "Curso base",
+    description: "Balance general, estado de resultados, flujo de efectivo, ratios y diagnóstico financiero."
   }
 ];
 
@@ -451,6 +458,49 @@ function renderWeekTabs() {
   `).join("");
 }
 
+function isFinanceUnifiedExamWeek() {
+  return state.courseId === "analisis-estados-financieros" && state.weekId === "aef-semana-01";
+}
+
+function configureWeekModeTabs() {
+  const unifiedExam = isFinanceUnifiedExamWeek();
+  const learnButton = document.querySelector('.week-mode-btn[data-section="learn"]');
+  const theoryButton = document.querySelector('.week-mode-btn[data-section="theory"]');
+  const practiceButton = document.querySelector('.week-mode-btn[data-section="practice"]');
+  const theoryEyebrow = document.querySelector("#theory .section-head .eyebrow");
+  const theoryTitle = document.querySelector("#theoryTitle");
+  const theoryIntro = document.querySelector("#theory .section-head > div > p:not(.eyebrow)");
+  const hubIntro = document.querySelector(".study-hub-head div > p:not(.eyebrow)");
+  const topic = currentTopic();
+
+  if (learnButton) {
+    learnButton.hidden = false;
+    learnButton.textContent = unifiedExam ? "Guía" : "Guía / teoría";
+  }
+  if (practiceButton) practiceButton.hidden = unifiedExam;
+  if (theoryButton) {
+    theoryButton.hidden = false;
+    theoryButton.textContent = unifiedExam ? "Examen" : "Examen teórico";
+  }
+
+  if (theoryEyebrow) theoryEyebrow.textContent = unifiedExam ? weekLabel(state.weekId) : "Examen de teoría";
+  if (theoryTitle) {
+    theoryTitle.innerHTML = unifiedExam
+      ? '<span class="title-icon">🧠</span> Examen'
+      : '<span class="title-icon">🧠</span> Examen de teoría';
+  }
+  if (theoryIntro) {
+    theoryIntro.textContent = unifiedExam
+      ? (topic.intro || "Practica los conceptos principales de la semana con preguntas de opción múltiple.")
+      : "Comprueba definiciones, intuición económica y condiciones de optimización.";
+  }
+  if (hubIntro) {
+    hubIntro.textContent = unifiedExam
+      ? "Selecciona la semana, revisa su guía breve y resuelve el examen desde una estructura simple."
+      : "Selecciona una semana y trabaja su guía, examen teórico o ejercicios prácticos desde un solo lugar.";
+  }
+}
+
 function selectWeek(weekId) {
   if (!weeks.some((week) => week.id === weekId)) return;
   state.weekId = weekId;
@@ -463,6 +513,8 @@ function selectWeek(weekId) {
   renderGuide();
   renderChoiceQuiz(weekId, state.theoryLevel);
   renderPracticeQuiz(weekId, state.practiceLevel);
+  configureWeekModeTabs();
+  activateSection("learn");
 }
 
 function renderMarketPowerWeekGuide() {
@@ -1005,9 +1057,271 @@ function renderMonopolyWeekGuide() {
   `;
 }
 
+function renderFinanceWeek1Guide() {
+  return `
+    <article class="week-guide finance-guide">
+      <section class="week-hero">
+        <span class="eyebrow">Semana 01 · Análisis de Estados Financieros</span>
+        <h2>Semana 1: Marco Conceptual de la Información Financiera y NIC 1</h2>
+        <p class="week-subtitle">Marco Conceptual, negocio en marcha, características cualitativas y presentación de estados financieros.</p>
+        <p>Esta semana estudia las bases que permiten preparar, presentar e interpretar estados financieros de propósito general. El Marco Conceptual entrega los principios para entender la información financiera, mientras que la NIC 1 ordena cómo debe presentarse un juego completo de estados financieros.</p>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading">
+          <span>01</span>
+          <h3>Objetivos de aprendizaje</h3>
+          <p>Al terminar esta guía deberías poder explicar qué información comunican los estados financieros, qué cualidades debe tener esa información y cómo se organiza bajo NIC 1.</p>
+        </div>
+        <div class="objective-grid">
+          <article><strong>Comprender</strong><p>Qué es el Marco Conceptual de la Información Financiera y para qué sirve.</p></article>
+          <article><strong>Identificar</strong><p>Los objetivos de los estados financieros de propósito general.</p></article>
+          <article><strong>Explicar</strong><p>La hipótesis fundamental de negocio en marcha y sus efectos.</p></article>
+          <article><strong>Diferenciar</strong><p>Características cualitativas fundamentales y de mejora.</p></article>
+          <article><strong>Reconocer</strong><p>Los estados financieros que conforman un juego completo según NIC 1.</p></article>
+          <article><strong>Comprender</strong><p>La utilidad de las notas a los estados financieros.</p></article>
+        </div>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading">
+          <span>02</span>
+          <h3>Marco Conceptual de la Información Financiera</h3>
+          <p>El Marco Conceptual describe el objetivo y los conceptos que sostienen la información financiera con propósito general.</p>
+        </div>
+        <div class="source-grid">
+          <article class="study-card"><div class="card-icon">MC</div><h4>Qué es</h4><p>Es una base conceptual que ordena cómo pensar la información financiera: sus objetivos, supuestos, cualidades y elementos principales.</p><strong>Idea clave: no es una lista de asientos, es el mapa conceptual de las NIIF.</strong></article>
+          <article class="study-card"><div class="card-icon">NIIF</div><h4>Para qué sirve</h4><p>Ayuda a que las normas se construyan sobre conceptos coherentes y a que la información financiera sea útil para los usuarios.</p><strong>Idea clave: da consistencia a la preparación e interpretación.</strong></article>
+          <article class="study-card"><div class="card-icon">Doc</div><h4>A quién ayuda</h4><p>Apoya al Consejo al desarrollar Normas NIIF, a los preparadores cuando no hay una norma específica y a los usuarios al interpretar la información.</p><strong>Idea clave: conecta norma, preparación y lectura financiera.</strong></article>
+        </div>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading">
+          <span>03</span>
+          <h3>Definición y objetivos de los estados financieros</h3>
+          <p>Los estados financieros son representaciones estructuradas de la situación financiera y del rendimiento de una entidad en periodos determinados.</p>
+        </div>
+        <aside class="key-idea"><strong>Una forma sencilla de verlo</strong><p>Los estados financieros son una foto financiera y una historia económica de la empresa: muestran qué tiene, qué debe, cuánto ganó o perdió y cómo se movió su efectivo.</p></aside>
+        <div class="cause-grid">
+          <article class="cause-card"><h4>Situación financiera</h4><p>Permiten observar activos, pasivos y patrimonio en una fecha específica.</p></article>
+          <article class="cause-card"><h4>Rendimiento</h4><p>Informan ingresos, gastos, ganancias o pérdidas generadas durante un periodo.</p></article>
+          <article class="cause-card"><h4>Flujos de efectivo</h4><p>Muestran cómo entra y sale efectivo por operación, inversión y financiamiento.</p></article>
+        </div>
+        <div class="clean-list">
+          <p><strong>Objetivos principales:</strong></p>
+          <ul>
+            <li>Suministrar información sobre la situación financiera de la entidad.</li>
+            <li>Mostrar el rendimiento económico obtenido en un periodo.</li>
+            <li>Informar sobre los flujos de efectivo y su origen.</li>
+            <li>Ayudar a usuarios externos a tomar decisiones económicas.</li>
+            <li>Mostrar los resultados de la gestión realizada por la administración.</li>
+            <li>Apoyar la proyección de flujos de efectivo futuros.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading">
+          <span>04</span>
+          <h3>Hipótesis fundamental: negocio en marcha</h3>
+          <p>La información financiera normalmente se prepara suponiendo que la entidad continuará operando en el futuro previsible.</p>
+        </div>
+        <div class="text-columns">
+          <p>La gerencia debe evaluar si la empresa tiene capacidad para seguir funcionando. Si no existe intención ni necesidad de liquidar o cerrar operaciones, los estados financieros se preparan bajo el supuesto de continuidad.</p>
+          <p>Si la empresa está en liquidación o no puede seguir operando, el supuesto cambia: la información debe prepararse pensando en valores de liquidación, es decir, cuánto podría recuperarse al vender activos o cancelar obligaciones.</p>
+        </div>
+        <aside class="key-idea"><strong>Ejemplo breve</strong><p>Si una empresa seguirá operando normalmente, sus activos se presentan bajo el supuesto de uso continuo. Pero si está en liquidación, los activos deben evaluarse pensando en cuánto podrían venderse.</p></aside>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading">
+          <span>05</span>
+          <h3>Características cualitativas de la información financiera</h3>
+          <p>La información financiera no basta con existir: debe ser útil. Para eso necesita cualidades fundamentales y cualidades de mejora.</p>
+        </div>
+        <div class="responsive-table">
+          <table>
+            <thead><tr><th>Tipo</th><th>Característica</th><th>Qué significa</th><th>Ejemplo de estudio</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Fundamental</strong></td><td>Relevancia / materialidad</td><td>Puede influir en decisiones. Es material si su omisión o error puede afectar decisiones económicas.</td><td>No revelar un cambio importante en depreciación puede cambiar la evaluación del resultado.</td></tr>
+              <tr><td><strong>Fundamental</strong></td><td>Representación fiel</td><td>La información debe representar correctamente los fenómenos económicos: completa, neutral y libre de error.</td><td>No basta con mostrar una cifra; debe estar explicada y sin sesgo.</td></tr>
+              <tr><td><strong>De mejora</strong></td><td>Comparabilidad</td><td>Permite comparar periodos o empresas mediante políticas contables uniformes.</td><td>Usar criterios consistentes para analizar dos años de resultados.</td></tr>
+              <tr><td><strong>De mejora</strong></td><td>Verificabilidad</td><td>Diferentes observadores pueden comprobar la información o llegar a conclusiones similares.</td><td>Un saldo puede respaldarse con documentos y cálculos revisables.</td></tr>
+              <tr><td><strong>De mejora</strong></td><td>Oportunidad</td><td>La información llega a tiempo para influir en decisiones.</td><td>Un reporte entregado demasiado tarde pierde utilidad.</td></tr>
+              <tr><td><strong>De mejora</strong></td><td>Comprensibilidad</td><td>Se presenta de forma clara para usuarios con conocimiento razonable de negocios y economía.</td><td>Notas ordenadas ayudan a entender políticas y riesgos.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading">
+          <span>06</span>
+          <h3>NIC 1: Presentación de Estados Financieros</h3>
+          <p>La NIC 1 regula la presentación de estados financieros con propósito general. Su importancia está en ordenar qué estados se presentan, cómo se estructuran y qué información mínima debe revelarse para que los usuarios puedan entenderlos.</p>
+        </div>
+        <div class="statement-grid">
+          <article><span>01</span><strong>Estado de situación financiera</strong><p>Presenta activos, pasivos y patrimonio en una fecha determinada.</p></article>
+          <article><span>02</span><strong>Estado de resultados integrales</strong><p>Muestra ingresos, gastos, ganancias o pérdidas del periodo.</p></article>
+          <article><span>03</span><strong>Estado de cambios en el patrimonio</strong><p>Explica movimientos de capital, reservas y resultados acumulados.</p></article>
+          <article><span>04</span><strong>Estado de flujos de efectivo</strong><p>Clasifica entradas y salidas de efectivo en operación, inversión y financiamiento.</p></article>
+          <article><span>05</span><strong>Notas a los estados financieros</strong><p>Revelan bases de preparación, políticas contables e información adicional relevante.</p></article>
+          <article><span>06</span><strong>Estado por reexpresión</strong><p>Se presenta cuando corresponde por reexpresión o reclasificación relevante.</p></article>
+        </div>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading">
+          <span>07</span>
+          <h3>Estado de situación financiera</h3>
+          <p>Informa la situación financiera de la empresa en un momento determinado. Su lectura central es: qué recursos controla, qué obligaciones tiene y cuál es la participación residual de los propietarios.</p>
+        </div>
+        <div class="source-grid">
+          <article class="study-card"><div class="card-icon">A</div><h4>Activos</h4><p>Recursos controlados por la entidad como resultado de sucesos pasados, de los que se espera obtener beneficios económicos.</p><strong>Ejemplos: efectivo, inventarios, cuentas por cobrar, activos fijos e intangibles.</strong></article>
+          <article class="study-card"><div class="card-icon">P</div><h4>Pasivos</h4><p>Obligaciones presentes surgidas de sucesos pasados que requerirán salida de recursos para su cancelación.</p><strong>Ejemplos: cuentas por pagar, préstamos y obligaciones financieras.</strong></article>
+          <article class="study-card"><div class="card-icon">Pat</div><h4>Patrimonio</h4><p>Representa la participación residual de los propietarios. Incluye capital emitido, reservas de capital y resultados acumulados.</p><strong>Idea clave: es lo que queda luego de reconocer activos y pasivos.</strong></article>
+        </div>
+        <div class="finance-comparison-grid">
+          <article class="finance-comparison-card">
+            <h4>Activos corrientes</h4>
+            <p>Se esperan realizar, vender o consumir en el ciclo normal de operaciones o dentro de 12 meses.</p>
+            <small>Ejemplo: inventarios o cuentas por cobrar de corto plazo.</small>
+          </article>
+          <article class="finance-comparison-card">
+            <h4>Activos no corrientes</h4>
+            <p>Son bienes de permanencia prolongada que apoyan la operación por más de un periodo.</p>
+            <small>Ejemplo: maquinaria, edificios, marcas o activos intangibles.</small>
+          </article>
+          <article class="finance-comparison-card">
+            <h4>Pasivos corrientes</h4>
+            <p>Obligaciones que deberán cumplirse en un periodo que no excede 12 meses.</p>
+            <small>Ejemplo: proveedores, impuestos por pagar o deuda de corto plazo.</small>
+          </article>
+          <article class="finance-comparison-card">
+            <h4>Pasivos no corrientes</h4>
+            <p>Obligaciones de largo plazo, normalmente mayores a un año.</p>
+            <small>Ejemplo: préstamo bancario de largo plazo o bonos por pagar.</small>
+          </article>
+        </div>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading">
+          <span>08</span>
+          <h3>Estado de resultados integrales</h3>
+          <p>Muestra la situación económica de la empresa durante un periodo. Es una herramienta clave para medir rentabilidad y rendimiento.</p>
+        </div>
+        <div class="responsive-table">
+          <table>
+            <thead><tr><th>Estado de situación financiera</th><th>Estado de resultados integrales</th></tr></thead>
+            <tbody>
+              <tr><td>Se lee como una foto en una fecha determinada.</td><td>Se lee como una película del rendimiento durante un periodo.</td></tr>
+              <tr><td>Presenta activos, pasivos y patrimonio.</td><td>Presenta ingresos, gastos, ganancias o pérdidas.</td></tr>
+              <tr><td>Ayuda a evaluar liquidez, solvencia y estructura financiera.</td><td>Ayuda a evaluar rentabilidad y desempeño económico.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <aside class="key-idea"><strong>Regla de lectura</strong><p>Si los ingresos son mayores que los gastos, hay ganancia. Si los gastos son mayores que los ingresos, hay pérdida. Las cuentas de resultados se cancelan de un ejercicio a otro porque miden desempeño del periodo.</p></aside>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading">
+          <span>09</span>
+          <h3>Clasificación de ingresos y gastos</h3>
+          <p>La NIC 1 ayuda a ordenar la información del rendimiento para distinguir lo habitual, lo eventual y lo financiero.</p>
+        </div>
+        <div class="finance-ledger-grid">
+          <article class="finance-ledger-card">
+            <h4>Ingresos</h4>
+            <dl>
+              <div><dt>Actividades ordinarias</dt><dd>Ventas de bienes o servicios del negocio, netas de descuentos y rebajas.</dd></div>
+              <div><dt>Otros ingresos operativos</dt><dd>Venta eventual de un activo fijo, recuperación de impuestos o ingresos por siniestros.</dd></div>
+              <div><dt>Ingresos financieros</dt><dd>Intereses generados por depósitos, cuentas bancarias o colocaciones de capital.</dd></div>
+            </dl>
+          </article>
+          <article class="finance-ledger-card">
+            <h4>Gastos</h4>
+            <dl>
+              <div><dt>Costo de ventas</dt><dd>Costo de producir bienes vendidos o costo de mercaderías vendidas.</dd></div>
+              <div><dt>Gastos de ventas</dt><dd>Publicidad, comisiones, distribución o gastos asociados a vender.</dd></div>
+              <div><dt>Gastos administrativos</dt><dd>Sueldos administrativos, alquiler de oficinas o servicios de gestión.</dd></div>
+              <div><dt>Otros gastos operativos</dt><dd>Pérdidas eventuales, como daños por siniestros o fenómenos naturales.</dd></div>
+              <div><dt>Gastos financieros</dt><dd>Intereses por préstamos u obligaciones financieras.</dd></div>
+            </dl>
+          </article>
+        </div>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading">
+          <span>10</span>
+          <h3>Otros estados financieros del juego completo</h3>
+          <p>Además del estado de situación financiera y el estado de resultados integrales, el juego completo permite explicar cambios patrimoniales, movimientos de efectivo y detalles que no caben en los estados principales.</p>
+        </div>
+        <div class="cause-grid">
+          <article class="cause-card"><h4>Estado de cambios en el patrimonio</h4><p>Muestra variaciones patrimoniales, movimientos de capital realizados por propietarios, distribuciones, utilidades o pérdidas acumuladas y movimientos del ejercicio.</p></article>
+          <article class="cause-card"><h4>Estado de flujos de efectivo</h4><p>Permite evaluar la capacidad de generar efectivo y equivalentes. Se divide en actividades de operación, inversión y financiamiento.</p></article>
+          <article class="cause-card"><h4>Notas a los estados financieros</h4><p>Revelan bases de preparación, políticas contables, objetivos y políticas de gestión de riesgos e información adicional relevante.</p></article>
+        </div>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading">
+          <span>11</span>
+          <h3>Caso de aplicación: cambio de vida útil de un activo fijo</h3>
+          <p>Una empresa cambia la vida útil usada para calcular la depreciación de un activo fijo. El cambio tiene impacto material en los estados financieros, pero la compañía decide no revelarlo.</p>
+        </div>
+        <div class="case-box">
+          <div><strong>Por qué debe revelarse</strong><p>Porque modifica la medición del gasto por depreciación y puede afectar la utilidad, el valor en libros del activo y la interpretación del desempeño.</p></div>
+          <div><strong>Qué característica se afecta</strong><p>Se afecta la relevancia/materialidad porque la omisión puede influir en decisiones, y también la representación fiel porque los estados no muestran completamente el fenómeno económico.</p></div>
+          <div><strong>Por qué importa al usuario</strong><p>Un inversionista, acreedor o analista podría evaluar mal la rentabilidad, el valor de los activos o la gestión si no conoce el cambio.</p></div>
+          <div><strong>Relación con las notas</strong><p>Las notas existen precisamente para revelar políticas contables, cambios relevantes y explicaciones necesarias para comprender los estados financieros.</p></div>
+        </div>
+      </section>
+
+      <section class="guide-section summary-guide">
+        <div class="section-heading">
+          <span>12</span>
+          <h3>Cierre de la guía</h3>
+          <p>Estas son las ideas que conviene dominar antes del examen.</p>
+        </div>
+        <div class="clean-list">
+          <ul>
+            <li>El Marco Conceptual orienta la preparación e interpretación de la información financiera.</li>
+            <li>Los estados financieros sirven para tomar decisiones económicas y evaluar la gestión.</li>
+            <li>La hipótesis de negocio en marcha es clave para preparar información bajo continuidad.</li>
+            <li>La información debe ser relevante y representar fielmente la realidad económica.</li>
+            <li>Las características de mejora aumentan la utilidad de información que ya es relevante y fiel.</li>
+            <li>La NIC 1 ordena la presentación de los estados financieros de propósito general.</li>
+            <li>Las notas complementan y explican información necesaria para comprender los estados principales.</li>
+          </ul>
+        </div>
+      </section>
+    </article>
+  `;
+}
+
 function renderGuide() {
   const topic = currentTopic();
   document.querySelector("#topicEyebrow").textContent = `${weekLabel(topic.week)} · Concepto clave`;
+  if (state.courseId === "analisis-estados-financieros") {
+    if (state.weekId === "aef-semana-01") {
+      guideView.innerHTML = renderFinanceWeek1Guide();
+      typesetMath();
+      return;
+    }
+    guideView.innerHTML = `
+      <article class="week-guide">
+        <section class="week-hero">
+          <span class="eyebrow">${escapeHtml(weekLabel(topic.week))}</span>
+          <h2>${escapeHtml(topic.title)}</h2>
+          <p class="week-subtitle">${topic.intro ? escapeHtml(topic.intro) : "Contenido pendiente por desarrollar."}</p>
+        </section>
+      </article>
+    `;
+    return;
+  }
   if (state.courseId === "poder-mercado" && topic.id === "pm-poder-mercado") {
     guideView.innerHTML = renderMarketPowerWeekGuide();
     typesetMath();
@@ -1050,7 +1364,115 @@ function updateProgress() {
   const pct = Math.round((state.viewed.size / topics.length) * 100);
   progressText.textContent = `${pct}%`;
   progressBar.style.width = `${pct}%`;
-  progressHint.textContent = `${state.viewed.size} de ${topics.length} temas completados.`;
+  progressHint.textContent = state.courseId === "analisis-estados-financieros"
+    ? `${state.viewed.size} de ${topics.length} módulos revisados.`
+    : `${state.viewed.size} de ${topics.length} temas completados.`;
+}
+
+function configureCourseIdentity(selectedCourse) {
+  document.body.dataset.course = state.courseId;
+  const brandSmall = document.querySelector(".topbar .brand small");
+  const heroBadges = document.querySelector(".hero-badges");
+  const studyOverview = document.querySelector(".study-overview");
+  const hubEyebrow = document.querySelector(".study-hub-head .eyebrow");
+  const hubTitle = document.querySelector(".study-hub-head h2");
+  const hubIntro = document.querySelector(".study-hub-head div > p:not(.eyebrow)");
+  const sidebarTitle = document.querySelector(".sidebar h2");
+  const learnTitle = document.querySelector("#learnTitle");
+  const learnIntro = document.querySelector("#learn .section-head > div > p:not(.eyebrow)");
+  const markButton = document.querySelector("#markTopic");
+  const progressLabel = document.querySelector(".progress-panel > span");
+  const progressSmall = document.querySelector(".progress-panel small");
+
+  if (brandSmall) {
+    brandSmall.textContent = state.courseId === "analisis-estados-financieros" ? "Estados financieros" : selectedCourse.subtitle || "Unidad 1";
+  }
+
+  if (state.courseId === "analisis-estados-financieros") {
+    document.title = "GE | Análisis de Estados Financieros";
+    if (heroBadges) {
+      heroBadges.innerHTML = `
+        <span>📄 Lectura financiera</span>
+        <span>🧾 Clasificación contable</span>
+        <span>📚 NIC 1</span>
+        <span>✅ Examen criterio</span>
+      `;
+    }
+    if (studyOverview) {
+      studyOverview.setAttribute("aria-label", "Método de aprendizaje financiero");
+      studyOverview.innerHTML = `
+        <article class="overview-card">
+          <span class="card-icon">01</span>
+          <h2>Lee</h2>
+          <p>Parte desde el Marco Conceptual y ubica qué problema contable intenta resolver cada norma.</p>
+        </article>
+        <article class="overview-card">
+          <span class="card-icon">02</span>
+          <h2>Clasifica</h2>
+          <p>Ordena cuentas, estados financieros, notas y revelaciones como si estuvieras revisando un reporte real.</p>
+        </article>
+        <article class="overview-card">
+          <span class="card-icon">03</span>
+          <h2>Interpreta</h2>
+          <p>Conecta cada partida con decisiones de usuarios: inversionistas, acreedores, gerencia y analistas.</p>
+        </article>
+        <article class="overview-card">
+          <span class="card-icon">04</span>
+          <h2>Evalúa</h2>
+          <p>Resuelve preguntas de criterio para detectar omisiones, errores materiales y revelaciones necesarias.</p>
+        </article>
+      `;
+    }
+    if (hubEyebrow) hubEyebrow.textContent = "Laboratorio financiero";
+    if (hubTitle) hubTitle.textContent = "Módulos de análisis";
+    if (hubIntro) hubIntro.textContent = "Elige una semana para estudiar la guía, revisar criterios contables y practicar con examen teórico.";
+    if (sidebarTitle) sidebarTitle.textContent = "Mapa contable";
+    if (learnTitle) learnTitle.innerHTML = '<span class="title-icon">📄</span> Lectura guiada';
+    if (learnIntro) learnIntro.textContent = "Estudia el criterio contable, clasifica la información y conecta cada concepto con la presentación financiera.";
+    if (markButton) markButton.textContent = "Marcar módulo revisado";
+    if (progressLabel) progressLabel.textContent = "Avance de lectura";
+    if (progressSmall) progressSmall.textContent = "Revisa cada módulo como si estuvieras auditando una idea financiera.";
+    return;
+  }
+
+  document.title = "GE | Guías de Economía y Finanzas";
+  if (heroBadges) {
+    heroBadges.innerHTML = `
+      <span>📘 Guía</span>
+      <span>🧠 Teoría</span>
+      <span>✍️ Ejercicios</span>
+      <span>📈 Progreso</span>
+    `;
+  }
+  if (studyOverview) {
+    studyOverview.setAttribute("aria-label", "Resumen de la plataforma");
+    studyOverview.innerHTML = `
+      <article class="overview-card">
+        <span class="card-icon">📘</span>
+        <h2>Aprende</h2>
+        <p>Conceptos, fórmulas y ejemplos explicados con una ruta clara de estudio.</p>
+      </article>
+      <article class="overview-card">
+        <span class="card-icon">✍️</span>
+        <h2>Practica</h2>
+        <p>Preguntas teóricas y ejercicios numéricos por semana para reforzar dominio.</p>
+      </article>
+      <article class="overview-card">
+        <span class="card-icon">📈</span>
+        <h2>Mide tu avance</h2>
+        <p>Marca temas vistos y revisa resultados para saber dónde enfocar el repaso.</p>
+      </article>
+    `;
+  }
+  if (hubEyebrow) hubEyebrow.textContent = "Curso";
+  if (hubTitle) hubTitle.textContent = "Guía de estudio";
+  if (hubIntro) hubIntro.textContent = "Selecciona una semana y trabaja su guía, examen teórico o ejercicios prácticos desde un solo lugar.";
+  if (sidebarTitle) sidebarTitle.textContent = "Temas clave";
+  if (learnTitle) learnTitle.innerHTML = '<span class="title-icon">📘</span> Conceptos explicados';
+  if (learnIntro) learnIntro.textContent = "Estudia la idea central, conecta la fórmula con el gráfico y revisa un ejemplo guiado.";
+  if (markButton) markButton.textContent = "Marcar tema visto";
+  if (progressLabel) progressLabel.textContent = "Progreso de la unidad";
+  if (progressSmall) progressSmall.textContent = "Avanza paso a paso en la unidad.";
 }
 
 function activateSection(sectionId) {
@@ -1066,6 +1488,10 @@ function activateSection(sectionId) {
 function showOnly(view) {
   coursesView.classList.toggle("hidden", view !== "courses");
   appShell.classList.toggle("hidden", view !== "app");
+  if (view === "courses") {
+    document.body.dataset.course = "courses";
+    document.title = "GE | Guías de Economía y Finanzas";
+  }
 }
 
 function renderCourses() {
@@ -1103,6 +1529,7 @@ function openCourse(courseId) {
   state.viewed = new Set();
   document.querySelector("#courseHeroTitle").textContent = selectedCourse.heroTitle;
   document.querySelector("#courseHeroSubtitle").textContent = selectedCourse.heroSubtitle;
+  configureCourseIdentity(selectedCourse);
   renderWeekSelects();
   renderWeekTabs();
   renderTopics();
@@ -1111,6 +1538,7 @@ function openCourse(courseId) {
   renderPracticeQuiz(weeks[0].id, "facil");
   updateProgress();
   showOnly("app");
+  configureWeekModeTabs();
   activateSection("learn");
   window.scrollTo({ top: 0, behavior: "instant" });
   typesetMath();
@@ -1297,8 +1725,9 @@ function makeTheoryQuestion(row, index) {
 
 function theoryBank(weekId, level = state.theoryLevel) {
   const bank = theoryData[weekId];
+  if (!bank) return [];
   const levels = level === "todas" ? ["facil", "medio", "dificil"] : [level];
-  return levels.flatMap((difficulty) => bank[difficulty].map(buildChoiceQuestion));
+  return levels.flatMap((difficulty) => (bank[difficulty] || []).map(buildChoiceQuestion));
 }
 
 let practiceBanks = {
@@ -1839,6 +2268,78 @@ const marketPracticeBanks = makeMarketPracticeBanks(marketWeeks);
 marketPracticeBanks["pm-semana-01"] = marketWeek1Practice;
 marketPracticeBanks["pm-semana-02"] = marketWeek2Practice;
 
+const financeWeeks = [
+  { id: "aef-semana-01", label: "Semana 01", title: "Marco Conceptual y NIC 1" },
+  { id: "aef-semana-02", label: "Semana 02", title: "Estado de resultados" },
+  { id: "aef-semana-03", label: "Semana 03", title: "Flujo de efectivo" },
+  { id: "aef-semana-04", label: "Semana 04", title: "Ratios financieros" },
+  { id: "aef-semana-05", label: "Semana 05", title: "Diagnóstico financiero" }
+];
+
+const financeTopics = financeWeeks.map((week) => ({
+  id: `${week.id}-estructura`,
+  week: week.id,
+  title: week.id === "aef-semana-01" ? "Semana 1: Marco Conceptual de la Información Financiera y NIC 1" : week.title,
+  question: "Contenido pendiente por desarrollar.",
+  intro: week.id === "aef-semana-01" ? "Esta semana refuerza la comprensión del Marco Conceptual, la hipótesis de negocio en marcha, las características cualitativas de la información financiera y la presentación de estados financieros según NIC 1." : "",
+  formulas: [],
+  explanation: [],
+  example: "",
+  graph: ""
+}));
+
+const emptyLevelBank = () => ({ facil: [], medio: [], dificil: [] });
+const financeTheoryData = Object.fromEntries(financeWeeks.map((week) => [week.id, emptyLevelBank()]));
+const financePracticeBanks = Object.fromEntries(financeWeeks.map((week) => [week.id, emptyLevelBank()]));
+
+financeTheoryData["aef-semana-01"] = {
+  facil: [
+    choiceRow("¿Cuál es el objetivo principal de los estados financieros con propósito general?", "Suministrar información útil sobre situación financiera, rendimiento y flujos de efectivo para la toma de decisiones económicas", ["Calcular únicamente los impuestos por pagar", "Mostrar solo el efectivo disponible al cierre", "Reemplazar las políticas contables de la entidad"], "Correcta: el PDF indica que los estados financieros suministran información sobre situación financiera, rendimiento y flujos de efectivo útil para decisiones económicas. Las otras opciones son incompletas: impuestos, efectivo o políticas contables no agotan el objetivo de los estados financieros."),
+    choiceRow("Según el PDF, ¿cómo se definen los estados financieros?", "Representaciones estructuradas de la situación financiera y del rendimiento de una entidad en periodos determinados", ["Listas internas de comprobantes de pago", "Reportes tributarios preparados solo para la autoridad fiscal", "Documentos informales sin base normativa"], "Correcta: el PDF los define como representaciones estructuradas de la situación financiera y rendimiento. Las demás alternativas reducen los estados financieros a documentos internos, tributarios o informales, lo cual no coincide con su propósito general."),
+    choiceRow("¿Qué hipótesis fundamental se usa al preparar estados financieros?", "Negocio en marcha", ["Valor de liquidación permanente", "Costo hundido", "Inflación constante"], "Correcta: la hipótesis fundamental presentada es negocio en marcha. Valor de liquidación se usa cuando la empresa está en liquidación; costo hundido e inflación constante no son la hipótesis fundamental del Marco Conceptual mostrada."),
+    choiceRow("¿Qué significa la hipótesis de negocio en marcha?", "Que la gerencia evalúa la capacidad de la entidad para continuar sus actividades sin intención o necesidad de liquidar", ["Que la empresa cerrará operaciones en el corto plazo", "Que todos los activos se miden siempre a valores de liquidación", "Que solo se presentan ingresos en efectivo"], "Correcta: negocio en marcha supone continuidad de la entidad. Las opciones incorrectas describen liquidación, medición obligatoria a valores de liquidación o una base de efectivo que no corresponde al concepto."),
+    choiceRow("¿Cuáles son características cualitativas fundamentales de la información financiera?", "Relevancia y representación fiel", ["Comparabilidad y oportunidad", "Verificabilidad y comprensibilidad", "Rentabilidad y liquidez"], "Correcta: el PDF separa como fundamentales la relevancia/materialidad y la representación fiel. Comparabilidad, verificabilidad, oportunidad y comprensibilidad son de mejora; rentabilidad y liquidez son indicadores, no características cualitativas fundamentales."),
+    choiceRow("¿Qué implica que la información financiera sea relevante?", "Que sea capaz de influir en las decisiones de los usuarios", ["Que siempre sea extensa", "Que solo incluya datos históricos sin efecto en decisiones", "Que no requiera juicio profesional"], "Correcta: relevancia significa capacidad de influir en decisiones. Extensión, datos históricos aislados o ausencia de juicio profesional no definen relevancia según el PDF."),
+    choiceRow("¿Qué significa importancia relativa o materialidad?", "Que una omisión o error puede influir en las decisiones económicas de los usuarios", ["Que toda cifra pequeña debe ignorarse siempre", "Que solo importan los activos fijos", "Que la información debe publicarse tarde"], "Correcta: materialidad existe cuando omitir o presentar erróneamente información puede influir en decisiones. Las demás opciones son falsas: no toda cifra pequeña se ignora, no se limita a activos fijos y no tiene relación con publicar tarde."),
+    choiceRow("¿Qué exige la representación fiel?", "Que la información sea completa, neutral y libre de error", ["Que sea favorable a la administración", "Que omita datos complejos", "Que solo muestre resultados positivos"], "Correcta: representación fiel requiere completitud, neutralidad y ausencia de error. Las otras opciones rompen la neutralidad, eliminan información relevante o sesgan la presentación."),
+    choiceRow("Según NIC 1, ¿qué estado informa la situación financiera en un momento determinado?", "Estado de situación financiera", ["Estado de flujos de efectivo", "Estado de cambios en el patrimonio", "Estado de resultados integrales"], "Correcta: el estado de situación financiera muestra la situación de la empresa en un momento determinado. Flujos de efectivo evalúa efectivo; cambios en patrimonio muestra variaciones patrimoniales; resultados integrales mide rendimiento del periodo."),
+    choiceRow("¿Para qué sirven las notas a los estados financieros?", "Para revelar información adicional requerida por NIIF y ayudar a comprender los estados financieros", ["Para sustituir todos los estados principales", "Para ocultar cambios contables materiales", "Para presentar solo publicidad corporativa"], "Correcta: las notas complementan y explican información requerida por NIIF, como políticas contables o gestión de riesgos. No sustituyen estados principales, no deben ocultar información material y no son publicidad.")
+  ],
+  medio: [
+    choiceRow("¿Cuál es la mejor diferencia entre características fundamentales y de mejora?", "Las fundamentales hacen útil la información; las de mejora aumentan su utilidad si la información ya es relevante y fiel", ["Las de mejora reemplazan a relevancia y representación fiel", "Las fundamentales solo se aplican al efectivo", "Las de mejora solo se usan para informes tributarios"], "Correcta: el PDF distingue fundamentales y de mejora. Las de mejora no sustituyen relevancia y representación fiel; tampoco se limitan al efectivo ni a fines tributarios."),
+    choiceRow("¿Qué característica se relaciona con aplicar políticas contables uniformes y usar una misma moneda?", "Comparabilidad", ["Materialidad", "Negocio en marcha", "Costo de ventas"], "Correcta: el PDF vincula comparabilidad con aplicación uniforme de políticas contables y uso de una misma moneda. Materialidad evalúa influencia en decisiones; negocio en marcha trata continuidad; costo de ventas es una partida de resultados."),
+    choiceRow("¿Qué característica exige emitir información a tiempo antes de que pierda capacidad de influir en decisiones?", "Oportunidad", ["Representación fiel", "Patrimonio", "Otros ingresos operativos"], "Correcta: oportunidad significa entregar información a tiempo. Representación fiel trata completitud y neutralidad; patrimonio e ingresos operativos son elementos o partidas contables, no características de mejora."),
+    choiceRow("¿Qué usuarios presupone la comprensibilidad de los estados financieros?", "Usuarios con conocimiento razonable de actividades económicas y del mundo de los negocios", ["Usuarios sin ninguna base económica", "Solo auditores externos", "Solo la gerencia"], "Correcta: el PDF indica que la información debe ser comprensible para usuarios con conocimiento razonable. No se limita a auditores o gerencia, ni presupone ausencia total de conocimientos."),
+    choiceRow("¿Qué conforma un juego completo de estados financieros según la NIC 1 presentada?", "Estado de situación financiera, resultados integrales, cambios en patrimonio, flujos de efectivo y notas", ["Solo balance general y declaración de impuestos", "Solo estado de resultados y libro diario", "Solo flujo de efectivo y presupuesto"], "Correcta: el PDF lista situación financiera, resultados integrales, cambios en patrimonio, flujos de efectivo y notas. Las demás alternativas omiten estados requeridos o incorporan documentos que no forman el juego completo mostrado."),
+    choiceRow("¿Cuál es la diferencia entre activos corrientes y no corrientes?", "Los corrientes se esperan realizar, vender o consumir en el ciclo normal o dentro de 12 meses; los no corrientes son de permanencia prolongada", ["Los corrientes son siempre intangibles y los no corrientes siempre efectivo", "Los corrientes son obligaciones y los no corrientes aportes de socios", "No existe diferencia según NIC 1"], "Correcta: el PDF clasifica activos corrientes por realización, venta o consumo en ciclo normal o 12 meses, y no corrientes por permanencia prolongada. Las demás opciones confunden activos con pasivos, patrimonio o niegan la clasificación."),
+    choiceRow("¿Cuál es la diferencia entre pasivos corrientes y no corrientes?", "Los corrientes se cumplen en un periodo que no excede 12 meses; los no corrientes vencen en plazos mayores a un año", ["Los corrientes son aportes de accionistas y los no corrientes ventas", "Los corrientes nunca requieren salida de recursos", "Los no corrientes siempre son ingresos financieros"], "Correcta: la clasificación depende del plazo de cumplimiento. Las alternativas incorrectas confunden pasivos con patrimonio, niegan la salida de recursos o mezclan pasivos con ingresos."),
+    choiceRow("¿Qué muestra el estado de resultados integrales?", "La situación económica, rentabilidad y rendimiento de la empresa en un periodo", ["Solo la composición del patrimonio al cierre", "Solo obligaciones por pagar en 12 meses", "Solo las políticas contables usadas"], "Correcta: el PDF lo presenta como herramienta para medir rentabilidad y rendimiento, con ingresos y gastos. Las demás opciones corresponden a patrimonio, pasivos o notas."),
+    choiceRow("¿Qué muestra el estado de cambios en el patrimonio?", "Variaciones patrimoniales, movimientos de capital, distribuciones y resultados acumulados del periodo", ["Solo entradas y salidas de efectivo", "Solo ventas brutas del negocio", "Solo activos corrientes"], "Correcta: el PDF señala variaciones en partidas patrimoniales, movimientos de propietarios y utilidades o pérdidas acumuladas. Las demás opciones describen flujo de efectivo, ingresos o activos."),
+    choiceRow("¿Qué actividades comprende el estado de flujos de efectivo?", "Operación, inversión y financiamiento", ["Ventas, administración y marketing", "Capital, reservas y resultados acumulados", "Relevancia, verificabilidad y oportunidad"], "Correcta: el PDF enumera operación, inversión y financiamiento. Las demás alternativas mezclan gastos, patrimonio o características cualitativas, no actividades del flujo de efectivo.")
+  ],
+  dificil: [
+    choiceRow("Una entidad cambia la vida útil de un activo fijo y el impacto es material para los estados financieros. Según el caso del PDF, ¿qué problema genera no revelarlo?", "Afecta la representación fiel y la utilidad de la información porque omite un cambio material", ["No genera problema si la gerencia lo decidió", "Solo afecta el estado de flujos de efectivo", "Es correcto porque las notas nunca revelan cambios"], "Correcta: si el impacto es material, omitirlo puede influir en decisiones y debilita la representación fiel. Las incorrectas ignoran materialidad, reducen el efecto a un solo estado o niegan la función de las notas."),
+    choiceRow("Si una empresa está en proceso de liquidación, ¿qué base de preparación menciona el PDF?", "Valores de liquidación", ["Negocio en marcha sin cambios", "Valor simbólico de un sol", "Solo costo histórico tributario"], "Correcta: el PDF indica que, si la empresa está en liquidación, la información contable se prepara sobre valores de liquidación. Mantener negocio en marcha sin cambios sería inconsistente; las demás bases no aparecen como regla del caso."),
+    choiceRow("¿Por qué el Marco Conceptual ayuda cuando no hay una Norma específica aplicable a una transacción?", "Porque orienta a preparadores a desarrollar políticas contables congruentes", ["Porque permite no presentar estados financieros", "Porque reemplaza siempre a todas las NIIF", "Porque elimina la necesidad de interpretación"], "Correcta: el PDF señala que ayuda a preparadores a desarrollar políticas congruentes cuando no aplica una Norma concreta. No elimina estados financieros, no reemplaza siempre las NIIF y no suprime la interpretación."),
+    choiceRow("Una información es neutral, completa y libre de error, pero llega tarde y ya no influye en decisiones. ¿Qué característica se ve afectada principalmente?", "Oportunidad", ["Capital emitido", "Costo de ventas", "Pasivo no corriente"], "Correcta: aunque sea fiel, si llega tarde pierde oportunidad. Las demás opciones son elementos o partidas contables, no características cualitativas aplicables al problema."),
+    choiceRow("¿Cuál clasificación es más coherente para una máquina usada por varios años en operaciones?", "Activo no corriente", ["Activo corriente por consumirse en 12 meses", "Pasivo corriente", "Ingreso financiero"], "Correcta: el PDF describe activos no corrientes como bienes de permanencia prolongada, por ejemplo activos fijos. Las otras alternativas confunden naturaleza y plazo o clasifican la máquina como obligación o ingreso."),
+    choiceRow("¿Cuál clasificación corresponde mejor a una obligación que deberá cumplirse en 8 meses?", "Pasivo corriente", ["Pasivo no corriente", "Patrimonio", "Otros ingresos operativos"], "Correcta: los pasivos corrientes se cumplen en un plazo que no excede 12 meses. Las demás opciones corresponden a plazos mayores, aportes/resultados patrimoniales o ingresos no habituales."),
+    choiceRow("Una venta habitual de bienes del negocio, neta de descuentos y rebajas, se clasifica como:", "Ingreso de actividades ordinarias", ["Otros ingresos operativos", "Ingreso financiero", "Resultados acumulados"], "Correcta: el PDF define ingresos de actividades ordinarias como ingresos brutos por ventas de bienes y servicios deducidos descuentos, rebajas y bonificaciones. Otros ingresos son eventuales; financieros provienen de intereses; resultados acumulados pertenecen al patrimonio."),
+    choiceRow("La pérdida por un fenómeno natural ocurrida de forma eventual se clasifica, según el PDF, como:", "Otros gastos operativos", ["Costo de ventas", "Gasto administrativo", "Capital emitido"], "Correcta: el PDF incluye pérdidas por fenómenos naturales entre otros gastos operativos eventuales. Costo de ventas se vincula a bienes vendidos; gastos administrativos a gestión principal; capital emitido es patrimonio."),
+    choiceRow("¿Por qué las notas son clave ante políticas contables y gestión de riesgos?", "Porque revelan bases de preparación, políticas contables y objetivos o políticas de gestión de riesgos", ["Porque eliminan la necesidad del estado de situación financiera", "Porque solo registran ventas diarias", "Porque sustituyen la representación fiel"], "Correcta: el PDF menciona bases de preparación, políticas contables y gestión de riesgos como información de notas. Las demás alternativas exageran o distorsionan su función."),
+    choiceRow("Una entidad omite un cambio de vida útil con impacto material. ¿Qué característica fundamental se compromete junto con la relevancia/materialidad?", "Representación fiel", ["Comparabilidad únicamente", "Comprensibilidad únicamente", "Capital emitido"], "Correcta: la omisión de información material impide representar fielmente el fenómeno económico. Comparabilidad y comprensibilidad pueden verse afectadas, pero la característica fundamental comprometida por la omisión es representación fiel; capital emitido no es característica cualitativa.")
+  ]
+};
+
+const financeCourse = {
+  weeks: financeWeeks,
+  topics: financeTopics,
+  theoryData: financeTheoryData,
+  practiceBanks: financePracticeBanks,
+  heroTitle: "AEF Análisis de Estados Financieros",
+  heroSubtitle: "Aprende a leer, clasificar e interpretar estados financieros con criterio contable."
+};
+
 const courseContent = {
   "economia-produccion": productionCourse,
   "poder-mercado": {
@@ -1848,7 +2349,8 @@ const courseContent = {
     practiceBanks: marketPracticeBanks,
     heroTitle: "EPM Economía de la Empresa con Poder de Mercado",
     heroSubtitle: "Estudia monopolio, oligopolio, concentración, teoría de juegos e información asimétrica."
-  }
+  },
+  "analisis-estados-financieros": financeCourse
 };
 
 function numericOptions(answer, index) {
@@ -1866,9 +2368,10 @@ function numericOptions(answer, index) {
 
 function practiceBank(weekId) {
   const bank = practiceBanks[weekId];
+  if (!bank) return [];
   if (!Array.isArray(bank)) {
     const levels = state.practiceLevel === "todas" ? ["facil", "medio", "dificil"] : [state.practiceLevel];
-    return levels.flatMap((difficulty) => bank[difficulty].map(buildChoiceQuestion));
+    return levels.flatMap((difficulty) => (bank[difficulty] || []).map(buildChoiceQuestion));
   }
   return bank.map((question, index) => {
     const options = numericOptions(question.answer, index);
@@ -1906,13 +2409,23 @@ function renderChoiceQuiz(weekId, level = state.theoryLevel) {
   const container = document.querySelector("#theoryQuiz");
   const result = document.querySelector("#theoryResult");
   result.hidden = true;
-  container.innerHTML = questions.map((question, index) => `
+  if (!questions.length) {
+    container.innerHTML = `<article class="empty-state"><h3>Examen teórico pendiente</h3><p>La estructura ya está creada. Todavía no hay preguntas para esta semana.</p></article>`;
+    typesetMath();
+    return;
+  }
+  const updateTheoryProgress = () => {
+    const answered = container.querySelectorAll(".question.locked").length;
+    const progress = container.querySelector(".quiz-progress strong");
+    if (progress) progress.textContent = `${answered}/${questions.length}`;
+  };
+  container.innerHTML = `<div class="quiz-progress"><span>Progreso del examen</span><strong>0/${questions.length}</strong></div>` + questions.map((question, index) => `
     <article class="question" data-question="${index}">
       <header><h3>${index + 1}. ${escapeHtml(question.prompt)}</h3><strong>${level === "todas" ? "Todas" : level}</strong></header>
       ${question.graph || ""}
       <div class="${optionsLayoutClass(question.options)}">
         ${question.options.map((option, optionIndex) => `
-          <label class="option"><input type="radio" name="theory-${weekId}-${index}" value="${optionIndex}" /><span>${escapeHtml(option)}</span></label>
+          <label class="option"><input type="radio" name="theory-${weekId}-${index}" value="${optionIndex}" /><span><strong class="option-letter">${"ABCD"[optionIndex]}</strong>${escapeHtml(option)}</span></label>
         `).join("")}
       </div>
       <div class="question-actions"><button class="ghost-btn verify-question" data-verify="${index}">Verificar respuesta</button></div>
@@ -1949,6 +2462,7 @@ function renderChoiceQuiz(weekId, level = state.theoryLevel) {
       });
       button.disabled = true;
       button.textContent = "Respuesta verificada";
+      updateTheoryProgress();
       typesetMath();
     });
   });
@@ -1980,6 +2494,7 @@ function renderChoiceQuiz(weekId, level = state.theoryLevel) {
       card.querySelector(".verify-question").textContent = "Respuesta verificada";
     });
     document.querySelector("#checkTheory").disabled = true;
+    updateTheoryProgress();
     result.hidden = false;
     result.innerHTML = `<strong>Resultado: ${score}/${questions.length}</strong><p>${score >= Math.ceil(questions.length * 0.8) ? "Muy buen dominio teórico." : "Repasa la guía y vuelve a intentar."}</p>`;
     typesetMath();
@@ -1996,13 +2511,18 @@ function renderPracticeQuiz(weekId, level = state.practiceLevel) {
   const container = document.querySelector("#practiceQuiz");
   const result = document.querySelector("#practiceResult");
   result.hidden = true;
+  if (!questions.length) {
+    container.innerHTML = `<article class="empty-state"><h3>Ejercicios prácticos pendientes</h3><p>La estructura ya está creada. Todavía no hay ejercicios para esta semana.</p></article>`;
+    typesetMath();
+    return;
+  }
   container.innerHTML = questions.map((question, index) => `
     <article class="question" data-practice="${index}">
       <header><h3>${index + 1}. ${escapeHtml(question.prompt)}</h3><strong>${level === "todas" ? "Todas" : level}</strong></header>
       ${question.graph || ""}
       <div class="${optionsLayoutClass(question.options)}">
         ${question.options.map((option, optionIndex) => `
-          <label class="option"><input type="radio" name="practice-${weekId}-${index}" value="${optionIndex}" /><span>${escapeHtml(option)}</span></label>
+          <label class="option"><input type="radio" name="practice-${weekId}-${index}" value="${optionIndex}" /><span><strong class="option-letter">${"ABCD"[optionIndex]}</strong>${escapeHtml(option)}</span></label>
         `).join("")}
       </div>
       <div class="question-actions"><button class="ghost-btn verify-practice" data-verify-practice="${index}">Verificar respuesta</button></div>
