@@ -552,11 +552,95 @@ function renderMarketPowerWeekGuide() {
   `;
 }
 
+function monopolySvg(kind) {
+  const arrow = `<defs><marker id="mono-arrow-${kind}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#111"/></marker></defs>`;
+  const axes = `${arrow}<line x1="78" y1="330" x2="690" y2="330" class="econ-axis" marker-end="url(#mono-arrow-${kind})"/><line x1="78" y1="330" x2="78" y2="50" class="econ-axis" marker-end="url(#mono-arrow-${kind})"/><text x="48" y="58" class="econ-var">P</text><text x="690" y="365" class="econ-var">Y</text>`;
+  if (kind === "max") return `<figure class="econ-diagram mono-chart"><figcaption>Maximización: producir hasta IMg = CMg</figcaption><svg viewBox="0 0 760 410" role="img" aria-label="Maximización del monopolista">${axes}<line x1="118" y1="82" x2="610" y2="292" class="econ-mr"/><path d="M120 286C230 260 334 218 438 166C510 132 578 108 638 96" class="econ-mc"/><circle cx="392" cy="176" r="7" class="econ-point"/><line x1="392" y1="176" x2="392" y2="330" class="econ-guide"/><text x="368" y="360" class="econ-label">Ym</text><text x="520" y="116" class="econ-label mc-text">CMg</text><text x="552" y="280" class="econ-label mr-text">IMg</text><text x="146" y="184" class="econ-label good-zone">IMg &gt; CMg</text><text x="454" y="218" class="econ-label bad-zone">IMg &lt; CMg</text><text x="300" y="150" class="econ-label">IMg = CMg</text></svg></figure>`;
+  if (kind === "linear") return `<figure class="econ-diagram mono-chart"><figcaption>Demanda lineal, IMg y beneficio</figcaption><svg viewBox="0 0 760 430" role="img" aria-label="Demanda lineal e ingreso marginal del monopolio">${axes}<rect x="78" y="170" width="306" height="104" class="profit-area"/><line x1="108" y1="72" x2="650" y2="310" class="econ-demand"/><line x1="108" y1="72" x2="382" y2="330" class="econ-mr"/><line x1="110" y1="274" x2="640" y2="274" class="econ-cme-flat"/><line x1="110" y1="222" x2="640" y2="222" class="econ-mc-flat"/><circle cx="384" cy="222" r="7" class="econ-point"/><line x1="384" y1="222" x2="384" y2="330" class="econ-guide"/><line x1="78" y1="170" x2="384" y2="170" class="econ-guide"/><line x1="78" y1="274" x2="384" y2="274" class="econ-guide"/><text x="45" y="174" class="econ-label">Pm</text><text x="42" y="278" class="econ-label">CMe</text><text x="364" y="360" class="econ-label">Ym</text><text x="560" y="286" class="econ-label demand-text">Demanda</text><text x="268" y="278" class="econ-label">Beneficio</text><text x="296" y="300" class="econ-label mr-text">IMg</text><text x="560" y="216" class="econ-label mc-text">CMg</text></svg></figure>`;
+  if (kind === "exercise") return `<figure class="econ-diagram mono-chart"><figcaption>Ejemplo: D(p)=100-2p, C(y)=2y</figcaption><svg viewBox="0 0 760 430" role="img" aria-label="Ejercicio de monopolio con demanda D(p)=100-2p">${axes}<rect x="78" y="170" width="350" height="132" class="profit-area"/><line x1="108" y1="74" x2="640" y2="314" class="econ-demand"/><line x1="108" y1="74" x2="440" y2="330" class="econ-mr"/><line x1="108" y1="302" x2="640" y2="302" class="econ-mc-flat"/><circle cx="428" cy="302" r="7" class="econ-point"/><line x1="428" y1="302" x2="428" y2="330" class="econ-guide"/><line x1="78" y1="170" x2="428" y2="170" class="econ-guide"/><circle cx="428" cy="170" r="7" class="econ-point"/><text x="46" y="174" class="econ-label">26</text><text x="44" y="306" class="econ-label">2</text><text x="412" y="360" class="econ-label">48</text><text x="528" y="274" class="econ-label demand-text">P = 50 - y/2</text><text x="300" y="258" class="econ-label mr-text">IMg = 50 - y</text><text x="520" y="296" class="econ-label mc-text">CMg = 2</text><text x="220" y="232" class="econ-label">π = 1152</text></svg></figure>`;
+  if (kind === "welfare") return `<figure class="econ-diagram mono-chart"><figcaption>Ineficiencia asignativa del monopolio</figcaption><svg viewBox="0 0 760 430" role="img" aria-label="Excedentes y pérdida irrecuperable">${axes}<polygon points="78,78 78,168 390,168" class="consumer-area"/><polygon points="78,168 390,168 390,252 78,252" class="producer-area"/><polygon points="390,252 540,252 390,168" class="deadweight-area"/><line x1="110" y1="76" x2="650" y2="318" class="econ-demand"/><line x1="110" y1="76" x2="390" y2="330" class="econ-mr"/><line x1="110" y1="252" x2="650" y2="252" class="econ-mc-flat"/><line x1="390" y1="168" x2="390" y2="330" class="econ-guide"/><line x1="540" y1="252" x2="540" y2="330" class="econ-guide"/><line x1="78" y1="168" x2="390" y2="168" class="econ-guide"/><circle cx="390" cy="252" r="7" class="econ-point"/><circle cx="540" cy="252" r="7" class="econ-point"/><text x="44" y="172" class="econ-label">Pm</text><text x="44" y="256" class="econ-label">Pc</text><text x="370" y="360" class="econ-label">Ym</text><text x="522" y="360" class="econ-label">Yc</text><text x="150" y="136" class="econ-label">EC</text><text x="168" y="222" class="econ-label">EP</text><text x="430" y="225" class="econ-label">PIE</text><text x="568" y="300" class="econ-label demand-text">Demanda</text><text x="560" y="246" class="econ-label mc-text">CMg</text></svg></figure>`;
+  return `<figure class="econ-diagram mono-chart"><figcaption>Aumento del costo marginal</figcaption><svg viewBox="0 0 760 430" role="img" aria-label="Aumento de costo marginal en monopolio">${axes}<line x1="108" y1="74" x2="650" y2="318" class="econ-demand"/><line x1="108" y1="74" x2="392" y2="330" class="econ-mr"/><line x1="110" y1="278" x2="650" y2="278" class="econ-mc-flat"/><line x1="110" y1="222" x2="650" y2="222" class="econ-mc-flat cost-shift"/><line x1="333" y1="222" x2="333" y2="330" class="econ-guide"/><line x1="392" y1="278" x2="392" y2="330" class="econ-guide"/><line x1="78" y1="176" x2="333" y2="176" class="econ-guide"/><line x1="78" y1="152" x2="392" y2="152" class="econ-guide"/><circle cx="333" cy="222" r="7" class="econ-point"/><circle cx="392" cy="278" r="7" class="econ-point"/><text x="316" y="360" class="econ-label">Y2</text><text x="374" y="360" class="econ-label">Y1</text><text x="42" y="180" class="econ-label">P2</text><text x="42" y="156" class="econ-label">P1</text><text x="560" y="216" class="econ-label mc-text">CMg2</text><text x="560" y="272" class="econ-label mc-text">CMg1</text><text x="500" y="300" class="econ-label demand-text">Demanda</text><text x="430" y="114" class="econ-label">Sube P, baja Y</text></svg></figure>`;
+}
+
+function renderMonopolyWeekGuide() {
+  return String.raw`
+    <article class="week-guide">
+      <section class="week-hero">
+        <span class="eyebrow">Unidad 1 · Semana 2</span>
+        <h2>Monopolio: producción, precio e ineficiencia asignativa</h2>
+        <p class="week-subtitle">Elección de producción, demanda lineal, ingreso marginal, markup, beneficios y bienestar.</p>
+        <p>Esta semana estudia cómo decide una empresa que enfrenta toda la demanda del mercado. A diferencia de una firma competitiva, el monopolista reconoce que su precio depende de la cantidad que elige vender.</p>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading"><span>01</span><h3>Características del monopolio</h3><p>El monopolio concentra la venta de un bien en una sola empresa y por eso la firma enfrenta la demanda de mercado.</p></div>
+        <div class="source-grid">
+          <article class="study-card"><div class="card-icon">1</div><h4>Un solo vendedor</h4><p>La empresa no toma el precio como dato: sus decisiones de cantidad afectan el precio de mercado.</p><strong>Clave: poder para influir en precios.</strong></article>
+          <article class="study-card"><div class="card-icon">B</div><h4>Barreras de entrada</h4><p>Patentes, escala, control de insumos, licencias o redes pueden impedir que entren rivales.</p><strong>Clave: la entrada no disciplina el precio.</strong></article>
+          <article class="study-card"><div class="card-icon">D</div><h4>Demanda exógena</h4><p>La firma toma la demanda como restricción: puede elegir un punto sobre ella, no inventarla libremente.</p><strong>Clave: precio y cantidad se eligen juntos.</strong></article>
+        </div>
+        <div class="responsive-table"><table><thead><tr><th>Rasgo</th><th>Interpretación económica</th></tr></thead><tbody><tr><td>Bien único o sin sustitutos cercanos</td><td>La demanda que enfrenta la firma es menos sensible al precio.</td></tr><tr><td>Información imperfecta</td><td>Consumidores o rivales pueden no conocer todas las alternativas.</td></tr><tr><td>Altas barreras a la entrada</td><td>El margen puede sostenerse durante más tiempo.</td></tr></tbody></table></div>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading"><span>02</span><h3>Decisión de producción del monopolista</h3><p>El monopolista elige la cantidad \(y\). Luego el precio se lee en la demanda inversa \(p(y)\).</p></div>
+        <div class="formula-highlight"><div><strong>Beneficio</strong>\[\pi(y)=p(y)y-C(y)\]</div><div><strong>Condición de óptimo</strong>\[IMg=CMg\]</div></div>
+        <div class="mr-grid"><article class="mr-card positive"><h4>Si \(IMg>CMg\)</h4><p>La unidad adicional aporta más ingreso que costo. Conviene producir más.</p></article><article class="mr-card neutral"><h4>Si \(IMg=CMg\)</h4><p>La ganancia marginal neta es cero. Es el candidato natural a óptimo.</p></article><article class="mr-card negative"><h4>Si \(IMg<CMg\)</h4><p>La unidad adicional cuesta más de lo que aporta. No conviene expandir producción.</p></article></div>
+        ${monopolySvg("max")}
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading"><span>03</span><h3>Decisión de precio y elasticidad</h3><p>El precio elegido depende de la elasticidad. En el óptimo con poder de mercado, el monopolista opera en el tramo elástico de la demanda.</p></div>
+        <div class="formula-highlight"><div><strong>Regla de markup</strong>\[p(y)=\frac{CMg}{1-\frac{1}{|\varepsilon|}}\]</div><div><strong>Lectura</strong>\[P>CMg\quad\text{si la demanda no es perfectamente elástica}\]</div></div>
+        <aside class="key-idea"><strong>Idea clave</strong><p>Si la demanda es inelástica, aumentar la cantidad reduce el ingreso total y además aumenta costos; por eso no es consistente con maximización de beneficios. Si la demanda es perfectamente elástica, el margen desaparece y el resultado se acerca a competencia perfecta.</p></aside>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading"><span>04</span><h3>Demanda lineal e ingreso marginal</h3><p>Con demanda inversa lineal, el ingreso marginal parte del mismo intercepto que la demanda, pero cae al doble de velocidad.</p></div>
+        <div class="derivation-box"><div>\[p(y)=a-by\]</div><div>\[IT=p(y)y=ay-by^2\]</div><div>\[IMg=a-2by\]</div></div>
+        ${monopolySvg("linear")}
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading"><span>05</span><h3>Ejemplo numérico del monopolista</h3><p>Si \(D(p)=100-2p\), entonces \(p=50-\frac{y}{2}\). Con costo \(C(y)=2y\), el costo marginal es \(CMg=2\).</p></div>
+        <div class="derivation-box"><div>\[IT=50y-\frac{y^2}{2}\]</div><div>\[IMg=50-y\]</div><div>\[50-y=2\Rightarrow y=48\]</div><div>\[P=26,\quad \pi=(26-2)\cdot48=1152\]</div></div>
+        ${monopolySvg("exercise")}
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading"><span>06</span><h3>Oferta en monopolio</h3><p>En monopolio no existe una curva de oferta independiente. La cantidad elegida depende simultáneamente del costo marginal y de la forma de la demanda.</p></div>
+        <div class="text-columns"><p>En competencia perfecta, la curva de oferta se relaciona directamente con el costo marginal porque la empresa toma el precio como dado.</p><p>En monopolio, el mismo costo marginal puede generar distintos precios y cantidades si cambia la demanda. Por eso no hay una relación única precio-cantidad que pueda llamarse oferta.</p></div>
+        <div class="cause-grid"><article class="cause-card"><h4>Cambia precio, no cantidad</h4><p>Una rotación de demanda puede mantener el punto \(IMg=CMg\) en la misma cantidad.</p></article><article class="cause-card"><h4>Cambia cantidad, no precio</h4><p>Otra demanda puede desplazar la cantidad elegida sin modificar el precio observado.</p></article><article class="cause-card"><h4>Cambian ambos</h4><p>En general, precio y cantidad se mueven juntos porque dependen de demanda y costos.</p></article></div>
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading"><span>07</span><h3>Ineficiencia asignativa</h3><p>El monopolio restringe producción respecto de competencia perfecta: \(Y_m<Y_c\) y \(P_m>P_c\). La diferencia genera pérdida irrecuperable de eficiencia.</p></div>
+        ${monopolySvg("welfare")}
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading"><span>08</span><h3>Aumento del costo marginal</h3><p>Cuando aumenta el costo marginal, el monopolista reduce cantidad y eleva precio. El excedente del consumidor cae y los beneficios de la empresa también pueden disminuir.</p></div>
+        ${monopolySvg("cost")}
+      </section>
+
+      <section class="guide-section">
+        <div class="section-heading"><span>09</span><h3>Resumen comparativo</h3></div>
+        <div class="responsive-table"><table><thead><tr><th>Estructura</th><th>Rasgo clave</th><th>Precio y cantidad</th></tr></thead><tbody><tr><td>Competencia perfecta</td><td>Muchas empresas precio-aceptantes.</td><td>\(P=CMg\), sin poder de mercado.</td></tr><tr><td>Competencia monopolística</td><td>Muchas firmas con diferenciación.</td><td>Algún margen, limitado por sustitutos.</td></tr><tr><td>Oligopolio</td><td>Pocas empresas interdependientes.</td><td>Precio depende de reacción estratégica.</td></tr><tr><td><strong>Monopolio</strong></td><td><strong>Una sola empresa, barreras de entrada y demanda de mercado.</strong></td><td><strong>Elige \(Y_m\) con \(IMg=CMg\), cobra \(P_m\) en la demanda y genera \(P_m>CMg\).</strong></td></tr><tr><td>Monopolio natural</td><td>Costos medios decrecientes por escala.</td><td>Una firma puede ser eficiente, pero requiere regulación.</td></tr><tr><td>Monopsonio</td><td>Un comprador relevante.</td><td>Poder de mercado del lado de la compra.</td></tr></tbody></table></div>
+      </section>
+    </article>
+  `;
+}
+
 function renderGuide() {
   const topic = currentTopic();
   document.querySelector("#topicEyebrow").textContent = `${weekLabel(topic.week)} · Concepto clave`;
   if (state.courseId === "poder-mercado" && topic.id === "pm-poder-mercado") {
     guideView.innerHTML = renderMarketPowerWeekGuide();
+    typesetMath();
+    return;
+  }
+  if (state.courseId === "poder-mercado" && topic.id === "pm-monopolio") {
+    guideView.innerHTML = renderMonopolyWeekGuide();
     typesetMath();
     return;
   }
@@ -1295,11 +1379,91 @@ const marketWeek1Practice = {
   ]
 };
 
+const marketWeek2Theory = {
+  facil: [
+    ["¿Cuál es una característica central del monopolio?", "Una sola empresa vendedora", ["Muchas empresas precio-aceptantes", "Entrada libre sin barreras", "Producto perfectamente homogéneo con infinitos rivales"], "El monopolio concentra la venta en una sola empresa."],
+    ["El monopolista se diferencia de una firma competitiva porque:", "No toma el precio como dato", ["No enfrenta costos", "No tiene demanda", "Siempre vende gratis"], "El monopolista reconoce que precio y cantidad están unidos por la demanda."],
+    ["La condición básica de maximización del monopolista es:", "\\(IMg=CMg\\)", ["\\(P=0\\)", "\\(CMe=0\\)", "\\(IT=CT\\) siempre"], "El óptimo se alcanza cuando el ingreso de la unidad adicional iguala su costo."],
+    ["Si \\(IMg>CMg\\), al monopolista le conviene:", "Producir más", ["Producir menos", "Cerrar siempre", "Ignorar la demanda"], "La unidad adicional aporta más ingreso que costo."],
+    ["Si \\(IMg<CMg\\), producir una unidad más:", "Reduce el beneficio", ["Aumenta siempre el beneficio", "No cambia nada", "Elimina el costo total"], "El costo marginal supera al ingreso marginal."],
+    ["En monopolio, el precio se obtiene:", "Leyéndolo en la demanda para la cantidad elegida", ["Igualándolo siempre a cero", "Tomándolo como dato externo", "Sumando empresas competidoras"], "Primero se decide \\(Y_m\\); luego \\(P_m=p(Y_m)\\)."],
+    ["Con demanda lineal \\(p(y)=a-by\\), el ingreso marginal es:", "\\(IMg=a-2by\\)", ["\\(IMg=a-by\\)", "\\(IMg=2a-by\\)", "\\(IMg=b-ay\\)"], "El ingreso total es \\(ay-by^2\\) y su derivada es \\(a-2by\\)."],
+    ["En monopolio, normalmente se cumple:", "\\(P>CMg\\)", ["\\(P=CMg\\) siempre", "\\(P<0\\)", "\\(CMg=0\\) siempre"], "El poder de mercado permite cobrar un precio por encima del costo marginal."],
+    ["¿Existe curva de oferta en monopolio?", "No, porque la cantidad depende de demanda y costo marginal", ["Sí, siempre es la demanda", "Sí, siempre es el costo medio", "Sí, es horizontal"], "No hay una relación única precio-cantidad independiente de la demanda."],
+    ["La pérdida irrecuperable aparece porque:", "El monopolio produce menos que la cantidad eficiente", ["El monopolio produce infinitamente", "El precio es igual a cero", "No existen consumidores"], "Al producir \\(Y_m<Y_c\\), quedan intercambios valiosos sin realizarse."]
+  ],
+  medio: [
+    ["¿Por qué el \\(IMg\\) queda por debajo de la demanda?", "Porque vender más exige bajar el precio de unidades previas", ["Porque el costo marginal sube", "Porque la demanda es vertical", "Porque el precio no existe"], "Con demanda descendente, la rebaja afecta unidades inframarginales."],
+    ["El monopolista produce en el tramo elástico porque:", "En el tramo inelástico aumentar cantidad reduce ingreso y eleva costos", ["Ahí el precio es cero", "Ahí no hay demanda", "Ahí el costo marginal desaparece"], "Si \\(|\\varepsilon|<1\\), \\(IMg<0\\); no conviene con \\(CMg\\ge0\\)."],
+    ["La fórmula de markup muestra que el precio depende de:", "Costo marginal y elasticidad", ["Solo costos fijos", "Solo número de trabajadores", "Solo impuestos"], "\\(p=CMg/(1-1/|\\varepsilon|)\\) vincula margen y sensibilidad."],
+    ["Si la demanda se vuelve más elástica, el margen del monopolista tiende a:", "Reducirse", ["Aumentar necesariamente", "Volverse infinito", "No depender de nada"], "Mayor elasticidad disciplina el precio."],
+    ["Si \\(p(y)=a-by\\), el \\(IMg\\) corta el eje de cantidad:", "En la mitad que la demanda", ["En el doble que la demanda", "En el mismo punto siempre", "Nunca corta el eje"], "La demanda corta en \\(a/b\\); el IMg en \\(a/(2b)\\)."],
+    ["El beneficio \\(\\pi=(P_m-CMe)Y_m\\) se interpreta como:", "Margen medio por cantidad vendida", ["Solo excedente del consumidor", "Costo fijo puro", "Pérdida social total"], "Es un rectángulo de margen unitario multiplicado por unidades."],
+    ["Comparado con competencia perfecta, el monopolio suele tener:", "Mayor precio y menor cantidad", ["Menor precio y mayor cantidad", "Precio igual y cantidad infinita", "Costo marginal cero"], "El monopolio restringe producción para sostener precio."],
+    ["Si aumenta el costo marginal, el monopolista normalmente:", "Sube precio y reduce cantidad", ["Baja precio y aumenta cantidad", "No cambia nada", "Produce infinito"], "El cruce \\(IMg=CMg\\) ocurre a menor cantidad."],
+    ["La inexistencia de oferta monopólica significa que:", "No hay una curva única que asocie cada precio con una cantidad ofrecida", ["El monopolista nunca vende", "No hay costos", "No hay demanda"], "La decisión depende de toda la curva de demanda, no solo del precio."],
+    ["La ineficiencia asignativa se resume con:", "\\(Y_m<Y_c\\) y \\(P_m>P_c\\)", ["\\(Y_m>Y_c\\) y \\(P_m<P_c\\)", "\\(Y_m=0\\) siempre", "\\(P_m=0\\) siempre"], "El monopolio vende menos y cobra más que la asignación eficiente."]
+  ],
+  dificil: [
+    ["Si una firma produce donde \\(|\\varepsilon|<1\\) y \\(CMg>0\\), ¿qué ajuste mejora beneficios?", "Reducir producción y elevar precio", ["Aumentar producción", "Mantener cantidad porque ya es óptima", "Bajar precio hasta cero"], "En zona inelástica, reducir cantidad eleva ingreso total y baja costos."],
+    ["Dos demandas distintas cruzan el mismo \\(CMg\\). ¿Por qué no basta el \\(CMg\\) para definir oferta monopólica?", "Porque el \\(IMg\\) depende de la forma de cada demanda", ["Porque el costo marginal no existe", "Porque el precio es fijo", "Porque la demanda es irrelevante"], "La cantidad se decide con \\(IMg=CMg\\), y el IMg cambia con la demanda."],
+    ["Cuando la demanda es perfectamente elástica, el monopolista se parece a competencia perfecta porque:", "No puede fijar margen sobre el precio de mercado", ["Tiene barreras infinitas", "El IMg es negativo siempre", "La cantidad eficiente es cero"], "Una demanda horizontal disciplina completamente el precio."],
+    ["¿Por qué el área de pérdida irrecuperable no es transferencia al monopolista?", "Porque representa excedente que nadie recibe", ["Porque todo pasa al productor", "Porque todo pasa al Estado", "Porque es costo fijo"], "Son intercambios no realizados donde disposición a pagar supera al costo."],
+    ["Si el monopolista enfrenta un aumento de \\(CMg\\), el excedente del consumidor cae porque:", "Sube el precio y baja la cantidad consumida", ["Baja el precio y sube la cantidad", "El precio no cambia jamás", "La demanda desaparece"], "El nuevo cruce implica menor \\(Y\\) y mayor precio sobre la demanda."],
+    ["El punto competitivo se identifica con:", "\\(P=CMg\\)", ["\\(IMg=CMg\\) del monopolista", "\\(P=0\\)", "\\(CMe=0\\)"], "La eficiencia asignativa requiere precio igual a costo marginal."],
+    ["En \\(p=a-by\\), si aumenta \\(b\\), manteniendo \\(a\\), la demanda es más inclinada. El monopolista enfrenta:", "Una caída más rápida del precio al expandir cantidad", ["Precio constante", "Ingreso marginal igual a demanda", "Costo marginal negativo"], "Mayor pendiente reduce más el precio al vender unidades adicionales."],
+    ["Si el monopolista tiene beneficios positivos, eso significa que:", "\\(P_m>CMe(Y_m)\\)", ["\\(P_m<CMg\\)", "\\(Y_m=Y_c\\)", "\\(IMg<0\\) siempre"], "El rectángulo de beneficio existe cuando precio supera costo medio."],
+    ["La regla de markup exige trabajar con elasticidad en valor absoluto porque:", "La elasticidad de demanda es negativa y el margen se interpreta positivo", ["El precio es negativo", "El costo marginal es negativo", "No existe demanda"], "Usar \\(|\\varepsilon|\\) evita confundir el signo de la pendiente."],
+    ["Una regulación que fuerza \\(P=CMg\\) busca:", "Eliminar la pérdida irrecuperable, aunque puede afectar cobertura de costos", ["Maximizar el margen monopólico", "Reducir cantidad por debajo de \\(Y_m\\)", "Eliminar consumidores"], "El precio eficiente iguala disposición marginal y costo marginal."]
+  ]
+};
+
+const marketWeek2Practice = {
+  facil: [
+    choiceRow("Si \\(P=80-2Y\\) y \\(Y=10\\), el precio es:", "60", ["80", "20", "100"], "\\(P=80-2(10)=60\\)."),
+    choiceRow("Si \\(P=120-Y\\) y \\(Y=30\\), el precio es:", "90", ["150", "30", "120"], "\\(P=120-30=90\\)."),
+    choiceRow("Para \\(P=60-0.5Y\\), si \\(Y=20\\), \\(P\\) es:", "50", ["40", "60", "10"], "\\(P=60-0.5(20)=50\\)."),
+    choiceRow("Si \\(P=50\\) y \\(Y=12\\), el ingreso total es:", "600", ["62", "416", "24"], "\\(IT=P\\cdot Y=50\\cdot12=600\\)."),
+    choiceRow("Para \\(P=80-2Y\\), el ingreso marginal es:", "\\(IMg=80-4Y\\)", ["\\(IMg=80-2Y\\)", "\\(IMg=160-2Y\\)", "\\(IMg=40-Y\\)"], "Si \\(P=a-bY\\), entonces \\(IMg=a-2bY\\)."),
+    choiceRow("Para \\(P=120-Y\\), el ingreso marginal es:", "\\(IMg=120-2Y\\)", ["\\(IMg=120-Y\\)", "\\(IMg=240-Y\\)", "\\(IMg=Y-120\\)"], "La pendiente del IMg es el doble de la demanda inversa."),
+    choiceRow("Si \\(IMg=50-Y\\) y \\(CMg=2\\), la cantidad monopólica es:", "48", ["52", "26", "50"], "\\(50-Y=2\\Rightarrow Y=48\\)."),
+    choiceRow("Con \\(P=50-Y/2\\) y \\(Y=48\\), el precio es:", "26", ["24", "48", "50"], "\\(P=50-48/2=26\\)."),
+    choiceRow("Si \\(P=26\\), \\(CMe=2\\) y \\(Y=48\\), el beneficio es:", "1152", ["1248", "96", "48"], "\\(\\pi=(26-2)48=1152\\)."),
+    choiceRow("En competencia perfecta con \\(P=80-2Y\\) y \\(CMg=20\\), la cantidad cumple:", "\\(Y=30\\)", ["\\(Y=15\\)", "\\(Y=20\\)", "\\(Y=50\\)"], "\\(P=CMg\\Rightarrow 80-2Y=20\\Rightarrow Y=30\\).")
+  ],
+  medio: [
+    choiceRow("Para \\(P=80-2Y\\) y \\(CMg=20\\), la cantidad monopólica es:", "15", ["30", "20", "10"], "\\(IMg=80-4Y\\). Igualando a 20: \\(Y=15\\)."),
+    choiceRow("Con \\(P=80-2Y\\) y \\(Y_m=15\\), el precio monopólico es:", "50", ["20", "30", "60"], "\\(P=80-2(15)=50\\)."),
+    choiceRow("Con \\(P=80-2Y\\), \\(CMg=CMe=20\\), el beneficio monopólico es:", "450", ["900", "300", "600"], "\\(\\pi=(50-20)15=450\\)."),
+    choiceRow("Para \\(P=120-Y\\) y \\(CMg=30\\), la cantidad monopólica es:", "45", ["90", "30", "60"], "\\(IMg=120-2Y=30\\Rightarrow Y=45\\)."),
+    choiceRow("Con \\(P=120-Y\\), \\(CMg=30\\), el precio monopólico es:", "75", ["45", "90", "30"], "\\(P=120-45=75\\)."),
+    choiceRow("Con \\(P=120-Y\\), \\(CMe=30\\), \\(Y_m=45\\), el beneficio es:", "2025", ["3375", "1350", "4050"], "\\(\\pi=(75-30)45=2025\\)."),
+    choiceRow("Para \\(P=60-0.5Y\\) y \\(CMg=10\\), \\(Y_m\\) es:", "50", ["100", "60", "25"], "\\(IMg=60-Y=10\\Rightarrow Y=50\\)."),
+    choiceRow("Con \\(P=60-0.5Y\\) y \\(Y_m=50\\), \\(P_m\\) es:", "35", ["10", "25", "50"], "\\(P=60-0.5(50)=35\\)."),
+    choiceRow("En competencia perfecta con \\(P=120-Y\\) y \\(CMg=30\\), \\(Y_c\\) es:", "90", ["45", "120", "30"], "\\(120-Y=30\\Rightarrow Y_c=90\\)."),
+    choiceRow("Para \\(P=80-2Y\\) y \\(CMg=20\\), la pérdida de cantidad frente a competencia es:", "15", ["30", "45", "5"], "\\(Y_c=30\\) y \\(Y_m=15\\), entonces la diferencia es 15.")
+  ],
+  dificil: [
+    choiceRow("Con \\(P=100-Y\\) y \\(CMg=20\\), la pérdida irrecuperable es:", "800", ["1600", "400", "2000"], "\\(Y_m=40\\), \\(Y_c=80\\), diferencia de precio en \\(Y_m\\): \\(60-20=40\\). PIE \\(=\\frac12(80-40)(40)=800\\).", monopolySvg("welfare")),
+    choiceRow("Para \\(P=80-2Y\\), \\(CMg=20\\), la pérdida irrecuperable es:", "225", ["450", "900", "150"], "\\(Y_m=15\\), \\(Y_c=30\\), \\(P_m=50\\), \\(Pc=20\\). PIE \\(=\\frac12(15)(30)=225\\)."),
+    choiceRow("Si \\(CMg\\) sube de 20 a 40 con \\(P=100-Y\\), \\(Y_m\\) cambia de:", "40 a 30", ["80 a 60", "30 a 40", "20 a 40"], "\\(IMg=100-2Y\\). Con 20: \\(Y=40\\); con 40: \\(Y=30\\).", monopolySvg("cost")),
+    choiceRow("Con \\(P=100-Y\\), al subir \\(CMg\\) de 20 a 40, el precio monopólico cambia de:", "60 a 70", ["20 a 40", "80 a 60", "70 a 60"], "Los precios son \\(100-40=60\\) y \\(100-30=70\\)."),
+    choiceRow("Con \\(P=120-Y\\), \\(CMg=30\\), el excedente del consumidor en monopolio es:", "1012.5", ["2025", "4050", "506.25"], "\\(Y_m=45\\), \\(P_m=75\\). EC \\(=\\frac12(120-75)45=1012.5\\)."),
+    choiceRow("Con \\(P=120-Y\\), \\(CMg=30\\), el excedente total eficiente en competencia es:", "4050", ["2025", "1012.5", "6075"], "\\(Y_c=90\\). Excedente total \\(=\\frac12(120-30)90=4050\\)."),
+    choiceRow("Con \\(P=60-0.5Y\\), \\(CMg=10\\), la cantidad competitiva es:", "100", ["50", "35", "25"], "\\(60-0.5Y=10\\Rightarrow Y_c=100\\)."),
+    choiceRow("Con \\(P=60-0.5Y\\), \\(CMg=10\\), la pérdida irrecuperable es:", "625", ["1250", "312.5", "2500"], "\\(Y_m=50\\), \\(Y_c=100\\), \\(P_m=35\\). PIE \\(=\\frac12(50)(25)=625\\)."),
+    choiceRow("En el ejemplo \\(D(p)=100-2p\\), \\(C(y)=2y\\), la cantidad competitiva sería:", "96", ["48", "50", "26"], "Demanda inversa: \\(P=50-y/2\\). Competencia: \\(50-y/2=2\\Rightarrow y=96\\)."),
+    choiceRow("En el ejemplo \\(D(p)=100-2p\\), \\(C(y)=2y\\), la cantidad monopólica es la mitad de la competitiva porque:", "El IMg corta el eje de cantidad a la mitad que la demanda", ["El costo marginal es cero", "La demanda es vertical", "El precio competitivo es igual al monopólico"], "En demanda lineal con \\(CMg\\) constante bajo, el IMg tiene doble pendiente y reduce la cantidad elegida.")
+  ]
+};
+
 const marketTheoryData = makeMarketTheoryData(marketWeeks);
 marketTheoryData["pm-semana-01"] = marketWeek1Theory;
+marketTheoryData["pm-semana-02"] = marketWeek2Theory;
 
 const marketPracticeBanks = makeMarketPracticeBanks(marketWeeks);
 marketPracticeBanks["pm-semana-01"] = marketWeek1Practice;
+marketPracticeBanks["pm-semana-02"] = marketWeek2Practice;
 
 const courseContent = {
   "economia-produccion": productionCourse,

@@ -1971,6 +1971,74 @@ main {
   stroke: none;
 }
 
+.mono-chart {
+  max-width: 980px;
+}
+
+.econ-mr,
+.econ-mc,
+.econ-demand,
+.econ-cme-flat,
+.econ-mc-flat {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.econ-mr {
+  stroke: #5f8fbd;
+  stroke-width: 4;
+}
+
+.econ-mc {
+  stroke: #be3f35;
+  stroke-width: 4.5;
+}
+
+.econ-cme-flat {
+  stroke: #2f8f6b;
+  stroke-width: 4;
+}
+
+.econ-mc-flat {
+  stroke: #be3f35;
+  stroke-width: 4;
+}
+
+.cost-shift {
+  stroke-width: 4.5;
+}
+
+.profit-area {
+  fill: rgba(47, 143, 107, 0.16);
+  stroke: rgba(47, 143, 107, 0.24);
+}
+
+.consumer-area {
+  fill: rgba(77, 132, 185, 0.18);
+}
+
+.producer-area {
+  fill: rgba(47, 143, 107, 0.18);
+}
+
+.deadweight-area {
+  fill: rgba(203, 91, 54, 0.28);
+  stroke: rgba(203, 91, 54, 0.42);
+}
+
+.good-zone {
+  fill: #2f684f;
+}
+
+.bad-zone {
+  fill: #9b3b32;
+}
+
+.mc-text {
+  fill: #a43b32;
+}
+
 .wide-chart {
   max-width: 980px;
 }
