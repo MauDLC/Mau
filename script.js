@@ -26,6 +26,13 @@ const courses = [
     title: "Análisis de Estados Financieros",
     subtitle: "Curso base",
     description: "Balance general, estado de resultados, flujo de efectivo, ratios y diagnóstico financiero."
+  },
+  {
+    id: "ingles-placement-upc",
+    acronym: "ING",
+    title: "UPC English Placement",
+    subtitle: "Basic · A1 · A2 · B1 · B2",
+    description: "Level-based route for grammar, reading, listening and vocabulary."
   }
 ];
 
@@ -52,7 +59,7 @@ let topics = [
     formulas: ["\\[\\operatorname{PMg}_i=\\frac{\\partial y}{\\partial x_i}\\]", "\\[\\operatorname{RTS}_{12}=-\\frac{\\operatorname{PMg}_1}{\\operatorname{PMg}_2}\\]"],
     explanation: [
       "Una isocuanta muestra combinaciones de factores que producen el mismo nivel de producto. Si te mueves sobre la misma isocuanta, cambias la mezcla de factores, pero no cambias y.",
-      "El producto marginal mide cuánto aumenta y cuando sube un factor, manteniendo los demás constantes. Es una idea de corto plazo cuando algún factor no puede ajustarse.",
+      "El producto marginal mide cuánto aumenta la producción cuando sube un factor, manteniendo los demás constantes. Es una idea de corto plazo cuando algún factor no puede ajustarse.",
       "La RTS es la pendiente de la isocuanta: indica cuánto de un factor puede sacrificarse si se usa más del otro manteniendo la producción."
     ],
     example: "Si \\(PMg_1=8\\) y \\(PMg_2=4\\), entonces \\(RTS=-\\frac{8}{4}=-2\\). La empresa puede reducir 2 unidades de \\(x_2\\) si aumenta 1 unidad de \\(x_1\\), manteniendo \\(y\\) constante de forma aproximada.",
@@ -122,7 +129,7 @@ let topics = [
     formulas: ["\\[C(y)=C_v(y)+F\\]", "\\[\\operatorname{CMe}=\\operatorname{CVMe}+\\operatorname{CFMe}\\]", "\\[\\operatorname{CMg}=\\frac{\\partial C}{\\partial y}\\]"],
     explanation: [
       "En el corto plazo hay factores fijos. Por eso el costo total se separa en costo variable y costo fijo.",
-      "El costo fijo medio cae cuando aumenta y porque el mismo costo fijo se reparte entre más unidades.",
+      "El costo fijo medio cae cuando aumenta la producción porque el mismo costo fijo se reparte entre más unidades.",
       "El costo marginal cruza al costo medio en su mínimo: si el marginal está debajo del promedio, lo baja; si está encima, lo sube."
     ],
     example: "Si \\(C(y)=y^2+100\\), entonces \\(CMg=2y\\). Para \\(y=10\\), \\(CMg=20\\). El costo fijo medio es \\(\\frac{100}{10}=10\\).",
@@ -162,6 +169,9 @@ const coursesView = document.querySelector("#coursesView");
 const appShell = document.querySelector("#appShell");
 const courseList = document.querySelector("#courseList");
 const weekTabs = document.querySelector("#weekTabs");
+const classesPanel = document.querySelector("#classesPanel");
+const toggleClassesButton = document.querySelector("#toggleClasses");
+const placementTargetDate = new Date("2026-06-20T10:00:00-05:00");
 
 function typesetMath() {
   if (window.MathJax?.typesetPromise) {
@@ -465,8 +475,10 @@ function isFinanceUnifiedExamWeek() {
 function configureWeekModeTabs() {
   const isFinanceWeek = isFinanceUnifiedExamWeek();
   const hasPractice = practiceBank(state.weekId).length > 0;
+  const hasBalancePractice = state.courseId === "analisis-estados-financieros" && state.weekId === "aef-semana-02";
   const learnButton = document.querySelector('.week-mode-btn[data-section="learn"]');
   const theoryButton = document.querySelector('.week-mode-btn[data-section="theory"]');
+  const balanceButton = document.querySelector('.week-mode-btn[data-section="balance"]');
   const practiceButton = document.querySelector('.week-mode-btn[data-section="practice"]');
   const theoryEyebrow = document.querySelector("#theory .section-head .eyebrow");
   const theoryTitle = document.querySelector("#theoryTitle");
@@ -485,6 +497,10 @@ function configureWeekModeTabs() {
   if (theoryButton) {
     theoryButton.hidden = false;
     theoryButton.textContent = isFinanceWeek ? "Examen" : "Examen teórico";
+  }
+  if (balanceButton) {
+    balanceButton.hidden = !hasBalancePractice;
+    balanceButton.textContent = "Balance General";
   }
 
   if (theoryEyebrow) theoryEyebrow.textContent = isFinanceWeek ? weekLabel(state.weekId) : "Examen de teoría";
@@ -517,6 +533,7 @@ function selectWeek(weekId) {
   renderGuide();
   renderChoiceQuiz(weekId, state.theoryLevel);
   renderPracticeQuiz(weekId, state.practiceLevel);
+  renderBalancePracticeArea();
   configureWeekModeTabs();
   activateSection("learn");
 }
@@ -538,8 +555,8 @@ function renderMarketPowerWeekGuide() {
           <p>El poder de mercado aparece cuando una empresa no toma el precio como dado, sino que puede influir sobre él mediante sus decisiones de producción, precio o estrategia.</p>
         </div>
         <div class="source-grid">
-          <article class="study-card"><div class="card-icon">E</div><h4>Elasticidad de la demanda</h4><p>Mientras menos sensible sea la cantidad demandada frente a cambios en el precio, mayor capacidad tendrá la empresa para subir precios sin perder muchos compradores.</p><strong>Idea clave: demanda menos elástica, mayor margen posible.</strong><small>Ejemplo: un medicamento sin sustitutos suele permitir mayor margen que una bebida con muchas alternativas.</small></article>
-          <article class="study-card"><div class="card-icon">N</div><h4>Número de empresas</h4><p>Mientras menos empresas existan, mayor será la posibilidad de que una firma influya en el precio o en la cantidad del mercado.</p><strong>Idea clave: menos rivales, mayor influencia.</strong><small>Ejemplo: un proveedor único de un servicio local pesa más que un vendedor en un mercado con muchos competidores.</small></article>
+          <article class="study-card"><div class="card-icon">E</div><h4>Elasticidad de la demanda</h4><p>Cuanto menos sensible sea la cantidad demandada frente a cambios en el precio, mayor capacidad tendrá la empresa para subir precios sin perder muchos compradores.</p><strong>Idea clave: demanda menos elástica, mayor margen posible.</strong><small>Ejemplo: un medicamento sin sustitutos suele permitir mayor margen que una bebida con muchas alternativas.</small></article>
+          <article class="study-card"><div class="card-icon">N</div><h4>Número de empresas</h4><p>Cuantas menos empresas existan, mayor será la posibilidad de que una firma influya en el precio o en la cantidad del mercado.</p><strong>Idea clave: menos rivales, mayor influencia.</strong><small>Ejemplo: un proveedor único de un servicio local pesa más que un vendedor en un mercado con muchos competidores.</small></article>
           <article class="study-card"><div class="card-icon">R</div><h4>Relación entre empresas</h4><p>Si las empresas compiten agresivamente, el poder de mercado disminuye. Si coordinan, coluden o actúan estratégicamente, puede aumentar.</p><strong>Idea clave: la conducta estratégica también crea poder.</strong><small>Ejemplo: dos firmas que evitan guerras de precios pueden sostener precios más altos.</small></article>
         </div>
       </section>
@@ -566,7 +583,7 @@ function renderMarketPowerWeekGuide() {
 
       <section class="guide-section">
         <div class="section-heading"><span>04</span><h3>Determinantes de la elasticidad</h3></div>
-        <div class="responsive-table"><table><thead><tr><th>Determinante</th><th>Efecto sobre elasticidad</th><th>Ejemplo</th></tr></thead><tbody><tr><td>Sustituibilidad del bien</td><td>Más sustitutos disponibles → demanda más elástica.</td><td>Una marca de café enfrenta sustitutos cercanos.</td></tr><tr><td>Generalidad del bien</td><td>Un bien general suele tener demanda menos elástica; uno específico, más elástica.</td><td>Alimentos en general vs. una variedad específica.</td></tr><tr><td>Porcentaje del ingreso</td><td>Mayor proporción del ingreso destinada al bien → mayor elasticidad.</td><td>Un auto pesa más que una goma de mascar.</td></tr><tr><td>Tiempo</td><td>A mayor tiempo para adaptarse → mayor elasticidad.</td><td>Con gasolina cara, después se puede cambiar transporte.</td></tr><tr><td>Bienes esenciales</td><td>Mientras más necesario sea un bien → menor elasticidad.</td><td>Medicinas urgentes o servicios básicos.</td></tr></tbody></table></div>
+        <div class="responsive-table"><table><thead><tr><th>Determinante</th><th>Efecto sobre elasticidad</th><th>Ejemplo</th></tr></thead><tbody><tr><td>Sustituibilidad del bien</td><td>Más sustitutos disponibles → demanda más elástica.</td><td>Una marca de café enfrenta sustitutos cercanos.</td></tr><tr><td>Generalidad del bien</td><td>Un bien general suele tener demanda menos elástica; uno específico, más elástica.</td><td>Alimentos en general vs. una variedad específica.</td></tr><tr><td>Porcentaje del ingreso</td><td>Mayor proporción del ingreso destinada al bien → mayor elasticidad.</td><td>Un auto pesa más que una goma de mascar.</td></tr><tr><td>Tiempo</td><td>A mayor tiempo para adaptarse → mayor elasticidad.</td><td>Con gasolina cara, después se puede cambiar de transporte.</td></tr><tr><td>Bienes esenciales</td><td>Cuanto más necesario sea un bien → menor elasticidad.</td><td>Medicinas urgentes o servicios básicos.</td></tr></tbody></table></div>
       </section>
 
       <section class="guide-section">
@@ -696,7 +713,7 @@ function monopolySvg(kind) {
       title: "Elección de producción",
       description: "El monopolista expande producción mientras el ingreso marginal supere al costo marginal.",
       file: "monopoly-production",
-      alt: "Diagrama TikZ de elección de producción del monopolio con IMg, CMg y y estrella",
+      alt: "Diagrama TikZ de elección de producción del monopolio con IMg, CMg e y estrella",
       note: "El óptimo se ubica donde la contribución marginal neta se vuelve cero."
     },
     linear: {
@@ -1306,9 +1323,306 @@ function renderFinanceWeek1Guide() {
   `;
 }
 
+const balancePracticeLevels = {
+  facil: {
+    classify: [
+      { id: "caja", name: "Caja", amount: 1200, category: "Activo", subcategory: "activo-corriente", explain: "Caja pertenece al activo corriente porque representa dinero disponible para la empresa." },
+      { id: "bancos", name: "Bancos", amount: 5200, category: "Activo", subcategory: "activo-corriente", explain: "Bancos es activo corriente porque es efectivo disponible en cuentas bancarias." },
+      { id: "mercaderias", name: "Mercaderías", amount: 8800, category: "Activo", subcategory: "activo-corriente", explain: "Mercaderías es activo corriente porque se espera vender dentro del ciclo normal de operaciones." },
+      { id: "proveedores", name: "Proveedores", amount: 3900, category: "Pasivo", subcategory: "pasivo-corriente", explain: "Proveedores pertenece al pasivo corriente porque es una obligación de pago de corto plazo." },
+      { id: "capital", name: "Capital social", amount: 11300, category: "Patrimonio", subcategory: "patrimonio", explain: "Capital social pertenece al patrimonio porque representa el aporte de los socios." }
+    ],
+    builder: [
+      { id: "efectivo", name: "Efectivo", amount: 3000, category: "Activo", subcategory: "activo-corriente", explain: "Efectivo es activo corriente por su disponibilidad inmediata." },
+      { id: "inventarios", name: "Inventarios", amount: 7000, category: "Activo", subcategory: "activo-corriente", explain: "Inventarios es activo corriente porque se espera vender en el ciclo normal." },
+      { id: "mobiliario", name: "Mobiliario", amount: 10000, category: "Activo", subcategory: "activo-no-corriente", explain: "Mobiliario es activo no corriente porque se usa por más de un periodo." },
+      { id: "proveedores-bg", name: "Proveedores", amount: 5000, category: "Pasivo", subcategory: "pasivo-corriente", explain: "Proveedores es pasivo corriente por ser deuda de corto plazo." },
+      { id: "capital-bg", name: "Capital social", amount: 15000, category: "Patrimonio", subcategory: "patrimonio", explain: "Capital social es patrimonio porque corresponde a aportes de propietarios." }
+    ]
+  },
+  medio: {
+    classify: [
+      { id: "cxc", name: "Cuentas por cobrar", amount: 9600, category: "Activo", subcategory: "activo-corriente", explain: "Cuentas por cobrar es activo corriente porque representa derechos de cobro de corto plazo." },
+      { id: "maquinaria", name: "Maquinaria", amount: 34000, category: "Activo", subcategory: "activo-no-corriente", explain: "Maquinaria es activo no corriente porque se usa en operaciones durante varios periodos." },
+      { id: "tributos", name: "Tributos por pagar", amount: 4200, category: "Pasivo", subcategory: "pasivo-corriente", explain: "Tributos por pagar es pasivo corriente porque es una obligación exigible en el corto plazo." },
+      { id: "prestamo-lp", name: "Préstamo bancario a largo plazo", amount: 18000, category: "Pasivo", subcategory: "pasivo-no-corriente", explain: "El préstamo de largo plazo es pasivo no corriente por vencer en más de un año." },
+      { id: "reservas", name: "Reservas", amount: 5200, category: "Patrimonio", subcategory: "patrimonio", explain: "Las reservas son patrimonio porque provienen de utilidades retenidas con destino específico." }
+    ],
+    builder: [
+      { id: "bancos-m", name: "Bancos", amount: 10500, category: "Activo", subcategory: "activo-corriente", explain: "Bancos se clasifica como activo corriente por disponibilidad." },
+      { id: "cobrar-m", name: "Cuentas por cobrar comerciales", amount: 14500, category: "Activo", subcategory: "activo-corriente", explain: "Son derechos de cobro de corto plazo." },
+      { id: "maquinaria-m", name: "Maquinaria", amount: 42000, category: "Activo", subcategory: "activo-no-corriente", explain: "Maquinaria es activo no corriente." },
+      { id: "tributos-m", name: "Tributos por pagar", amount: 7000, category: "Pasivo", subcategory: "pasivo-corriente", explain: "Tributos por pagar es deuda corriente." },
+      { id: "prestamo-m", name: "Préstamo bancario a largo plazo", amount: 22000, category: "Pasivo", subcategory: "pasivo-no-corriente", explain: "Vence en un plazo mayor a un año." },
+      { id: "capital-m", name: "Capital social", amount: 30000, category: "Patrimonio", subcategory: "patrimonio", explain: "Capital social representa aportes de socios." },
+      { id: "utilidades-m", name: "Resultados acumulados", amount: 8000, category: "Patrimonio", subcategory: "patrimonio", explain: "Resultados acumulados forman parte del patrimonio." }
+    ]
+  },
+  dificil: {
+    classify: [
+      { id: "depreciacion", name: "Depreciación acumulada", amount: -7600, category: "Activo", subcategory: "activo-no-corriente", explain: "Depreciación acumulada es una cuenta correctora del activo no corriente; reduce el valor de los activos fijos." },
+      { id: "utilidad", name: "Utilidad del ejercicio", amount: 12800, category: "Patrimonio", subcategory: "patrimonio", explain: "La utilidad del ejercicio incrementa el patrimonio mientras no se distribuya." },
+      { id: "inventario-final", name: "Inventario final", amount: 15400, category: "Activo", subcategory: "activo-corriente", explain: "Inventario final es activo corriente porque se espera vender en el ciclo normal." },
+      { id: "cxc-vencidas", name: "Cuentas por cobrar vencidas", amount: 6800, category: "Activo", subcategory: "activo-corriente", explain: "Aunque estén vencidas, siguen siendo derechos de cobro; debe evaluarse su recuperabilidad." },
+      { id: "obligaciones", name: "Obligaciones financieras", amount: 25000, category: "Pasivo", subcategory: "pasivo-no-corriente", explain: "Obligaciones financieras de largo plazo pertenecen al pasivo no corriente." }
+    ],
+    builder: [
+      { id: "caja-d", name: "Caja y bancos", amount: 9000, category: "Activo", subcategory: "activo-corriente", explain: "Es efectivo disponible, por eso es activo corriente." },
+      { id: "inv-d", name: "Inventario final", amount: 18000, category: "Activo", subcategory: "activo-corriente", explain: "El inventario final se espera vender dentro del ciclo normal." },
+      { id: "cxc-d", name: "Cuentas por cobrar vencidas", amount: 6000, category: "Activo", subcategory: "activo-corriente", explain: "Son derechos de cobro; si hubiera incobrabilidad se reconocería una estimación separada." },
+      { id: "ppe-d", name: "Propiedad, planta y equipo", amount: 70000, category: "Activo", subcategory: "activo-no-corriente", explain: "Son activos usados por más de un periodo." },
+      { id: "dep-d", name: "Depreciación acumulada", amount: -16000, category: "Activo", subcategory: "activo-no-corriente", explain: "Es cuenta correctora del activo no corriente y se resta del valor bruto." },
+      { id: "prov-d", name: "Proveedores", amount: 11000, category: "Pasivo", subcategory: "pasivo-corriente", explain: "Proveedores es obligación de corto plazo." },
+      { id: "trib-d", name: "Tributos por pagar", amount: 5000, category: "Pasivo", subcategory: "pasivo-corriente", explain: "Tributos por pagar es pasivo corriente." },
+      { id: "oblig-d", name: "Obligaciones financieras", amount: 28000, category: "Pasivo", subcategory: "pasivo-no-corriente", explain: "Se asume deuda financiera de largo plazo." },
+      { id: "capital-d", name: "Capital social", amount: 30000, category: "Patrimonio", subcategory: "patrimonio", explain: "Capital social representa aportes de propietarios." },
+      { id: "utilidad-d", name: "Utilidad del ejercicio", amount: 13000, category: "Patrimonio", subcategory: "patrimonio", explain: "La utilidad del ejercicio aumenta el patrimonio." }
+    ]
+  }
+};
+
+const balanceSubcategoryLabels = {
+  "activo-corriente": "Activo corriente",
+  "activo-no-corriente": "Activo no corriente",
+  "pasivo-corriente": "Pasivo corriente",
+  "pasivo-no-corriente": "Pasivo no corriente",
+  patrimonio: "Patrimonio"
+};
+
+function money(value) {
+  const sign = value < 0 ? "-" : "";
+  return `${sign}S/ ${Math.abs(value).toLocaleString("es-PE")}`;
+}
+
+function renderBalancePracticeModule() {
+  return `
+    <section class="balance-lab" id="balancePractice" data-level="facil">
+      <div class="section-heading">
+        <span>BG</span>
+        <h3>Prácticas Interactivas: Balance General</h3>
+        <p>Practica cómo se clasifica cada cuenta y cómo se construye un balance general que cumpla la ecuación contable.</p>
+      </div>
+      <div class="balance-intro">
+        <p>El balance general muestra la situación financiera de una empresa mediante tres grandes elementos: activo, pasivo y patrimonio.</p>
+        <div class="balance-equation">\\[Activo=Pasivo+Patrimonio\\]</div>
+      </div>
+      <div class="balance-level-tabs" aria-label="Dificultad de prácticas de balance">
+        <button class="balance-level-btn active" data-balance-level="facil" type="button">Fácil</button>
+        <button class="balance-level-btn" data-balance-level="medio" type="button">Medio</button>
+        <button class="balance-level-btn" data-balance-level="dificil" type="button">Difícil</button>
+      </div>
+      <div id="balancePracticeBody"></div>
+    </section>
+  `;
+}
+
+function balancePracticeTemplate(level) {
+  const data = balancePracticeLevels[level] || balancePracticeLevels.facil;
+  const classOptions = ["Activo", "Pasivo", "Patrimonio"];
+  const subOptions = Object.entries(balanceSubcategoryLabels);
+  return `
+    <div class="balance-practice-layout">
+      <article class="balance-panel">
+        <div class="balance-panel-head">
+          <div><p class="eyebrow">Práctica 1</p><h4>Clasificación de cuentas</h4></div>
+          <button class="ghost-btn" data-balance-action="verify-classification" type="button">Verificar respuestas</button>
+        </div>
+        <div class="balance-account-list">
+          ${data.classify.map((account) => `
+            <div class="balance-account-card" data-classify-card="${account.id}">
+              <div><strong>${escapeHtml(account.name)}</strong><span>${money(account.amount)}</span></div>
+              <div class="balance-choice-row">
+                ${classOptions.map((option) => `<button type="button" data-classify="${account.id}" data-value="${option}">${option}</button>`).join("")}
+              </div>
+              <p class="balance-feedback" hidden></p>
+            </div>
+          `).join("")}
+        </div>
+      </article>
+
+      <article class="balance-panel">
+        <div class="balance-panel-head">
+          <div><p class="eyebrow">Práctica 2</p><h4>Construcción del Balance General</h4></div>
+          <button class="ghost-btn" data-balance-action="verify-builder" type="button">Verificar balance</button>
+        </div>
+        <p class="balance-case">Asigna cada cuenta a su sección. Los totales se actualizan automáticamente con tu clasificación.</p>
+        <div class="balance-builder-list">
+          ${data.builder.map((account) => `
+            <label class="balance-builder-card" data-builder-card="${account.id}">
+              <span><strong>${escapeHtml(account.name)}</strong><small>${money(account.amount)}</small></span>
+              <select data-builder="${account.id}" aria-label="Clasificación de ${escapeHtml(account.name)}">
+                <option value="">Sin clasificar</option>
+                ${subOptions.map(([value, label]) => `<option value="${value}">${label}</option>`).join("")}
+              </select>
+              <p class="balance-feedback" hidden></p>
+            </label>
+          `).join("")}
+        </div>
+        <div class="balance-totals" aria-label="Totales del balance">
+          <div><span>Total Activo</span><strong data-total="activo">S/ 0</strong></div>
+          <div><span>Total Pasivo</span><strong data-total="pasivo">S/ 0</strong></div>
+          <div><span>Total Patrimonio</span><strong data-total="patrimonio">S/ 0</strong></div>
+          <div><span>Pasivo + Patrimonio</span><strong data-total="pasivo-patrimonio">S/ 0</strong></div>
+        </div>
+        <div class="balance-status" data-balance-status hidden></div>
+      </article>
+    </div>
+  `;
+}
+
+function currentBalanceData() {
+  const level = document.querySelector("#balancePractice")?.dataset.level || "facil";
+  return balancePracticeLevels[level] || balancePracticeLevels.facil;
+}
+
+function renderBalancePracticeLevel(level = "facil") {
+  const root = document.querySelector("#balancePractice");
+  if (!root) return;
+  root.dataset.level = level;
+  root.querySelectorAll(".balance-level-btn").forEach((button) => {
+    button.classList.toggle("active", button.dataset.balanceLevel === level);
+  });
+  root.querySelector("#balancePracticeBody").innerHTML = balancePracticeTemplate(level);
+  updateBalanceTotals();
+  typesetMath();
+}
+
+function updateBalanceTotals() {
+  const root = document.querySelector("#balancePractice");
+  if (!root) return;
+  const data = currentBalanceData();
+  const totals = { activo: 0, pasivo: 0, patrimonio: 0 };
+  data.builder.forEach((account) => {
+    const selected = root.querySelector(`[data-builder="${account.id}"]`)?.value;
+    if (selected?.startsWith("activo")) totals.activo += account.amount;
+    if (selected?.startsWith("pasivo")) totals.pasivo += account.amount;
+    if (selected === "patrimonio") totals.patrimonio += account.amount;
+  });
+  const totalMap = {
+    activo: totals.activo,
+    pasivo: totals.pasivo,
+    patrimonio: totals.patrimonio,
+    "pasivo-patrimonio": totals.pasivo + totals.patrimonio
+  };
+  Object.entries(totalMap).forEach(([key, value]) => {
+    const target = root.querySelector(`[data-total="${key}"]`);
+    if (target) target.textContent = money(value);
+  });
+}
+
+function verifyBalanceClassification() {
+  const root = document.querySelector("#balancePractice");
+  const data = currentBalanceData();
+  data.classify.forEach((account) => {
+    const card = root.querySelector(`[data-classify-card="${account.id}"]`);
+    const selected = card?.querySelector(".selected")?.dataset.value || "";
+    const feedback = card?.querySelector(".balance-feedback");
+    const correct = selected === account.category;
+    card?.classList.toggle("correct", correct);
+    card?.classList.toggle("incorrect", !correct);
+    if (feedback) {
+      feedback.hidden = false;
+      feedback.textContent = correct
+        ? `Correcto. ${account.explain}`
+        : `Revisa: ${account.name} pertenece a ${account.category}. ${account.explain}`;
+    }
+  });
+}
+
+function verifyBalanceBuilder() {
+  const root = document.querySelector("#balancePractice");
+  const data = currentBalanceData();
+  let allCorrect = true;
+  data.builder.forEach((account) => {
+    const card = root.querySelector(`[data-builder-card="${account.id}"]`);
+    const selected = root.querySelector(`[data-builder="${account.id}"]`)?.value || "";
+    const feedback = card?.querySelector(".balance-feedback");
+    const correct = selected === account.subcategory;
+    allCorrect = allCorrect && correct;
+    card?.classList.toggle("correct", correct);
+    card?.classList.toggle("incorrect", !correct);
+    if (feedback) {
+      feedback.hidden = false;
+      feedback.textContent = correct
+        ? `Correcto. ${account.explain}`
+        : `Debe ir en ${balanceSubcategoryLabels[account.subcategory]}. ${account.explain}`;
+    }
+  });
+  updateBalanceTotals();
+  const totals = { activo: 0, pasivo: 0, patrimonio: 0 };
+  data.builder.forEach((account) => {
+    const selected = root.querySelector(`[data-builder="${account.id}"]`)?.value;
+    if (selected?.startsWith("activo")) totals.activo += account.amount;
+    if (selected?.startsWith("pasivo")) totals.pasivo += account.amount;
+    if (selected === "patrimonio") totals.patrimonio += account.amount;
+  });
+  const diff = totals.activo - (totals.pasivo + totals.patrimonio);
+  const status = root.querySelector("[data-balance-status]");
+  if (!status) return;
+  status.hidden = false;
+  status.classList.toggle("success", allCorrect && diff === 0);
+  status.classList.toggle("warning", !(allCorrect && diff === 0));
+  status.innerHTML = allCorrect && diff === 0
+    ? "<strong>Balance cuadrado.</strong><p>Excelente: tus clasificaciones cumplen Activo = Pasivo + Patrimonio.</p>"
+    : `<strong>Revisa la clasificación.</strong><p>Diferencia actual: ${money(diff)}. Pista: verifica si mezclaste activos corrientes/no corrientes o pasivos con patrimonio.</p>`;
+}
+
+function initBalancePractice() {
+  const root = document.querySelector("#balancePractice");
+  if (!root || root.dataset.ready === "true") return;
+  root.dataset.ready = "true";
+  root.addEventListener("click", (event) => {
+    const levelButton = event.target.closest("[data-balance-level]");
+    if (levelButton) {
+      renderBalancePracticeLevel(levelButton.dataset.balanceLevel);
+      return;
+    }
+    const classifyButton = event.target.closest("[data-classify]");
+    if (classifyButton) {
+      const card = root.querySelector(`[data-classify-card="${classifyButton.dataset.classify}"]`);
+      card?.querySelectorAll("[data-classify]").forEach((button) => button.classList.remove("selected"));
+      classifyButton.classList.add("selected");
+      card?.classList.remove("correct", "incorrect");
+      const feedback = card?.querySelector(".balance-feedback");
+      if (feedback) feedback.hidden = true;
+      return;
+    }
+    const action = event.target.closest("[data-balance-action]")?.dataset.balanceAction;
+    if (action === "verify-classification") verifyBalanceClassification();
+    if (action === "verify-builder") verifyBalanceBuilder();
+  });
+  root.addEventListener("change", (event) => {
+    if (event.target.matches("[data-builder]")) {
+      event.target.closest(".balance-builder-card")?.classList.remove("correct", "incorrect");
+      const feedback = event.target.closest(".balance-builder-card")?.querySelector(".balance-feedback");
+      if (feedback) feedback.hidden = true;
+      updateBalanceTotals();
+    }
+  });
+  renderBalancePracticeLevel(root.dataset.level || "facil");
+}
+
+function renderBalancePracticeArea() {
+  const container = document.querySelector("#balanceView");
+  if (!container) return;
+  const showBalancePractice = state.courseId === "analisis-estados-financieros" && state.weekId === "aef-semana-02";
+  if (!showBalancePractice) {
+    container.innerHTML = `<article class="empty-state"><h3>Práctica de balance no disponible</h3><p>Esta herramienta está preparada para la Semana 2 del curso de análisis financiero.</p></article>`;
+    return;
+  }
+  container.innerHTML = renderBalancePracticeModule();
+  initBalancePractice();
+  typesetMath();
+}
+
 function renderGuide() {
   const topic = currentTopic();
   document.querySelector("#topicEyebrow").textContent = `${weekLabel(topic.week)} · Concepto clave`;
+  if (state.courseId === "ingles-placement-upc") {
+    guideView.innerHTML = renderEnglishLevelGuide(topic);
+    typesetMath();
+    return;
+  }
   if (state.courseId === "analisis-estados-financieros") {
     if (state.weekId === "aef-semana-01") {
       guideView.innerHTML = renderFinanceWeek1Guide();
@@ -1367,6 +1681,39 @@ function renderGuide() {
     </div>
   `;
   typesetMath();
+}
+
+function renderEnglishLevelGuide(topic) {
+  return `
+    <div class="english-level-guide">
+      <section class="english-level-hero">
+        <p class="eyebrow">${escapeHtml(weekLabel(topic.week))}</p>
+        <h2>${escapeHtml(topic.title)}</h2>
+        <p>${escapeHtml(topic.question)}</p>
+      </section>
+      <section class="english-skill-grid" aria-label="Habilidades del nivel">
+        ${(topic.skills || []).map((skill) => `
+          <article>
+            <span>${escapeHtml(skill.label)}</span>
+            <h3>${escapeHtml(skill.title)}</h3>
+            <p>${escapeHtml(skill.detail)}</p>
+          </article>
+        `).join("")}
+      </section>
+      <section class="english-fill-map">
+        <div>
+          <h3>What we will add here</h3>
+          <ul>
+            ${(topic.fill || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+          </ul>
+        </div>
+        <div>
+          <h3>Level goal</h3>
+          <p>${escapeHtml(topic.example)}</p>
+        </div>
+      </section>
+    </div>
+  `;
 }
 
 function updateProgress() {
@@ -1444,6 +1791,54 @@ function configureCourseIdentity(selectedCourse) {
     return;
   }
 
+  if (state.courseId === "ingles-placement-upc") {
+    document.title = "UPC Placement | English";
+    if (brandSmall) brandSmall.textContent = "English";
+    if (heroBadges) {
+      heroBadges.innerHTML = `
+        <span>Grammar</span>
+        <span>Reading</span>
+        <span>Listening</span>
+        <span>Vocabulary</span>
+      `;
+    }
+    if (studyOverview) {
+      studyOverview.setAttribute("aria-label", "Método de preparación en inglés");
+      studyOverview.innerHTML = `
+        <article class="overview-card">
+          <span class="card-icon">01</span>
+          <h2>Diagnostica</h2>
+          <p>Ubica el nivel real antes de subir dificultad para evitar huecos de base.</p>
+        </article>
+        <article class="overview-card">
+          <span class="card-icon">02</span>
+          <h2>Construye</h2>
+          <p>Refuerza grammar y vocabulary por nivel con ejemplos cortos y repetibles.</p>
+        </article>
+        <article class="overview-card">
+          <span class="card-icon">03</span>
+          <h2>Comprende</h2>
+          <p>Entrena reading y listening con foco en idea principal, detalle e inferencia.</p>
+        </article>
+        <article class="overview-card">
+          <span class="card-icon">04</span>
+          <h2>Simula</h2>
+          <p>Resuelve preguntas tipo placement para medir velocidad, precisión y errores.</p>
+        </article>
+      `;
+    }
+    if (hubEyebrow) hubEyebrow.textContent = "UPC English";
+    if (hubTitle) hubTitle.textContent = "Level route";
+    if (hubIntro) hubIntro.textContent = "Move from Basic to B2 with grammar, reading, listening and vocabulary.";
+    if (sidebarTitle) sidebarTitle.textContent = "Levels";
+    if (learnTitle) learnTitle.innerHTML = '<span class="title-icon">EN</span> English level';
+    if (learnIntro) learnIntro.textContent = "Work through objectives, skills and key topics for each placement level.";
+    if (markButton) markButton.textContent = "Mark level as reviewed";
+    if (progressLabel) progressLabel.textContent = "English progress";
+    if (progressSmall) progressSmall.textContent = "Complete the level route before the final mock test.";
+    return;
+  }
+
   document.title = "GE | Guías de Economía y Finanzas";
   if (heroBadges) {
     heroBadges.innerHTML = `
@@ -1494,12 +1889,42 @@ function activateSection(sectionId) {
   document.querySelector(".workspace")?.classList.toggle("exam-mode", sectionId !== "learn");
 }
 
+function updatePlacementCountdown() {
+  const daysNode = document.querySelector("#countdownDays");
+  const hoursNode = document.querySelector("#countdownHours");
+  const minutesNode = document.querySelector("#countdownMinutes");
+  const labelNode = document.querySelector("#countdownLabel");
+  if (!daysNode || !hoursNode || !minutesNode) return;
+
+  const diff = placementTargetDate.getTime() - Date.now();
+  const remaining = Math.max(0, diff);
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+  const days = Math.floor(remaining / day);
+  const hours = Math.floor((remaining % day) / hour);
+  const minutes = Math.floor((remaining % hour) / minute);
+
+  daysNode.textContent = String(days);
+  hoursNode.textContent = String(hours).padStart(2, "0");
+  minutesNode.textContent = String(minutes).padStart(2, "0");
+  if (labelNode) {
+    labelNode.textContent = diff <= 0 ? "The placement test has started." : "For June 20 at 10:00 a.m.";
+  }
+}
+
+function startPlacementCountdown() {
+  updatePlacementCountdown();
+  window.setInterval(updatePlacementCountdown, 30 * 1000);
+}
+
 function showOnly(view) {
   coursesView.classList.toggle("hidden", view !== "courses");
   appShell.classList.toggle("hidden", view !== "app");
   if (view === "courses") {
-    document.body.dataset.course = "courses";
-    document.title = "GE | Guías de Economía y Finanzas";
+    document.body.dataset.course = "placement";
+    document.title = "UPC Placement Test | Preparation";
+    updatePlacementCountdown();
   }
 }
 
@@ -1545,6 +1970,7 @@ function openCourse(courseId) {
   renderGuide();
   renderChoiceQuiz(weeks[0].id, "facil");
   renderPracticeQuiz(weeks[0].id, "facil");
+  renderBalancePracticeArea();
   updateProgress();
   showOnly("app");
   configureWeekModeTabs();
@@ -2321,9 +2747,8 @@ const financeWeekGuides = {
       ["Activo corriente y no corriente", "El corriente se espera realizar, vender o consumir en el ciclo normal o dentro de 12 meses. El no corriente permanece por más tiempo, como propiedades, planta, equipo e intangibles."],
       ["Pasivo y patrimonio", "El pasivo recoge obligaciones con terceros. El patrimonio incluye capital, reservas y resultados acumulados."]
     ],
-    formulas: ["\\[Activo = Pasivo + Patrimonio\\]", "\\[Total\\ Activo = Total\\ Pasivo + Total\\ Patrimonio\\]"],
     tables: [
-      ["Estructura del ESF", [["Activo corriente", "Efectivo, cuentas por cobrar, inventarios."], ["Activo no corriente", "Inversiones, propiedad planta y equipo, intangibles."], ["Pasivo corriente", "Sobregiros, tributos y cuentas por pagar de corto plazo."], ["Pasivo no corriente", "Préstamos u obligaciones mayores a un año."], ["Patrimonio", "Capital, reservas y resultados acumulados."]]]
+      ["Estructura del ESF", [["Activo corriente", "Efectivo, cuentas por cobrar, inventarios."], ["Activo no corriente", "Inversiones, propiedad planta y equipo, intangibles."], ["Pasivo corriente", "Sobregiros, tributos y cuentas por pagar de corto plazo."], ["Pasivo no corriente", "Préstamos u obligaciones mayores a un año."], ["Patrimonio", "Capital, reservas y resultados acumulados."], ["Ecuación contable", "Resume el equilibrio básico del Estado de Situación Financiera.", "\\[Activo=Pasivo+Patrimonio\\]"], ["Comprobación del total", "El total de recursos debe coincidir con sus fuentes de financiamiento.", "\\[Total\\ Activo=Total\\ Pasivo+Total\\ Patrimonio\\]"]]]
     ],
     key: "El Estado de Situación Financiera siempre debe cuadrar: los recursos de la empresa se financian con terceros o con propietarios."
   },
@@ -2354,34 +2779,166 @@ const financeWeekGuides = {
       ["Análisis horizontal", "Compara una cuenta entre periodos para medir aumento o disminución absoluta y relativa."],
       ["Cuidado interpretativo", "Un aumento de inventarios o cuentas por cobrar puede deberse a crecimiento, política comercial o problemas de gestión. El porcentaje necesita contexto."]
     ],
-    formulas: ["\\[Análisis\\ vertical=\\frac{Cuenta}{Base}\\times 100\\]", "\\[Variación\\ absoluta=Valor\\ actual-Valor\\ anterior\\]", "\\[Variación\\ porcentual=\\frac{Valor\\ actual-Valor\\ anterior}{Valor\\ anterior}\\times 100\\]"],
     tables: [
-      ["Comparación de técnicas", [["Vertical", "Analiza composición interna de un periodo."], ["Horizontal", "Analiza tendencia entre periodos."], ["Ratios", "Relacionan cuentas para evaluar liquidez, solvencia o rentabilidad."]]]
+      ["Comparación de técnicas", [["Vertical", "Analiza composición interna de un periodo.", "\\[Análisis\\ vertical=\\frac{Cuenta}{Base}\\times100\\]"], ["Horizontal absoluto", "Mide cuánto aumentó o disminuyó una cuenta entre periodos.", "\\[Variación\\ absoluta=Valor\\ actual-Valor\\ anterior\\]"], ["Horizontal porcentual", "Mide el cambio relativo respecto del periodo anterior.", "\\[Variación\\ porcentual=\\frac{Valor\\ actual-Valor\\ anterior}{Valor\\ anterior}\\times100\\]"], ["Ratios", "Relacionan cuentas para evaluar liquidez, solvencia o rentabilidad."]]]
     ],
     key: "El análisis vertical muestra peso relativo; el horizontal muestra cambio. Juntos ayudan a detectar dónde mirar con más detalle."
   },
   "aef-semana-07": {
     title: "Semana 7: Indicadores financieros de liquidez y solvencia",
-    subtitle: "Ratios, limitaciones, liquidez general, prueba ácida, endeudamiento y cobertura.",
+    subtitle: "Ratios, limitaciones, liquidez general, prueba ácida, prueba defensiva, endeudamiento y cobertura.",
     intro: "Esta semana introduce ratios financieros. Los indicadores resumen relaciones entre cuentas, pero deben interpretarse con contexto y comparaciones.",
     objectives: ["Definir qué es un ratio financiero.", "Reconocer limitaciones de los ratios.", "Calcular e interpretar ratios de liquidez.", "Calcular e interpretar ratios de solvencia."],
     blocks: [
       ["Qué es un ratio", "Un ratio es una razón o cociente que relaciona dos cuentas del Estado de Situación Financiera, del Estado de Resultados o de ambos."],
       ["Limitaciones", "Los ratios usan información histórica, pueden estar afectados por manipulación contable, son estáticos y deben analizarse de forma integral."],
-      ["Liquidez", "Mide la capacidad para cumplir obligaciones de corto plazo. Incluye liquidez general, prueba ácida, prueba defensiva y capital de trabajo neto."],
-      ["Solvencia", "Mide el grado de endeudamiento y la capacidad para cumplir pagos durante la vida de una deuda."]
+      ["Liquidez", "Mide la capacidad para cumplir obligaciones de corto plazo. Incluye liquidez general, prueba ácida, prueba defensiva, días disponibles y capital de trabajo neto."],
+      ["Solvencia", "Mide el grado de endeudamiento y la capacidad para cumplir pagos durante la vida de una deuda. Incluye endeudamiento, propiedad, endeudamiento patrimonial, cobertura del activo fijo, cobertura de intereses y costo de deuda."]
     ],
-    formulas: ["\\[Liquidez\\ general=\\frac{Activo\\ corriente}{Pasivo\\ corriente}\\]", "\\[Prueba\\ ácida=\\frac{Activo\\ corriente-Inventarios}{Pasivo\\ corriente}\\]", "\\[Capital\\ de\\ trabajo\\ neto=Activo\\ corriente-Pasivo\\ corriente\\]", "\\[Grado\\ de\\ endeudamiento=\\frac{Pasivo\\ total}{Activo\\ total}\\]", "\\[Endeudamiento\\ patrimonial=\\frac{Pasivo\\ total}{Patrimonio\\ total}\\]", "\\[Cobertura\\ de\\ intereses=\\frac{EBIT}{Gastos\\ financieros}\\]"],
     tables: [
-      ["Ratios principales", [["Liquidez general", "Capacidad general de cubrir pasivos corrientes."], ["Prueba ácida", "Liquidez sin depender de inventarios."], ["Capital de trabajo neto", "Exceso de activo corriente sobre pasivo corriente."], ["Grado de endeudamiento", "Proporción de activos financiada por acreedores."], ["Cobertura de intereses", "Veces que EBIT cubre gastos financieros."]]]
+      ["Ratios de liquidez", [["Liquidez general", "Capacidad general de cubrir pasivos corrientes.", "\\[Liquidez\\ general=\\frac{Activo\\ corriente}{Pasivo\\ corriente}\\]"], ["Prueba ácida", "Liquidez sin depender de inventarios ni pagos anticipados.", "\\[Prueba\\ ácida=\\frac{Activo\\ corriente-Inventarios-Servicios\\ pagados\\ por\\ anticipado}{Pasivo\\ corriente}\\]"], ["Prueba defensiva", "Cobertura inmediata usando efectivo, equivalentes y valores negociables.", "\\[Prueba\\ defensiva=\\frac{Efectivo\\ y\\ equivalentes+Valores\\ negociables}{Pasivo\\ corriente}\\]"], ["Días disponibles", "Número aproximado de días en que se pueden atender pagos corrientes con disponible.", "\\[Días\\ disponibles=\\frac{Efectivo\\ y\\ equivalentes+Valores\\ negociables}{Pasivo\\ corriente/365}\\]"], ["Capital de trabajo neto", "Exceso de activo corriente sobre pasivo corriente.", "\\[Capital\\ de\\ trabajo\\ neto=Activo\\ corriente-Pasivo\\ corriente\\]"]]],
+      ["Ratios de solvencia", [["Grado de endeudamiento", "Proporción de activos financiada por acreedores.", "\\[Grado\\ de\\ endeudamiento=\\frac{Pasivo\\ total}{Activo\\ total}\\]"], ["Grado de propiedad", "Proporción de activos financiada por patrimonio.", "\\[Grado\\ de\\ propiedad=\\frac{Patrimonio\\ total}{Activo\\ total}\\]"], ["Endeudamiento patrimonial", "Veces que el pasivo representa el patrimonio.", "\\[Endeudamiento\\ patrimonial=\\frac{Pasivo\\ total}{Patrimonio\\ total}\\]"], ["Cobertura del activo fijo", "Mide respaldo de activos fijos con financiamiento permanente.", "\\[Cobertura\\ del\\ activo\\ fijo=\\frac{Pasivo\\ no\\ corriente+Patrimonio-IRD}{Activo\\ fijo}\\]"], ["Cobertura de intereses", "Veces que EBIT cubre gastos financieros.", "\\[Cobertura\\ de\\ intereses=\\frac{EBIT}{Gastos\\ financieros}\\]"], ["Costo de deuda", "Costo promedio del financiamiento con costo explícito.", "\\[Costo\\ de\\ la\\ deuda=\\frac{Gastos\\ financieros}{Pasivos\\ con\\ costo\\ financiero}\\]"]]]
     ],
     key: "Un ratio aislado nunca cuenta toda la historia. Debe compararse contra periodos, sector, estrategia y calidad de la información."
   }
 };
 
+Object.assign(financeWeekGuides, {
+  "aef-semana-09": {
+    title: "Semana 9: Ratios de gestión y rentabilidad sobre las ventas",
+    subtitle: "Rotación de cuentas por cobrar, cuentas por pagar, inventarios, activos y márgenes sobre ventas.",
+    intro: "Esta semana estudia ratios que miden velocidad, eficiencia y rentabilidad. Los ratios de gestión muestran qué tan rápido ciertas cuentas se convierten en ventas o efectivo; los márgenes muestran qué parte de las ventas se transforma en utilidad.",
+    objectives: ["Interpretar la rotación de cuentas por cobrar, cuentas por pagar e inventarios.", "Calcular días promedio de cobro, pago e inventario.", "Evaluar la eficiencia del uso de activos para generar ventas.", "Distinguir margen bruto, margen operativo y margen neto."],
+    blocks: [
+      ["Gestión", "Mide la eficiencia con la que la empresa administra cuentas por cobrar, proveedores, inventarios y activos. No basta vender: también importa cobrar, pagar, renovar inventarios y usar bien los recursos."],
+      ["Cuentas por cobrar", "Una mayor rotación suele indicar cobranza más rápida. Si los días de cobro aumentan de forma constante, puede haber ventas a crédito menos controladas o problemas de cobranza."],
+      ["Inventarios y pagos", "La rotación de inventarios muestra velocidad de venta. Los días de pago indican cuánto tarda la empresa en pagar proveedores y deben compararse con los días de cobro."],
+      ["Rentabilidad sobre ventas", "Los márgenes evalúan cuánta utilidad queda por cada sol vendido: primero después del costo de ventas, luego después de gastos operativos y finalmente después de todos los costos, intereses e impuestos."]
+    ],
+    tables: [
+      ["Ratios de gestión", [["Rotación de cuentas por cobrar", "Velocidad con que se cobran ventas al crédito.", "\\[Rotación\\ CxC=\\frac{Ventas\\ al\\ crédito}{Promedio\\ CxC}\\]"], ["Días promedio de cobro", "Tiempo promedio para convertir cuentas por cobrar en efectivo.", "\\[Días\\ de\\ cobro=\\frac{365}{Rotación\\ CxC}\\]"], ["Rotación de cuentas por pagar", "Velocidad con que se pagan compras al crédito.", "\\[Rotación\\ CxP=\\frac{Compras\\ al\\ crédito}{Promedio\\ CxP}\\]"], ["Días promedio de pago", "Tiempo promedio para pagar a proveedores.", "\\[Días\\ de\\ pago=\\frac{365}{Rotación\\ CxP}\\]"], ["Rotación de inventarios", "Velocidad con que el inventario se vende.", "\\[Rotación\\ de\\ inventarios=\\frac{Costo\\ de\\ ventas}{Inventario\\ promedio}\\]"], ["Días promedio de inventario", "Tiempo promedio que el inventario permanece antes de venderse.", "\\[Días\\ de\\ inventario=\\frac{365}{Rotación\\ de\\ inventarios}\\]"], ["Rotación del activo", "Eficiencia de los activos para generar ventas.", "\\[Rotación\\ del\\ activo=\\frac{Ventas}{Activo\\ total}\\]"]]],
+      ["Rentabilidad sobre ventas", [["Margen bruto", "Utilidad luego de cubrir costo de ventas.", "\\[Margen\\ bruto=\\frac{Utilidad\\ bruta}{Ventas\\ netas}\\]"], ["Margen operativo", "Utilidad luego de costos y gastos operativos.", "\\[Margen\\ operativo=\\frac{Utilidad\\ operativa}{Ventas}\\]"], ["Margen neto", "Utilidad final luego de costos, gastos, intereses e impuestos.", "\\[Margen\\ neto=\\frac{Utilidad\\ neta}{Ventas}\\]"]]]
+    ],
+    visual: "management-ratios",
+    key: "La gestión eficiente se ve en ciclos cortos y coherentes: cobrar a tiempo, vender inventario sin acumularlo y usar activos para generar ventas rentables."
+  },
+  "aef-semana-10": {
+    title: "Semana 10: Medidas de rentabilidad sobre la inversión: ROA y ROE",
+    subtitle: "Rentabilidad sobre activos, rentabilidad sobre patrimonio y lectura del apalancamiento.",
+    intro: "Esta semana conecta utilidad, activos y patrimonio. El ROA mide qué tan rentable es el negocio respecto a sus activos; el ROE mide el retorno para propietarios o accionistas respecto al patrimonio.",
+    objectives: ["Calcular e interpretar el ROA.", "Calcular e interpretar el ROE.", "Diferenciar rentabilidad del negocio y rentabilidad del accionista.", "Relacionar margen, rotación y apalancamiento con la rentabilidad."],
+    blocks: [
+      ["ROA", "El ROA muestra cuánta utilidad genera cada sol invertido en activos. Es una medida de eficiencia económica del negocio, porque observa la capacidad de los activos para producir ganancias."],
+      ["ROE", "El ROE muestra la rentabilidad obtenida por los propietarios por cada sol de patrimonio. Un ROE alto puede ser atractivo, pero debe analizarse junto con deuda y riesgo."],
+      ["Diferencia clave", "ROA mira activos; ROE mira patrimonio. Si hay deuda, el patrimonio puede ser menor que los activos, por lo que el ROE puede superar al ROA por efecto del apalancamiento."],
+      ["Relación con gestión", "La rentabilidad depende del margen neto, de la rotación de activos y del apalancamiento financiero. Una empresa puede mejorar por vender con mayor margen, vender más con los mismos activos o financiarse con deuda de forma controlada."]
+    ],
+    tables: [
+      ["ROA y ROE", [["ROA", "Utilidad generada por cada sol invertido en activos.", "\\[ROA=\\frac{Utilidad\\ neta}{Total\\ de\\ activos}\\]"], ["ROE", "Rentabilidad obtenida por los propietarios sobre su inversión patrimonial.", "\\[ROE=\\frac{Utilidad\\ neta}{Total\\ patrimonio}\\]"]]],
+      ["Comparación", [["ROA", "Base: activos. Mide eficiencia del negocio. Importa a gerencia e inversionistas."], ["ROE", "Base: patrimonio. Mide retorno para accionistas. Importa a propietarios e inversionistas."], ["Lectura conjunta", "Si ROE supera mucho al ROA, revisa deuda, costo financiero y riesgo."]]]
+    ],
+    visual: "roa-roe-flow",
+    key: "ROA responde qué tan productivos son los activos; ROE responde qué tan rentable fue el capital de los propietarios."
+  },
+  "aef-semana-11": {
+    title: "Semana 11: Interpretación del enfoque Dupont",
+    subtitle: "Descomposición de ROA y ROE en margen neto, rotación de activos y apalancamiento.",
+    intro: "Esta semana estudia el enfoque Dupont: una herramienta que explica de dónde proviene la rentabilidad. En vez de mirar solo el ROA o el ROE final, separa sus causas principales.",
+    objectives: ["Descomponer el ROA en margen neto y rotación de activos.", "Descomponer el ROE en margen neto, rotación y apalancamiento.", "Interpretar qué componente explica mejor el resultado.", "Reconocer que mayor apalancamiento aumenta retorno potencial y riesgo."],
+    blocks: [
+      ["Importancia", "Dupont combina indicadores para identificar si la rentabilidad viene de margen, eficiencia en el uso de activos o financiamiento con deuda."],
+      ["Margen neto", "Mide cuánto gana la empresa por cada sol vendido. Un margen mayor indica mayor utilidad final por unidad de venta."],
+      ["Rotación de activos", "Mide qué tan bien usa la empresa sus activos para generar ventas. Una rotación alta indica mayor velocidad comercial o mejor aprovechamiento de recursos."],
+      ["Apalancamiento", "El multiplicador de apalancamiento financiero mide cuántos activos se sostienen por cada sol de patrimonio. Puede elevar el ROE, pero también aumenta exposición al riesgo financiero."]
+    ],
+    tables: [
+      ["Componentes Dupont", [["Margen neto", "Utilidad final obtenida por cada sol vendido.", "\\[Margen\\ neto=\\frac{Utilidad\\ neta}{Ventas}\\]"], ["Rotación de activos", "Ventas generadas por cada sol de activos.", "\\[Rotación\\ de\\ activos=\\frac{Ventas}{Activos}\\]"], ["MAF", "Multiplicador de apalancamiento financiero.", "\\[MAF=\\frac{Activos}{Patrimonio}\\]"]]],
+      ["Fórmulas Dupont", [["ROA", "Rentabilidad del activo explicada por margen y rotación.", "\\[ROA=Margen\\ neto\\times Rotación\\ de\\ activos\\]"], ["ROE", "Rentabilidad del patrimonio explicada por margen, rotación y apalancamiento.", "\\[ROE=Margen\\ neto\\times Rotación\\ de\\ activos\\times MAF\\]"], ["ROA expandido", "Cancela ventas y queda utilidad neta sobre activos.", "\\[ROA=\\frac{Utilidad\\ neta}{Ventas}\\times\\frac{Ventas}{Activos}\\]"], ["ROE expandido", "Cancela ventas y activos, quedando utilidad neta sobre patrimonio.", "\\[ROE=\\frac{Utilidad\\ neta}{Ventas}\\times\\frac{Ventas}{Activos}\\times\\frac{Activos}{Patrimonio}\\]"]]]
+    ],
+    visual: "dupont-tree",
+    key: "Dupont convierte la rentabilidad en diagnóstico: margen, eficiencia y apalancamiento explican por qué cambia el ROA o el ROE."
+  },
+  "aef-semana-12": {
+    title: "Semana 12: EBITDA y su interpretación",
+    subtitle: "EBITDA, EBIT, NOPAT, GOPAT, márgenes y límites del indicador.",
+    intro: "Esta semana estudia el EBITDA como indicador de desempeño operativo. Ayuda a leer la capacidad de generar beneficios desde el giro principal, antes de intereses, impuestos, depreciación y amortización.",
+    objectives: ["Definir EBITDA y diferenciarlo de EBIT y utilidad neta.", "Calcular EBITDA desde EBIT o desde gastos operativos sin depreciación y amortización.", "Interpretar margen operativo y margen EBITDA.", "Reconocer limitaciones del EBITDA y complementarlo con otros indicadores."],
+    blocks: [
+      ["Qué es", "EBITDA significa Earnings Before Interest, Taxes, Depreciation and Amortization: utilidad antes de intereses, impuestos, depreciación y amortización."],
+      ["Importancia", "Ayuda a medir rentabilidad operativa, comparar empresas del mismo sector, aproximarse al flujo operativo y analizar el negocio sin depender directamente de estructura financiera o impuestos."],
+      ["Limitaciones", "No considera intereses, impuestos ni inversiones necesarias para mantener capacidad productiva. Tampoco representa exactamente flujo de caja y puede ser engañoso en empresas muy endeudadas."],
+      ["Márgenes", "El margen EBITDA muestra qué porcentaje de las ventas se convierte en resultado operativo antes de depreciación y amortización. Debe compararse con margen operativo, deuda, capex y flujo de caja."]
+    ],
+    tables: [
+      ["Fórmulas EBITDA", [["EBITDA desde EBIT", "Suma depreciación y amortización a la utilidad operativa.", "\\[EBITDA=EBIT+Depreciación+Amortización\\]"], ["EBITDA operativo", "Parte de utilidad bruta y resta gastos operativos sin depreciación ni amortización.", "\\[EBITDA=Utilidad\\ bruta-Gastos\\ operativos\\ sin\\ D\\&A\\]"], ["Margen operativo", "Porcentaje de ventas que queda como EBIT.", "\\[Margen\\ operativo=\\frac{EBIT}{Ventas}\\]"], ["Margen EBITDA", "Porcentaje de ventas que queda como EBITDA.", "\\[Margen\\ EBITDA=\\frac{EBITDA}{Ventas}\\]"]]],
+      ["Herramientas relacionadas", [["EBIT", "Utilidad operativa antes de intereses e impuestos."], ["NOPAT", "Resultado operativo después de impuestos.", "\\[NOPAT=EBIT\\times(1-t)\\]"], ["GOPAT", "EBITDA después de impuestos operativos.", "\\[GOPAT=EBITDA\\times(1-t)\\]"], ["Cash Flow operativo", "Aproximación operativa agregando depreciación y amortización.", "\\[CF=NOPAT+Depreciación+Amortización\\]"]]],
+      ["Ejemplo guiado", [["Ventas netas", "1,000"], ["Costo de ventas", "600"], ["Utilidad bruta", "400"], ["Gastos operativos sin D&A", "180"], ["Depreciación y amortización", "50"], ["EBIT", "170"], ["EBITDA", "\\[170+50=220\\]"], ["Margen operativo", "\\[170/1000=17\\%\\]"], ["Margen EBITDA", "\\[220/1000=22\\%\\]"], ["NOPAT con tasa 30%", "\\[170(1-0.30)=119\\]"], ["GOPAT con tasa 30%", "\\[220(1-0.30)=154\\]"]]]
+    ],
+    visual: "ebitda-flow",
+    key: "EBITDA es útil para leer desempeño operativo, pero no debe confundirse con caja disponible ni con rentabilidad total para los accionistas."
+  }
+});
+
 function renderGenericFinanceGuide(topic) {
   const guide = financeWeekGuides[topic.week];
   if (!guide) return "";
+  const formatLedgerRow = ([term, desc, formula]) => `
+    <div>
+      <dt>${escapeHtml(term)}</dt>
+      <dd>${escapeHtml(desc)}</dd>
+      ${formula ? `<dd class="ledger-formula">${escapeHtml(formula)}</dd>` : ""}
+    </div>
+  `;
+  const renderVisual = () => {
+    const visuals = {
+      "management-ratios": `
+        <div class="finance-visual-grid">
+          <article><span>Cobrar</span><strong>CxC</strong><p>Ventas al crédito → cuentas por cobrar → efectivo.</p></article>
+          <article><span>Pagar</span><strong>CxP</strong><p>Compras al crédito → proveedores → salida de efectivo.</p></article>
+          <article><span>Vender</span><strong>Inventarios</strong><p>Inventario → costo de ventas → caja o crédito.</p></article>
+          <article><span>Rentabilizar</span><strong>Márgenes</strong><p>Ventas → utilidad bruta → utilidad operativa → utilidad neta.</p></article>
+        </div>
+      `,
+      "roa-roe-flow": `
+        <div class="finance-flow-diagram">
+          <div><strong>Utilidad neta</strong><span>Resultado final</span></div>
+          <div class="flow-arrow">→</div>
+          <div><strong>ROA</strong><span>Utilidad / Activos</span></div>
+          <div><strong>ROE</strong><span>Utilidad / Patrimonio</span></div>
+          <div><strong>Activos</strong><span>Base del negocio</span></div>
+          <div><strong>Patrimonio</strong><span>Base del accionista</span></div>
+        </div>
+      `,
+      "dupont-tree": `
+        <div class="dupont-visual">
+          <div class="dupont-root">ROE</div>
+          <div class="dupont-branches">
+            <article><strong>Margen neto</strong><span>Utilidad neta / Ventas</span></article>
+            <article><strong>Rotación de activos</strong><span>Ventas / Activos</span></article>
+            <article><strong>MAF</strong><span>Activos / Patrimonio</span></article>
+          </div>
+          <div class="dupont-root muted-root">ROA</div>
+          <div class="dupont-branches two">
+            <article><strong>Margen neto</strong><span>Rentabilidad por venta</span></article>
+            <article><strong>Rotación de activos</strong><span>Eficiencia del activo</span></article>
+          </div>
+        </div>
+      `,
+      "ebitda-flow": `
+        <div class="ebitda-visual">
+          <article><span>01</span><strong>Ventas netas</strong></article>
+          <article><span>02</span><strong>- Costo de ventas</strong></article>
+          <article><span>03</span><strong>= Utilidad bruta</strong></article>
+          <article><span>04</span><strong>- Gastos operativos sin D&A</strong></article>
+          <article><span>05</span><strong>= EBITDA</strong></article>
+          <article><span>06</span><strong>- Depreciación y amortización</strong></article>
+          <article><span>07</span><strong>= EBIT</strong></article>
+        </div>
+      `
+    };
+    return visuals[guide.visual] || "";
+  };
+  const visualHtml = renderVisual();
   return `
     <article class="week-guide finance-guide">
       <section class="week-hero">
@@ -2398,13 +2955,13 @@ function renderGenericFinanceGuide(topic) {
         <div class="section-heading"><span>02</span><h3>Ideas centrales</h3><p>Resumen didáctico de los conceptos que ordenan la semana.</p></div>
         <div class="source-grid">${guide.blocks.map(([title, text]) => `<article class="study-card"><div class="card-icon">${escapeHtml(title.slice(0, 2))}</div><h4>${escapeHtml(title)}</h4><p>${escapeHtml(text)}</p></article>`).join("")}</div>
       </section>
-      ${guide.formulas ? `<section class="guide-section"><div class="section-heading"><span>03</span><h3>Fórmulas clave</h3><p>Estas relaciones son las que más se usan para resolver ejercicios y leer estados financieros.</p></div><div class="formula-highlight">${guide.formulas.map((formula) => `<div>${escapeHtml(formula)}</div>`).join("")}</div></section>` : ""}
       <section class="guide-section">
-        <div class="section-heading"><span>${guide.formulas ? "04" : "03"}</span><h3>Mapa de clasificación</h3><p>Ordena los conceptos para leerlos como parte de un estado financiero.</p></div>
-        ${guide.tables.map(([title, rows]) => `<div class="finance-ledger-card"><h4>${escapeHtml(title)}</h4><dl>${rows.map(([term, desc]) => `<div><dt>${escapeHtml(term)}</dt><dd>${escapeHtml(desc)}</dd></div>`).join("")}</dl></div>`).join("")}
+        <div class="section-heading"><span>03</span><h3>Mapa de clasificación</h3><p>Ordena los conceptos y sus fórmulas dentro del lugar donde se usan.</p></div>
+        ${guide.tables.map(([title, rows]) => `<div class="finance-ledger-card"><h4>${escapeHtml(title)}</h4><dl>${rows.map(formatLedgerRow).join("")}</dl></div>`).join("")}
       </section>
+      ${visualHtml ? `<section class="guide-section"><div class="section-heading"><span>04</span><h3>Diagrama de estudio</h3><p>Lectura visual de los componentes principales de la semana.</p></div>${visualHtml}</section>` : ""}
       <section class="guide-section summary-guide">
-        <div class="section-heading"><span>${guide.formulas ? "05" : "04"}</span><h3>Idea clave para estudiar</h3><p>${escapeHtml(guide.key)}</p></div>
+        <div class="section-heading"><span>${visualHtml ? "05" : "04"}</span><h3>Idea clave para estudiar</h3><p>${escapeHtml(guide.key)}</p></div>
       </section>
     </article>
   `;
@@ -2417,7 +2974,11 @@ const financeWeeks = [
   { id: "aef-semana-04", label: "Semana 04", title: "Estado de situación financiera" },
   { id: "aef-semana-05", label: "Semana 05", title: "Estado de flujo de efectivo" },
   { id: "aef-semana-06", label: "Semana 06", title: "Análisis vertical y horizontal" },
-  { id: "aef-semana-07", label: "Semana 07", title: "Liquidez y solvencia" }
+  { id: "aef-semana-07", label: "Semana 07", title: "Liquidez y solvencia" },
+  { id: "aef-semana-09", label: "Semana 09", title: "Gestión y rentabilidad sobre ventas" },
+  { id: "aef-semana-10", label: "Semana 10", title: "ROA y ROE" },
+  { id: "aef-semana-11", label: "Semana 11", title: "Enfoque Dupont" },
+  { id: "aef-semana-12", label: "Semana 12", title: "EBITDA e interpretación" }
 ];
 
 const financeTopics = financeWeeks.map((week) => {
@@ -2537,7 +3098,7 @@ financeTheoryData["aef-semana-04"] = {
   medio: [
     choiceRow("Activo se relaciona con decisiones de:", "Inversión", ["Solo reparto de dividendos", "Solo ventas", "Solo publicidad"], "Los activos muestran en qué invierte la empresa."),
     choiceRow("Pasivo y patrimonio se relacionan con decisiones de:", "Financiamiento", ["Producción física", "Precio de venta únicamente", "Costo de ventas"], "Indican cómo se financian los activos."),
-    choiceRow("Si total activo no iguala pasivo más patrimonio:", "El estado no cuadra", ["Siempre está bien", "Significa mayor rentabilidad", "No importa"], "La ecuación contable debe cumplirse."),
+    choiceRow("Si el total de activos no iguala el pasivo más el patrimonio:", "El estado no cuadra", ["Siempre está bien", "Significa mayor rentabilidad", "No importa"], "La ecuación contable debe cumplirse."),
     choiceRow("Propiedad, planta y equipo normalmente es:", "Activo no corriente", ["Pasivo corriente", "Gasto financiero", "Ingreso ordinario"], "Son activos de permanencia prolongada."),
     choiceRow("Cuentas por pagar comerciales normalmente son:", "Pasivo corriente", ["Activo intangible", "Ingreso financiero", "Capital social"], "Son obligaciones de corto plazo con proveedores.")
   ],
@@ -2587,14 +3148,18 @@ financeTheoryData["aef-semana-06"] = {
     choiceRow("Si ventas pasan de 100,000 a 120,000, la variación absoluta es:", "20,000", ["120%", "80,000", "10,000"], "\\(120,000-100,000=20,000\\)."),
     choiceRow("Si ventas pasan de 100,000 a 120,000, la variación porcentual es:", "20%", ["120%", "80%", "2%"], "\\((120,000-100,000)/100,000=20\\%\\)."),
     choiceRow("Una cuenta por cobrar que sube fuerte puede sugerir:", "Mayor crédito, más ventas o cobranza débil", ["Siempre menor riesgo", "Cero ventas", "No requiere análisis"], "El cambio necesita interpretación cualitativa."),
-    choiceRow("El análisis vertical del ESF suele usar como base:", "Total activo", ["Gasto financiero", "Ventas netas siempre", "Resultado neto"], "Permite ver estructura de activos y financiamiento.")
+    choiceRow("El análisis vertical del ESF suele usar como base:", "Total activo", ["Gasto financiero", "Ventas netas siempre", "Resultado neto"], "Permite ver estructura de activos y financiamiento."),
+    choiceRow("Si los gastos administrativos bajan como porcentaje de ventas, una interpretación razonable es:", "La empresa podría estar ganando eficiencia administrativa relativa", ["La deuda necesariamente desapareció", "Las ventas son siempre menores", "El activo fijo se vendió"], "El análisis vertical compara el peso relativo de cada partida."),
+    choiceRow("Si cuentas por cobrar suben más rápido que ventas, conviene revisar:", "Política de crédito y cobranza", ["Solo capital social", "Solo depreciación acumulada", "Solo el logo del estado financiero"], "Puede indicar más ventas a crédito o recuperación lenta.")
   ],
   dificil: [
     choiceRow("Si el margen bruto baja de 43% a 35%, puede indicar:", "Mayor peso del costo de ventas", ["Menor costo relativo", "Más patrimonio", "Menor activo total"], "El costo de ventas absorbió más ventas."),
     choiceRow("Una variación porcentual muy alta en una cuenta pequeña debe interpretarse:", "Con cuidado, mirando también el monto absoluto", ["Como siempre decisiva", "Como error seguro", "Sin comparar"], "Porcentajes grandes pueden venir de bases pequeñas."),
     choiceRow("El análisis horizontal y vertical juntos permiten:", "Ver estructura y tendencia", ["Eliminar notas", "Sustituir auditoría", "Garantizar rentabilidad"], "Son herramientas complementarias."),
     choiceRow("Un aumento de inventarios puede representar:", "Expectativa de ventas, cobertura de precios o mala gestión", ["Siempre éxito", "Siempre fraude", "Solo pago de deuda"], "El contexto define interpretación."),
-    choiceRow("Una limitación del análisis financiero es:", "Depende de calidad y contexto de la información", ["No usa estados financieros", "No permite comparar", "No sirve para decisiones"], "Las herramientas no reemplazan el juicio.")
+    choiceRow("Una limitación del análisis financiero es:", "Depende de calidad y contexto de la información", ["No usa estados financieros", "No permite comparar", "No sirve para decisiones"], "Las herramientas no reemplazan el juicio."),
+    choiceRow("Si ventas crecen 20% pero utilidad neta cae 10%, la lectura más útil es:", "El crecimiento no se tradujo en rentabilidad y hay que revisar costos, gastos o financiamiento", ["La empresa necesariamente mejoró", "No se puede analizar nada", "El Estado de Situación Financiera no sirve"], "El análisis horizontal debe conectar crecimiento con márgenes y gastos."),
+    choiceRow("Si el efectivo aumenta como porcentaje del activo total, pero los pasivos corrientes también suben fuerte, debes:", "Cruzar estructura con liquidez y vencimientos", ["Concluir que no hay riesgo", "Ignorar pasivos", "Solo mirar ventas"], "Un porcentaje aislado no basta; hay que interpretar relaciones.")
   ]
 };
 
@@ -2604,21 +3169,31 @@ financeTheoryData["aef-semana-07"] = {
     choiceRow("La liquidez mide:", "Capacidad de cumplir obligaciones de corto plazo", ["Solo rentabilidad", "Solo ventas", "Solo patrimonio"], "Se enfoca en compromisos inmediatos."),
     choiceRow("Liquidez general se calcula como:", "Activo corriente / Pasivo corriente", ["Pasivo total / Activo total", "EBIT / Intereses", "Ventas / Inventario"], "Es el ratio corriente."),
     choiceRow("Prueba ácida excluye principalmente:", "Inventarios", ["Efectivo", "Pasivos", "Patrimonio"], "Busca activos más líquidos."),
-    choiceRow("Solvencia mide:", "Grado de endeudamiento y capacidad de pago de deuda", ["Solo ventas diarias", "Solo caja chica", "Solo descuentos"], "Evalúa estructura financiera y deuda.")
+    choiceRow("Solvencia mide:", "Grado de endeudamiento y capacidad de pago de deuda", ["Solo ventas diarias", "Solo caja chica", "Solo descuentos"], "Evalúa estructura financiera y deuda."),
+    choiceRow("La prueba defensiva usa principalmente:", "Efectivo, equivalentes y valores negociables", ["Inventarios y activo fijo", "Capital social y ventas", "Costo de ventas e impuestos"], "Mide liquidez de emergencia con partidas de disponibilidad inmediata."),
+    choiceRow("El capital de trabajo neto mide:", "Activo corriente menos pasivo corriente", ["Pasivo total entre activo total", "Ventas menos costo", "EBIT entre intereses"], "Muestra el exceso de recursos corrientes luego de cubrir pasivos corrientes.")
   ],
   medio: [
     choiceRow("Una limitación de los ratios es que:", "Usan información histórica", ["Siempre predicen el futuro perfecto", "No usan cuentas", "Eliminan el juicio"], "Deben interpretarse con contexto."),
     choiceRow("Si activo corriente es 200 y pasivo corriente 100, liquidez general es:", "2.0", ["0.5", "100", "300"], "\\(200/100=2\\)."),
     choiceRow("Si activo corriente es 200, inventarios 50 y pasivo corriente 100, prueba ácida es:", "1.5", ["2.5", "0.5", "150"], "\\((200-50)/100=1.5\\)."),
     choiceRow("Capital de trabajo neto se calcula como:", "Activo corriente - Pasivo corriente", ["Pasivo total / Patrimonio", "Ventas - costo", "EBIT / gastos financieros"], "Mide exceso monetario corriente."),
-    choiceRow("Cobertura de intereses relaciona:", "EBIT y gastos financieros", ["Inventarios y ventas", "Activo y patrimonio", "Efectivo y notas"], "Indica cuántas veces EBIT cubre intereses.")
+    choiceRow("Cobertura de intereses relaciona:", "EBIT y gastos financieros", ["Inventarios y ventas", "Activo y patrimonio", "Efectivo y notas"], "Indica cuántas veces EBIT cubre intereses."),
+    choiceRow("Grado de propiedad se calcula como:", "Patrimonio total / Activo total", ["Pasivo total / Patrimonio", "Activo corriente / Pasivo corriente", "EBIT / Gastos financieros"], "Mide qué parte de los activos está financiada por propietarios."),
+    choiceRow("Costo de la deuda se calcula como:", "Gastos financieros / Pasivos con costo financiero", ["Ventas / Activo total", "Patrimonio / Pasivo corriente", "Inventarios / Ventas"], "Mide el costo del financiamiento con deuda."),
+    choiceRow("Si la liquidez general es alta pero la prueba defensiva es baja, se interpreta que:", "La empresa depende de cobrar o vender inventarios para pagar", ["Tiene caja abundante", "No tiene pasivos corrientes", "Su rentabilidad es perfecta"], "La prueba defensiva mira solo recursos de disponibilidad inmediata."),
+    choiceRow("Si el capital de trabajo neto aumenta, pero por acumulación de inventarios lentos, la interpretación debe ser:", "Cautelosa, porque no todo activo corriente es igualmente líquido", ["Automáticamente positiva", "Siempre señal de insolvencia", "Irrelevante"], "La calidad del activo corriente importa.")
   ],
   dificil: [
     choiceRow("Una liquidez general mayor a 1 no garantiza liquidez real si:", "Los activos corrientes no son fácilmente realizables", ["No hay inventarios", "El pasivo es cero", "Hay notas"], "La calidad del activo corriente importa."),
     choiceRow("Un alto endeudamiento puede ser útil pero riesgoso porque:", "La deuda puede ser barata, pero aumenta compromisos fijos", ["Siempre elimina intereses", "Nunca exige pagos", "Aumenta efectivo infinito"], "La deuda apalanca pero puede presionar solvencia."),
     choiceRow("Si pasivo total es 600 y activo total 1,000, grado de endeudamiento es:", "60%", ["40%", "1.67", "600%"], "\\(600/1,000=60\\%\\)."),
     choiceRow("Si EBIT es 300 y gastos financieros 75, cobertura de intereses es:", "4 veces", ["0.25 veces", "225 veces", "375 veces"], "\\(300/75=4\\)."),
-    choiceRow("Un ratio debe compararse con:", "Sector, historia de la empresa y estrategia", ["Solo el nombre de la cuenta", "Nada más", "Color del reporte"], "El número aislado puede engañar.")
+    choiceRow("Un ratio debe compararse con:", "Sector, historia de la empresa y estrategia", ["Solo el nombre de la cuenta", "Nada más", "Color del reporte"], "El número aislado puede engañar."),
+    choiceRow("Una prueba defensiva baja aunque la liquidez general sea alta puede indicar:", "Dependencia de cuentas por cobrar o inventarios para pagar", ["Caja excesiva siempre", "Cero pasivos", "Solvencia perfecta"], "La prueba defensiva es más estricta porque mira liquidez inmediata."),
+    choiceRow("Un grado de endeudamiento alto y cobertura de intereses baja sugieren:", "Mayor riesgo financiero", ["Menor riesgo financiero siempre", "Ausencia de deuda", "Liquidez perfecta"], "Mucha deuda y poca cobertura de intereses presionan la capacidad de pago."),
+    choiceRow("Si el grado de propiedad cae y el endeudamiento patrimonial sube, la empresa probablemente:", "Está financiando más activos con deuda que con patrimonio", ["Está eliminando acreedores", "No tiene apalancamiento", "Aumentó solo caja sin deuda"], "Ambos ratios apuntan a mayor peso relativo de terceros."),
+    choiceRow("Si la cobertura de intereses es baja aunque la liquidez sea aceptable, el riesgo principal está en:", "La capacidad de sostener el costo financiero con resultados operativos", ["El cobro de ventas al contado únicamente", "La clasificación de inventarios", "La moneda del reporte"], "Liquidez de corto plazo y cobertura de intereses miden riesgos distintos.")
   ]
 };
 
@@ -2676,21 +3251,339 @@ financePracticeBanks["aef-semana-07"] = {
     choiceRow("Activo corriente 500, inventarios 100, pasivo corriente 200. Prueba ácida:", "2.0", ["2.5", "0.4", "3.0"], "\\((500-100)/200=2\\)."),
     choiceRow("Activo corriente 400 y pasivo corriente 250. Capital de trabajo neto:", "150", ["650", "1.6", "-150"], "\\(400-250=150\\)."),
     choiceRow("Pasivo total 600 y activo total 1,200. Endeudamiento:", "50%", ["200%", "60%", "20%"], "\\(600/1200=50\\%\\)."),
-    choiceRow("EBIT 240 y gastos financieros 60. Cobertura:", "4 veces", ["0.25 veces", "300 veces", "180 veces"], "\\(240/60=4\\).")
+    choiceRow("EBIT 240 y gastos financieros 60. Cobertura:", "4 veces", ["0.25 veces", "300 veces", "180 veces"], "\\(240/60=4\\)."),
+    choiceRow("Efectivo 80, valores negociables 20 y pasivo corriente 200. Prueba defensiva:", "0.5", ["2.0", "0.1", "1.5"], "\\((80+20)/200=0.5\\)."),
+    choiceRow("Pasivo corriente 365 y disponible 73. Días disponibles:", "73 días", ["5 días", "365 días", "292 días"], "\\(73/(365/365)=73\\) días.")
   ],
   medio: [
     choiceRow("Activo corriente 180, inventarios 60, pasivo corriente 120. Prueba ácida:", "1.0", ["1.5", "0.5", "2.0"], "\\((180-60)/120=1\\)."),
     choiceRow("Pasivo total 300 y patrimonio 200. Endeudamiento patrimonial:", "1.5", ["0.67", "500", "60%"], "\\(300/200=1.5\\)."),
     choiceRow("Gastos financieros 40 y pasivos con costo 800. Costo de deuda:", "5%", ["20%", "2%", "50%"], "\\(40/800=5\\%\\)."),
     choiceRow("Patrimonio 450 y activo total 900. Grado de propiedad:", "50%", ["2", "45%", "150%"], "\\(450/900=50\\%\\)."),
-    choiceRow("Activo corriente 90 y pasivo corriente 120. Liquidez general:", "0.75", ["1.33", "30", "2.10"], "\\(90/120=0.75\\).")
+    choiceRow("Activo corriente 90 y pasivo corriente 120. Liquidez general:", "0.75", ["1.33", "30", "2.10"], "\\(90/120=0.75\\)."),
+    choiceRow("Patrimonio 300 y activo total 1,000. Grado de propiedad:", "30%", ["70%", "3.33", "300%"], "\\(300/1000=30\\%\\)."),
+    choiceRow("Gastos financieros 50 y pasivos con costo 1,000. Costo de deuda:", "5%", ["20%", "50%", "0.5%"], "\\(50/1000=5\\%\\).")
   ],
   dificil: [
     choiceRow("Liquidez general 2.5 pero inventarios son casi todo el activo corriente. Riesgo:", "La liquidez puede estar sobreestimada", ["No hay riesgo posible", "La empresa no tiene pasivos", "La solvencia es infinita"], "Inventarios pueden tardar en convertirse en efectivo."),
     choiceRow("Cobertura de intereses baja de 5 a 1.2. Lectura:", "Menor holgura para pagar intereses", ["Mejor solvencia siempre", "No cambia riesgo", "Mayor liquidez automática"], "Menos veces de cobertura aumenta presión financiera."),
     choiceRow("Pasivo total 700, activo 1,000, patrimonio 300. Endeudamiento patrimonial:", "2.33", ["0.70", "0.43", "1.30"], "\\(700/300=2.33\\)."),
     choiceRow("Activo corriente 1,000, inventarios 700, pasivo corriente 500. Liquidez general y ácida:", "2.0 y 0.6", ["0.6 y 2.0", "1.4 y 2.0", "2.0 y 1.4"], "LG \\(=1000/500=2\\); PA \\(=(1000-700)/500=0.6\\)."),
-    choiceRow("Un alto endeudamiento con flujos estables puede ser:", "Manejable, pero debe revisarse cobertura y vencimientos", ["Siempre quiebra inmediata", "Siempre óptimo", "Irrelevante"], "La interpretación depende de flujos, costo de deuda y calendario.")
+    choiceRow("Un alto endeudamiento con flujos estables puede ser:", "Manejable, pero debe revisarse cobertura y vencimientos", ["Siempre quiebra inmediata", "Siempre óptimo", "Irrelevante"], "La interpretación depende de flujos, costo de deuda y calendario."),
+    choiceRow("Pasivo no corriente 400, patrimonio 600, IRD 50 y activo fijo 500. Cobertura del activo fijo:", "1.9", ["0.5", "2.1", "0.95"], "\\((400+600-50)/500=1.9\\)."),
+    choiceRow("Disponible 120 y pasivo corriente 730. Días disponibles:", "60 días", ["6 días", "120 días", "730 días"], "\\(120/(730/365)=60\\) días.")
+  ]
+};
+
+financeTheoryData["aef-semana-09"] = {
+  facil: [
+    choiceRow("¿Qué miden principalmente los ratios de gestión?", "Eficiencia y velocidad en el uso de recursos", ["Solo impuestos", "Solo valor de mercado", "Solo dividendos"], "Los ratios de gestión miden qué tan rápido cuentas como inventarios, cuentas por cobrar o activos se convierten en ventas o efectivo."),
+    choiceRow("La rotación de cuentas por cobrar se relaciona con:", "La rapidez de cobranza", ["La depreciación", "El pago de impuestos", "El valor del patrimonio"], "Este indicador evalúa cuántas veces se recuperan las cuentas por cobrar durante el periodo."),
+    choiceRow("Los días promedio de cobro se calculan con:", "365 / Rotación de cuentas por cobrar", ["Ventas / Activo", "Utilidad / Ventas", "Pasivo / Patrimonio"], "Convierte la rotación en una medida de tiempo promedio de cobranza."),
+    choiceRow("La rotación de inventarios usa como numerador:", "Costo de ventas", ["Utilidad neta", "Patrimonio", "Gasto financiero"], "El inventario se relaciona directamente con el costo de los bienes vendidos."),
+    choiceRow("El margen bruto compara:", "Utilidad bruta y ventas netas", ["Pasivo y activo", "Caja e inventario", "Ventas y patrimonio"], "El margen bruto mide qué queda de las ventas después del costo de ventas."),
+    choiceRow("El margen operativo mide utilidad después de:", "Costos y gastos operativos", ["Solo dividendos", "Solo aportes de socios", "Solo activos fijos"], "El margen operativo observa el desempeño del giro antes de intereses e impuestos."),
+    choiceRow("El margen neto se calcula con:", "Utilidad neta / Ventas", ["Ventas / Activo", "Compras / CxP", "Inventario / Ventas"], "El margen neto muestra la utilidad final por cada sol vendido."),
+    choiceRow("La rotación del activo mide:", "Ventas generadas por cada sol de activo", ["Deuda por cada proveedor", "Impuestos por venta", "Dividendos por acción"], "Evalúa eficiencia de los activos para generar ingresos."),
+    choiceRow("Un aumento sostenido de días de cobro puede indicar:", "Problemas de crédito o cobranza", ["Menor riesgo siempre", "Más depreciación", "Cierre automático"], "Más días para cobrar puede reflejar políticas de crédito débiles o clientes demorados."),
+    choiceRow("Los días de pago deben compararse con:", "Los días de cobro", ["El logotipo", "El número de empleados solamente", "El nombre legal"], "La comparación entre cobrar y pagar ayuda a leer presión de caja.")
+  ],
+  medio: [
+    choiceRow("Una rotación de cuentas por cobrar más alta normalmente implica:", "Cobranza más rápida", ["Cobranza más lenta", "Menor venta siempre", "Mayor deuda bancaria siempre"], "Si la rotación aumenta, la cuenta se recupera más veces en el año."),
+    choiceRow("Un plazo de pago alto puede ser conveniente cuando:", "No genera costos financieros altos ni deteriora relaciones con proveedores", ["Siempre elimina deudas", "Impide comprar inventarios", "Garantiza utilidad neta"], "Pagar más tarde puede aliviar caja, pero tiene costos y riesgos comerciales."),
+    choiceRow("Una rotación de inventarios baja puede indicar:", "Inventario acumulado o baja salida", ["Cobranza perfecta", "Menor activo fijo", "Cero ventas a crédito"], "Un inventario lento puede revelar sobrestock, obsolescencia o problemas de ventas."),
+    choiceRow("Si el margen bruto baja, una causa posible es:", "Mayor peso del costo de ventas", ["Menor costo de ventas siempre", "Más patrimonio", "Menos cuentas por pagar"], "El margen bruto depende de ventas netas y costo de ventas."),
+    choiceRow("Si el margen operativo baja pero el margen bruto se mantiene, conviene revisar:", "Gastos operativos", ["Solo proveedores", "Solo capital social", "Solo bancos"], "El deterioro después del margen bruto suele venir de gastos de ventas o administración."),
+    choiceRow("El margen neto puede caer aunque el margen operativo no cambie por:", "Intereses o impuestos más altos", ["Menor nombre comercial", "Mayor inventario físico siempre", "Más notas contables"], "El margen neto incorpora partidas no operativas, financieras e impuestos."),
+    choiceRow("La rotación del activo alta puede interpretarse como:", "Buen uso de activos para generar ventas", ["Rentabilidad garantizada", "Deuda inexistente", "Margen neto alto siempre"], "La rotación mide eficiencia comercial, pero no asegura utilidad si los márgenes son bajos."),
+    choiceRow("Comparar días de cobro y días de pago ayuda a entender:", "El ciclo de caja", ["La tasa de depreciación", "La política de dividendos únicamente", "La NIC aplicable"], "Si se cobra tarde y se paga temprano, puede haber presión de liquidez."),
+    choiceRow("Una empresa con margen bruto alto pero margen neto bajo podría tener:", "Gastos, intereses o impuestos elevados", ["Costo de ventas excesivo necesariamente", "Cero gastos operativos", "Ventas inexistentes"], "La utilidad se erosiona después del margen bruto."),
+    choiceRow("Los ratios de gestión deben interpretarse con:", "Sector, historia y política comercial", ["Solo una cifra aislada", "Solo color del reporte", "Solo saldo de caja"], "El nivel normal de rotación depende del modelo de negocio.")
+  ],
+  dificil: [
+    choiceRow("Si los días de cobro suben y los días de pago bajan, la empresa podría enfrentar:", "Mayor presión de liquidez", ["Menor necesidad de caja", "Cero riesgo comercial", "Menor capital de trabajo siempre"], "Cobrar más tarde y pagar más rápido aumenta la necesidad de financiamiento operativo."),
+    choiceRow("Una rotación de inventarios muy alta no siempre es buena porque puede indicar:", "Riesgo de quiebres de stock", ["Inventario obsoleto seguro", "Ventas nulas", "Mayor deuda siempre"], "Una rotación excesiva puede reflejar inventarios demasiado ajustados."),
+    choiceRow("Un margen neto menor al operativo refleja impacto de:", "Gastos financieros, impuestos u otras partidas no operativas", ["Solo costo de ventas", "Solo inventarios", "Solo cuentas por cobrar"], "El margen operativo se calcula antes de esas partidas."),
+    choiceRow("Si rota mucho el activo pero el margen neto es bajo, el negocio podría depender de:", "Volumen alto con bajo margen", ["Precio alto con pocas ventas", "Activos improductivos únicamente", "Sin ventas"], "Algunos modelos ganan por volumen y eficiencia, no por margen unitario alto."),
+    choiceRow("Para evaluar política de crédito se debe mirar especialmente:", "Días de cobro y rotación de CxC", ["ROE únicamente", "Depreciación únicamente", "Patrimonio fijo"], "Estos ratios muestran rapidez de recuperación de ventas al crédito."),
+    choiceRow("Si cuentas por pagar se pagan más lentamente cada año, la interpretación debe ser cautelosa porque:", "Puede aliviar caja o señalar tensión con proveedores", ["Siempre mejora solvencia", "Siempre aumenta ventas", "Nunca afecta relaciones"], "El efecto depende de costos financieros y condiciones comerciales."),
+    choiceRow("Una empresa con inventario lento y margen bruto decreciente podría tener:", "Problemas de demanda u obsolescencia", ["Cobranza perfecta garantizada", "Menos riesgo operativo", "Mayor eficiencia segura"], "Inventarios lentos pueden forzar descuentos y afectar margen."),
+    choiceRow("El ciclo operativo se entiende mejor combinando:", "Cobro, inventario y pago", ["Solo ROE", "Solo impuestos", "Solo capital social"], "La gestión operativa conecta cuánto tarda vender, cobrar y pagar."),
+    choiceRow("Una mejora de margen operativo sin mejora de margen neto puede ocultar:", "Mayor costo financiero o tributario", ["Menor deuda siempre", "Mayor eficiencia total asegurada", "Ningún cambio posible"], "El resultado final puede deteriorarse por debajo de la línea operativa."),
+    choiceRow("La rotación del activo debe leerse junto con márgenes porque:", "Vender mucho no garantiza ganar mucho", ["Son indicadores idénticos", "La rotación reemplaza utilidad", "Los activos no importan"], "La rentabilidad combina volumen, eficiencia y margen.")
+  ]
+};
+
+financePracticeBanks["aef-semana-09"] = {
+  facil: [
+    choiceRow("Ventas al crédito 120,000 y promedio CxC 30,000. Rotación CxC:", "4.0", ["0.25", "150,000", "90,000"], "\\(120,000/30,000=4\\) veces."),
+    choiceRow("Rotación CxC 5. Días promedio de cobro:", "73 días", ["5 días", "365 días", "18 días"], "\\(365/5=73\\) días."),
+    choiceRow("Costo de ventas 200,000 e inventario promedio 50,000. Rotación de inventarios:", "4.0", ["0.25", "250,000", "150,000"], "\\(200,000/50,000=4\\)."),
+    choiceRow("Rotación de inventarios 10. Días de inventario:", "36.5 días", ["10 días", "365 días", "3.65 días"], "\\(365/10=36.5\\) días."),
+    choiceRow("Ventas 500,000 y activo total 250,000. Rotación del activo:", "2.0", ["0.5", "750,000", "250,000"], "\\(500,000/250,000=2\\)."),
+    choiceRow("Utilidad bruta 80,000 y ventas netas 200,000. Margen bruto:", "40%", ["25%", "60%", "160%"], "\\(80,000/200,000=40\\%\\)."),
+    choiceRow("Utilidad operativa 30,000 y ventas 150,000. Margen operativo:", "20%", ["5%", "30%", "80%"], "\\(30,000/150,000=20\\%\\)."),
+    choiceRow("Utilidad neta 18,000 y ventas 180,000. Margen neto:", "10%", ["18%", "1%", "90%"], "\\(18,000/180,000=10\\%\\)."),
+    choiceRow("Compras al crédito 90,000 y promedio CxP 30,000. Rotación CxP:", "3.0", ["0.33", "120,000", "60,000"], "\\(90,000/30,000=3\\)."),
+    choiceRow("Rotación CxP 4. Días promedio de pago:", "91.25 días", ["4 días", "365 días", "45 días"], "\\(365/4=91.25\\).")
+  ],
+  medio: [
+    choiceRow("Ventas al crédito 240,000; CxC inicial 30,000 y final 50,000. Rotación CxC:", "6.0", ["4.8", "8.0", "3.0"], "Promedio CxC \\((30,000+50,000)/2=40,000\\); \\(240,000/40,000=6\\)."),
+    choiceRow("Con rotación CxC de 6, días de cobro aproximados:", "60.8 días", ["6 días", "30 días", "120 días"], "\\(365/6=60.8\\)."),
+    choiceRow("Costo de ventas 360,000; inventario inicial 80,000 y final 100,000. Rotación:", "4.0", ["3.6", "4.5", "2.0"], "Inventario promedio \\(90,000\\); \\(360,000/90,000=4\\)."),
+    choiceRow("Compras al crédito 180,000; CxP promedio 45,000. Días de pago:", "91.25 días", ["45 días", "4 días", "180 días"], "Rotación CxP \\(=4\\); días \\(365/4=91.25\\)."),
+    choiceRow("Ventas 800,000 y activo total 400,000. Rotación del activo:", "2.0", ["0.5", "1.5", "4.0"], "\\(800,000/400,000=2\\)."),
+    choiceRow("Ventas 600,000 y utilidad bruta 210,000. Margen bruto:", "35%", ["65%", "28.6%", "21%"], "\\(210,000/600,000=35\\%\\)."),
+    choiceRow("Ventas 500,000, utilidad operativa 75,000 y utilidad neta 45,000. Margen operativo:", "15%", ["9%", "60%", "6%"], "\\(75,000/500,000=15\\%\\)."),
+    choiceRow("Con esos datos, margen neto:", "9%", ["15%", "60%", "45%"], "\\(45,000/500,000=9\\%\\)."),
+    choiceRow("Días de cobro 80 y días de pago 40 sugieren:", "Presión de caja por cobrar después de pagar", ["Holgura segura", "Inventario obsoleto", "Margen bruto alto"], "Si se cobra tarde y se paga temprano, la operación puede necesitar financiamiento."),
+    choiceRow("Rotación de inventarios baja de 8 a 4. Lectura probable:", "Inventario se mueve más lento", ["Inventario se mueve más rápido", "Días de inventario caen", "No cambia gestión"], "Menor rotación implica más días promedio de inventario.")
+  ],
+  dificil: [
+    choiceRow("CxC rota 5 veces y CxP rota 10 veces. ¿Qué ciclo presiona más caja?", "Se cobra más lento que se paga", ["Se cobra más rápido", "No hay presión posible", "No se puede comparar días"], "Días CxC \\(=73\\); días CxP \\(=36.5\\)."),
+    choiceRow("Inventarios rotan 4 veces y CxC 6 veces. Días combinados antes de cobrar:", "152.1 días", ["60.8 días", "91.25 días", "30.4 días"], "Días inventario \\(91.25\\) + días cobro \\(60.8\\) = \\(152.05\\)."),
+    choiceRow("Ventas 1,000, costo 650, gastos operativos 200, utilidad neta 90. Margen operativo:", "15%", ["9%", "35%", "20%"], "Utilidad operativa \\(=1000-650-200=150\\); margen \\(150/1000=15\\%\\)."),
+    choiceRow("Con esos datos, margen bruto:", "35%", ["15%", "9%", "65%"], "Utilidad bruta \\(=350\\); \\(350/1000=35\\%\\)."),
+    choiceRow("Con esos datos, margen neto:", "9%", ["15%", "35%", "90%"], "\\(90/1000=9\\%\\)."),
+    choiceRow("Rotación del activo 3 y margen neto 4%. Ventas/activos alto con margen bajo indica:", "Modelo de volumen alto y margen bajo", ["Sin eficiencia", "Utilidad nula siempre", "Mayor deuda necesariamente"], "Debe analizarse la rentabilidad total, no solo la velocidad."),
+    choiceRow("Días de inventario suben de 45 a 90 y margen bruto baja. Riesgo principal:", "Obsolescencia o descuentos para vender", ["Cobranza acelerada", "Menor necesidad de capital", "Mayor margen seguro"], "Inventario lento puede obligar a rebajas y afectar margen."),
+    choiceRow("Ventas crecen 20%, CxC crece 80%. Posible lectura:", "Crédito más riesgoso o cobranza más lenta", ["Mejora segura de caja", "Menor venta al crédito", "No hay señal"], "CxC creciendo mucho más que ventas suele exigir revisión de cobranza."),
+    choiceRow("Si días de pago se alargan por falta de caja, una señal complementaria sería:", "Aumento de obligaciones vencidas o costo financiero", ["Menor pasivo", "Más margen bruto", "Menos proveedores"], "Pagar tarde puede ser estrategia o tensión financiera."),
+    choiceRow("Si margen bruto mejora pero margen neto cae, el análisis debe revisar:", "Gastos operativos, intereses e impuestos", ["Solo costo de ventas", "Solo inventario inicial", "Solo activo total"], "La utilidad se pierde después del margen bruto.")
+  ]
+};
+
+financeTheoryData["aef-semana-10"] = {
+  facil: [
+    choiceRow("¿Qué mide el ROA?", "Rentabilidad sobre los activos", ["Rentabilidad solo de ventas", "Días de cobro", "Rotación de proveedores"], "El ROA relaciona utilidad neta con activos totales."),
+    choiceRow("La fórmula del ROA es:", "Utilidad neta / Total de activos", ["Ventas / Patrimonio", "EBITDA / Impuestos", "Compras / CxP"], "Mide utilidad generada por los recursos controlados."),
+    choiceRow("¿Qué mide el ROE?", "Rentabilidad sobre el patrimonio", ["Liquidez corriente", "Rotación de inventarios", "Costo de ventas"], "El ROE mide retorno para propietarios o accionistas."),
+    choiceRow("La fórmula del ROE es:", "Utilidad neta / Total patrimonio", ["Ventas / Activos", "Activo / Pasivo", "EBIT / Ventas"], "Relaciona utilidad final con inversión patrimonial."),
+    choiceRow("Un ROA alto suele indicar:", "Buen uso de activos para generar ganancias", ["Menor utilidad siempre", "Más días de cobro", "Pérdida obligatoria"], "El indicador evalúa productividad rentable del activo."),
+    choiceRow("Un ROE alto es especialmente relevante para:", "Propietarios e inversionistas", ["Solo proveedores", "Solo clientes", "Solo auditores tributarios"], "Mide retorno del capital propio."),
+    choiceRow("ROA usa como base:", "Activos", ["Patrimonio", "Ventas al crédito", "Inventario promedio"], "El denominador del ROA es el total de activos."),
+    choiceRow("ROE usa como base:", "Patrimonio", ["Activo total", "Costo de ventas", "Compras"], "El denominador del ROE es el patrimonio."),
+    choiceRow("ROE debe analizarse junto con:", "Nivel de deuda", ["Color del reporte", "Número de páginas", "Solo caja chica"], "El apalancamiento puede elevar ROE y riesgo."),
+    choiceRow("ROA y ROE son indicadores de:", "Rentabilidad sobre inversión", ["Solo liquidez", "Solo gestión de inventarios", "Solo presentación contable"], "Ambos relacionan utilidad con recursos invertidos.")
+  ],
+  medio: [
+    choiceRow("Si ROE es mucho mayor que ROA, puede deberse a:", "Apalancamiento financiero", ["Cero deuda siempre", "Inventario bajo únicamente", "Menos ventas"], "La deuda reduce la base patrimonial relativa y puede amplificar el ROE."),
+    choiceRow("Un ROA bajo con activos altos puede sugerir:", "Activos poco productivos o baja utilidad", ["Mayor eficiencia segura", "Menor riesgo siempre", "Caja ilimitada"], "El activo no está generando suficiente utilidad."),
+    choiceRow("Un ROE alto no siempre es positivo porque:", "Puede venir de deuda excesiva", ["Siempre elimina riesgo", "No usa utilidad", "No depende del patrimonio"], "La deuda puede aumentar retorno y también presión financiera."),
+    choiceRow("La gerencia suele mirar ROA porque:", "Evalúa eficiencia del negocio con sus activos", ["Solo calcula dividendos", "Ignora operaciones", "Mide únicamente proveedores"], "El ROA permite juzgar uso de recursos controlados."),
+    choiceRow("Los accionistas suelen mirar ROE porque:", "Evalúa retorno del capital propio", ["Mide días de inventario", "Solo calcula impuestos", "Sustituye ventas"], "El ROE muestra rentabilidad sobre patrimonio."),
+    choiceRow("Si utilidad sube y activos permanecen constantes, ROA:", "Aumenta", ["Disminuye", "No cambia necesariamente", "Se vuelve cero"], "Con el mismo denominador y mayor numerador, el ratio sube."),
+    choiceRow("Si utilidad se mantiene y patrimonio baja por mayor deuda, ROE:", "Puede aumentar", ["Debe caer siempre", "Se vuelve negativo siempre", "No puede calcularse"], "Menor patrimonio eleva el ratio, aunque puede aumentar riesgo."),
+    choiceRow("ROA se puede mejorar con:", "Mayor margen o mejor rotación de activos", ["Más gastos sin ventas", "Menor utilidad", "Inventario obsoleto"], "La rentabilidad del activo depende de utilidad y uso del activo."),
+    choiceRow("ROE combina rentabilidad y:", "Estructura financiera", ["Solo formato contable", "Solo número de clientes", "Solo moneda"], "El patrimonio depende de cómo se financian activos."),
+    choiceRow("Comparar ROA y ROE ayuda a distinguir:", "Eficiencia operativa y efecto del financiamiento", ["Solo caja y bancos", "Solo ventas brutas", "Solo notas"], "ROA mira negocio; ROE incorpora capital propio y deuda.")
+  ],
+  dificil: [
+    choiceRow("Una empresa puede tener ROA estable y ROE creciente si:", "Aumenta el apalancamiento", ["Reduce deuda", "Elimina utilidad", "No tiene patrimonio"], "Con la misma eficiencia del activo, más deuda puede elevar retorno patrimonial."),
+    choiceRow("ROE alto con cobertura de intereses baja sugiere:", "Rentabilidad atractiva pero riesgo financiero alto", ["Situación sin riesgo", "Ausencia de deuda", "Inventarios perfectos"], "El retorno para accionistas puede estar sostenido por deuda riesgosa."),
+    choiceRow("ROA bajo y margen neto alto podría explicarse por:", "Baja rotación de activos", ["Activos muy productivos", "Cero activos", "Mayor ciclo de cobro seguro"], "Un margen alto no basta si los activos generan pocas ventas."),
+    choiceRow("ROA alto y ROE bajo podría indicar:", "Poco apalancamiento o base patrimonial amplia", ["Deuda excesiva siempre", "Pérdida neta segura", "Inventario lento siempre"], "Si casi todo se financia con patrimonio, ROE puede acercarse al ROA."),
+    choiceRow("Para comparar empresas con deuda distinta conviene mirar:", "ROA junto con ROE", ["Solo ROE", "Solo dividendos", "Solo ventas"], "La lectura conjunta separa desempeño del activo y efecto del apalancamiento."),
+    choiceRow("Si ROE sube por recompra o reducción de patrimonio, se debe revisar:", "Si la utilidad y el riesgo sostienen ese aumento", ["Solo el logo", "Solo ventas brutas", "Nada más"], "Un denominador menor puede inflar el indicador."),
+    choiceRow("Un ROA negativo significa:", "La empresa destruye utilidad respecto a sus activos", ["Siempre tiene caja negativa", "No tiene activos", "No hay ventas"], "Utilidad neta negativa sobre activos genera ROA negativo."),
+    choiceRow("Una empresa intensiva en activos suele tener:", "ROA más presionado si no genera suficiente utilidad", ["ROA infinito", "Sin necesidad de ventas", "ROE cero siempre"], "El activo alto exige utilidad suficiente para sostener rentabilidad."),
+    choiceRow("El ROE puede mejorar por aumento de utilidad, reducción de patrimonio o:", "Uso de deuda", ["Más inventario obsoleto", "Menor margen siempre", "Más impuestos"], "El financiamiento altera la base patrimonial."),
+    choiceRow("Una lectura completa de ROA y ROE debe incorporar:", "Margen, rotación, deuda y riesgo", ["Solo utilidad neta aislada", "Solo caja", "Solo compras"], "La rentabilidad no se explica por un único número.")
+  ]
+};
+
+financePracticeBanks["aef-semana-10"] = {
+  facil: [
+    choiceRow("Utilidad neta 50,000 y activos 500,000. ROA:", "10%", ["5%", "50%", "1%"], "\\(50,000/500,000=10\\%\\)."),
+    choiceRow("Utilidad neta 40,000 y patrimonio 200,000. ROE:", "20%", ["5%", "10%", "40%"], "\\(40,000/200,000=20\\%\\)."),
+    choiceRow("Utilidad neta 30,000 y activos 300,000. ROA:", "10%", ["30%", "1%", "90%"], "\\(30,000/300,000=10\\%\\)."),
+    choiceRow("Utilidad neta 24,000 y patrimonio 120,000. ROE:", "20%", ["12%", "5%", "24%"], "\\(24,000/120,000=20\\%\\)."),
+    choiceRow("ROA 8% significa:", "La empresa gana 8 por cada 100 de activos", ["Cobra en 8 días", "Debe 8%", "Paga 8 proveedores"], "Es utilidad neta sobre activos."),
+    choiceRow("ROE 15% significa:", "La empresa gana 15 por cada 100 de patrimonio", ["Vende 15 inventarios", "Cobra en 15 días", "Tiene 15 activos"], "Es retorno sobre capital propio."),
+    choiceRow("Utilidad neta 10,000 y activos 200,000. ROA:", "5%", ["20%", "10%", "2%"], "\\(10,000/200,000=5\\%\\)."),
+    choiceRow("Utilidad neta 10,000 y patrimonio 50,000. ROE:", "20%", ["5%", "10%", "50%"], "\\(10,000/50,000=20\\%\\)."),
+    choiceRow("Si activos son 1,000 y utilidad 100, ROA:", "10%", ["1%", "100%", "90%"], "\\(100/1000=10\\%\\)."),
+    choiceRow("Si patrimonio es 400 y utilidad 80, ROE:", "20%", ["5%", "25%", "80%"], "\\(80/400=20\\%\\).")
+  ],
+  medio: [
+    choiceRow("Utilidad 60,000, activos 600,000 y patrimonio 300,000. ROA y ROE:", "10% y 20%", ["20% y 10%", "10% y 10%", "20% y 20%"], "ROA \\(=60/600=10\\%\\); ROE \\(=60/300=20\\%\\)."),
+    choiceRow("Utilidad 45,000, activos 900,000 y patrimonio 300,000. ROA:", "5%", ["15%", "30%", "3%"], "\\(45,000/900,000=5\\%\\)."),
+    choiceRow("Con esos datos, ROE:", "15%", ["5%", "30%", "45%"], "\\(45,000/300,000=15\\%\\)."),
+    choiceRow("Utilidad 72,000, activos 800,000. ROA:", "9%", ["11.1%", "72%", "8%"], "\\(72,000/800,000=9\\%\\)."),
+    choiceRow("Utilidad 72,000, patrimonio 240,000. ROE:", "30%", ["9%", "3.3%", "24%"], "\\(72,000/240,000=30\\%\\)."),
+    choiceRow("Si ROA 6% y activos 500,000, utilidad neta:", "30,000", ["83,333", "6,000", "500,000"], "\\(0.06\\times500,000=30,000\\)."),
+    choiceRow("Si ROE 25% y patrimonio 160,000, utilidad neta:", "40,000", ["25,000", "64,000", "160,000"], "\\(0.25\\times160,000=40,000\\)."),
+    choiceRow("Utilidad igual, activos 1,000 y patrimonio 500. ROE será respecto al ROA:", "El doble", ["Igual", "La mitad", "Cero"], "El patrimonio es la mitad de activos; con igual utilidad, el ratio sobre patrimonio duplica al de activos."),
+    choiceRow("Si utilidad baja de 50 a 40 y activos quedan en 500, ROA cambia de:", "10% a 8%", ["8% a 10%", "50% a 40%", "5% a 4%"], "\\(50/500=10\\%\\), \\(40/500=8\\%\\)."),
+    choiceRow("Si utilidad sube de 30 a 45 y patrimonio queda en 300, ROE cambia de:", "10% a 15%", ["15% a 10%", "30% a 45%", "3% a 4.5%"], "\\(30/300=10\\%\\), \\(45/300=15\\%\\).")
+  ],
+  dificil: [
+    choiceRow("Empresa A: utilidad 80, activos 1,000, patrimonio 800. Empresa B: utilidad 80, activos 1,000, patrimonio 400. ¿Cuál tiene mayor ROE?", "Empresa B", ["Empresa A", "Ambas igual", "No puede calcularse"], "B tiene menor patrimonio: \\(80/400=20\\%\\) vs. \\(80/800=10\\%\\)."),
+    choiceRow("Con esos datos, ambas tienen el mismo:", "ROA", ["ROE", "Apalancamiento", "Patrimonio"], "Ambas tienen \\(80/1000=8\\%\\) de ROA."),
+    choiceRow("Utilidad 100, activos 1,250 y patrimonio 500. ROA y ROE:", "8% y 20%", ["20% y 8%", "10% y 25%", "5% y 20%"], "ROA \\(=100/1250=8\\%\\); ROE \\(=100/500=20\\%\\)."),
+    choiceRow("Si ROA es 7% y activos/patrimonio es 2.5, ROE aproximado:", "17.5%", ["2.8%", "7%", "25%"], "Con apalancamiento, \\(ROE\\approx ROA\\times Activos/Patrimonio\\)."),
+    choiceRow("Si ROE sube de 18% a 28% pero ROA cae, posible explicación:", "Mayor apalancamiento con menor eficiencia del activo", ["Menor deuda y mayor eficiencia", "No hay cambio", "Inventarios desaparecen"], "El ROE puede subir por deuda aunque el activo rinda menos."),
+    choiceRow("Utilidad 60, activos 1,000, patrimonio 250. MAF:", "4.0", ["0.25", "16", "6"], "\\(Activos/Patrimonio=1000/250=4\\)."),
+    choiceRow("Con utilidad 60, activos 1,000, patrimonio 250, ROA y ROE:", "6% y 24%", ["24% y 6%", "6% y 6%", "24% y 24%"], "\\(60/1000=6\\%\\); \\(60/250=24\\%\\)."),
+    choiceRow("Si ROE aumenta solo porque el patrimonio cae por pérdidas acumuladas, la lectura debe ser:", "Cautelosa", ["Siempre positiva", "Irrelevante", "Mayor solvencia segura"], "Un denominador reducido puede inflar el ratio sin mejora real."),
+    choiceRow("Una empresa con ROA 12% y ROE 13% probablemente tiene:", "Bajo apalancamiento", ["Apalancamiento extremo", "Pérdida neta", "Sin activos"], "ROE cercano al ROA sugiere poca diferencia entre activos y patrimonio."),
+    choiceRow("Una empresa con ROA 4% y ROE 24% debe revisar especialmente:", "Deuda y costo financiero", ["Solo margen bruto", "Solo inventario", "Solo notas"], "La brecha grande sugiere apalancamiento elevado.")
+  ]
+};
+
+financeTheoryData["aef-semana-11"] = {
+  facil: [
+    choiceRow("¿Qué busca el enfoque Dupont?", "Explicar las causas de la rentabilidad", ["Calcular solo impuestos", "Registrar asientos", "Medir solo liquidez"], "Dupont descompone ROA y ROE para entender de dónde viene la rentabilidad."),
+    choiceRow("El ROA Dupont se descompone en:", "Margen neto y rotación de activos", ["Liquidez y solvencia", "CxC y CxP", "EBITDA y capex"], "ROA = margen neto por rotación de activos."),
+    choiceRow("El ROE Dupont incorpora además:", "Multiplicador de apalancamiento financiero", ["Días de inventario", "Costo de ventas", "Caja chica"], "El ROE agrega el efecto de activos sobre patrimonio."),
+    choiceRow("El margen neto mide:", "Utilidad por cada sol vendido", ["Activos por patrimonio", "Días de pago", "Inventarios por ventas"], "Se calcula como utilidad neta sobre ventas."),
+    choiceRow("La rotación de activos mide:", "Ventas por cada sol de activos", ["Utilidad por patrimonio", "Compras por proveedor", "Impuestos por venta"], "Se calcula como ventas sobre activos."),
+    choiceRow("El MAF se calcula como:", "Activos / Patrimonio", ["Utilidad / Ventas", "Ventas / Activos", "Pasivo / Ventas"], "Mide apalancamiento financiero."),
+    choiceRow("La fórmula Dupont del ROE es:", "Margen neto × Rotación de activos × MAF", ["Ventas / CxC", "EBITDA / Ventas", "Activo - Pasivo"], "Combina margen, eficiencia y apalancamiento."),
+    choiceRow("Si no hay deuda, ROA y ROE tienden a ser:", "Más parecidos", ["Siempre negativos", "Incalculables", "Iguales a ventas"], "Sin deuda, activos y patrimonio son más cercanos."),
+    choiceRow("Dupont ayuda a identificar si el problema está en:", "Margen, rotación o apalancamiento", ["Solo impuestos", "Solo bancos", "Solo notas"], "Su valor está en separar causas."),
+    choiceRow("Mayor apalancamiento puede aumentar ROE pero también:", "Aumenta riesgo", ["Elimina intereses", "Reduce toda deuda", "Impide vender"], "La deuda amplifica resultados y compromisos.")
+  ],
+  medio: [
+    choiceRow("Si margen neto sube y rotación se mantiene, ROA:", "Aumenta", ["Disminuye", "No cambia", "Se vuelve cero"], "ROA es producto de margen y rotación."),
+    choiceRow("Si margen neto cae pero rotación sube, ROA:", "Depende de la magnitud de ambos cambios", ["Siempre sube", "Siempre cae", "No puede calcularse"], "Un componente puede compensar al otro."),
+    choiceRow("Si ROE sube por MAF, la causa principal es:", "Mayor apalancamiento", ["Mayor margen necesariamente", "Menor activo siempre", "Menor deuda"], "El MAF refleja activos financiados con patrimonio y deuda."),
+    choiceRow("Una empresa con margen bajo y rotación alta puede ser:", "Negocio de volumen", ["Negocio sin ventas", "Empresa sin activos", "Entidad sin costos"], "Puede compensar bajo margen con mucha velocidad de ventas."),
+    choiceRow("Una empresa con margen alto y rotación baja puede ser:", "Negocio de alto margen y menor volumen", ["Sin rentabilidad", "Sin activos", "Solo deuda"], "Algunos negocios venden menos veces pero con mayor utilidad por venta."),
+    choiceRow("Si ROA es bajo, Dupont permite preguntar:", "Si falla margen, rotación o ambos", ["Solo si hay caja", "Solo si hay proveedores", "Solo si falta una nota"], "La descomposición transforma el ratio en diagnóstico."),
+    choiceRow("Si ROE es alto por MAF excesivo, se debe revisar:", "Solvencia y costo de la deuda", ["Solo inventario", "Solo ventas brutas", "Solo número de accionistas"], "El apalancamiento aumenta presión financiera."),
+    choiceRow("El margen neto se afecta por:", "Costos, gastos, intereses e impuestos", ["Solo activos", "Solo patrimonio", "Solo rotación"], "La utilidad neta es resultado final."),
+    choiceRow("La rotación de activos mejora cuando:", "Se generan más ventas con los mismos activos", ["Bajan ventas", "Suben activos ociosos", "Cae utilidad neta"], "El indicador relaciona ventas y activos."),
+    choiceRow("Dupont es útil porque conecta:", "Estado de resultados y Estado de Situación Financiera", ["Solo notas", "Solo asientos", "Solo presupuesto"], "Usa utilidad y ventas del ERI, activos y patrimonio del ESF.")
+  ],
+  dificil: [
+    choiceRow("Dos empresas tienen el mismo ROA, pero una tiene mayor ROE. La diferencia probablemente está en:", "MAF más alto", ["Menor apalancamiento", "Mismo patrimonio", "Ausencia de deuda"], "Si ROA es igual, el ROE cambia por apalancamiento."),
+    choiceRow("Si margen neto mejora por recorte de gastos, pero ventas caen y activos no bajan, el efecto en ROA:", "Puede ser ambiguo", ["Siempre positivo", "Siempre negativo", "Imposible"], "Mejora margen, pero puede caer rotación."),
+    choiceRow("Un ROE alto explicado casi solo por MAF es riesgoso porque:", "Depende de deuda y compromisos financieros", ["Proviene de mayor margen", "Reduce intereses", "Elimina pasivos"], "El apalancamiento puede amplificar pérdidas."),
+    choiceRow("Una caída de ROA con margen estable indica principalmente:", "Menor rotación de activos", ["Mayor margen", "Menor deuda", "Mayor patrimonio seguro"], "Si margen no cambia, el ROA cae por eficiencia del activo."),
+    choiceRow("Una caída de ROE con ROA estable puede explicarse por:", "Menor apalancamiento", ["Mayor MAF", "Más deuda necesariamente", "Mayor margen"], "Si ROA se mantiene, cambios de ROE pueden venir del MAF."),
+    choiceRow("Dupont de tres factores cancela algebraicamente hasta:", "Utilidad neta / Patrimonio", ["Ventas / Activo", "EBITDA / Ventas", "Pasivo / Activo"], "\\((UN/Ventas)(Ventas/Activos)(Activos/Patrimonio)=UN/Patrimonio\\)."),
+    choiceRow("Dupont de dos factores cancela algebraicamente hasta:", "Utilidad neta / Activos", ["Utilidad / Patrimonio", "Ventas / Patrimonio", "Activos / Ventas"], "\\((UN/Ventas)(Ventas/Activos)=UN/Activos\\)."),
+    choiceRow("Si una empresa mejora rotación vendiendo activos improductivos, podría:", "Mejorar ROA si mantiene ventas y utilidad", ["Reducir siempre ROA", "Eliminar margen neto", "Aumentar inventario siempre"], "Menos activos con resultados similares elevan rotación y ROA."),
+    choiceRow("Si margen neto baja por mayor gasto financiero, el ROE puede no mejorar aunque suba MAF porque:", "El costo de deuda reduce utilidad neta", ["La deuda no afecta utilidad", "El MAF elimina gastos", "Las ventas desaparecen"], "La deuda aumenta apalancamiento, pero sus intereses pueden erosionar utilidad."),
+    choiceRow("La mejor lectura Dupont combina:", "Causas numéricas y explicación del negocio", ["Solo multiplicar ratios", "Ignorar contexto", "Solo mirar ROE"], "El resultado debe conectarse con estrategia, sector y riesgo.")
+  ]
+};
+
+financePracticeBanks["aef-semana-11"] = {
+  facil: [
+    choiceRow("Utilidad neta 50 y ventas 500. Margen neto:", "10%", ["5%", "50%", "100%"], "\\(50/500=10\\%\\)."),
+    choiceRow("Ventas 500 y activos 250. Rotación de activos:", "2.0", ["0.5", "250", "5"], "\\(500/250=2\\)."),
+    choiceRow("Activos 250 y patrimonio 125. MAF:", "2.0", ["0.5", "125", "3"], "\\(250/125=2\\)."),
+    choiceRow("Margen 10% y rotación 2. ROA:", "20%", ["5%", "12%", "2%"], "\\(0.10\\times2=20\\%\\)."),
+    choiceRow("Margen 10%, rotación 2 y MAF 2. ROE:", "40%", ["20%", "10%", "4%"], "\\(0.10\\times2\\times2=40\\%\\)."),
+    choiceRow("Utilidad 30 y ventas 300. Margen:", "10%", ["30%", "3%", "90%"], "\\(30/300=10\\%\\)."),
+    choiceRow("Ventas 300 y activos 600. Rotación:", "0.5", ["2.0", "300", "6"], "\\(300/600=0.5\\)."),
+    choiceRow("Activos 600 y patrimonio 300. MAF:", "2.0", ["0.5", "3.0", "300"], "\\(600/300=2\\)."),
+    choiceRow("Margen 8% y rotación 1.5. ROA:", "12%", ["8%", "1.5%", "18.75%"], "\\(0.08\\times1.5=12\\%\\)."),
+    choiceRow("ROA 12% y MAF 2. ROE:", "24%", ["6%", "12%", "14%"], "\\(12\\%\\times2=24\\%\\).")
+  ],
+  medio: [
+    choiceRow("Utilidad 80, ventas 1,000, activos 500. ROA Dupont:", "16%", ["8%", "20%", "5%"], "Margen \\(8\\%\\), rotación \\(2\\); ROA \\(=16\\%\\)."),
+    choiceRow("Con utilidad 80, ventas 1,000, activos 500, patrimonio 250. ROE:", "32%", ["16%", "8%", "20%"], "MAF \\(=2\\); ROE \\(=8\\%\\times2\\times2=32\\%\\)."),
+    choiceRow("Margen 5%, rotación 3, MAF 2. ROE:", "30%", ["15%", "10%", "60%"], "\\(0.05\\times3\\times2=30\\%\\)."),
+    choiceRow("Margen 12% y rotación 0.8. ROA:", "9.6%", ["12.8%", "15%", "6.7%"], "\\(0.12\\times0.8=9.6\\%\\)."),
+    choiceRow("ROE 24% y MAF 3. ROA:", "8%", ["72%", "21%", "3%"], "\\(ROA=ROE/MAF=24\\%/3=8\\%\\)."),
+    choiceRow("ROA 9% y rotación 1.5. Margen neto:", "6%", ["13.5%", "9%", "1.5%"], "\\(Margen=ROA/Rotación=9\\%/1.5=6\\%\\)."),
+    choiceRow("ROA 10% y margen 4%. Rotación:", "2.5", ["0.4", "14", "6"], "\\(Rotación=10\\%/4\\%=2.5\\)."),
+    choiceRow("Activos 900, patrimonio 300. MAF:", "3.0", ["0.33", "600", "1.5"], "\\(900/300=3\\)."),
+    choiceRow("Si margen baja de 10% a 8% y rotación queda en 2, ROA pasa de:", "20% a 16%", ["16% a 20%", "10% a 8%", "2% a 4%"], "Solo cambia margen: \\(0.10\\times2=20\\%\\), \\(0.08\\times2=16\\%\\)."),
+    choiceRow("Si rotación sube de 1 a 1.5 con margen 10%, ROA pasa de:", "10% a 15%", ["15% a 10%", "1% a 1.5%", "11% a 15%"], "\\(0.10\\times1=10\\%\\), \\(0.10\\times1.5=15\\%\\).")
+  ],
+  dificil: [
+    choiceRow("Empresa A: margen 5%, rotación 4. Empresa B: margen 10%, rotación 2. ¿ROA?", "Ambas 20%", ["A mayor", "B mayor", "Ambas 10%"], "A \\(=0.05\\times4=20\\%\\); B \\(=0.10\\times2=20\\%\\)."),
+    choiceRow("Si dos empresas tienen ROA 20%, pero A tiene MAF 1.5 y B MAF 3, ¿mayor ROE?", "B", ["A", "Iguales", "Ninguna"], "B: \\(20\\%\\times3=60\\%\\), A: \\(30\\%\\)."),
+    choiceRow("Margen 6%, rotación 2.5, MAF 4. ROE:", "60%", ["15%", "24%", "12.5%"], "\\(0.06\\times2.5\\times4=60\\%\\)."),
+    choiceRow("Utilidad 120, ventas 1,500, activos 1,000, patrimonio 400. ROE Dupont:", "30%", ["12%", "8%", "20%"], "Margen 8%, rotación 1.5, MAF 2.5; ROE \\(=30\\%\\)."),
+    choiceRow("Con esos datos, ROA:", "12%", ["30%", "8%", "2.5%"], "\\(0.08\\times1.5=12\\%\\)."),
+    choiceRow("Si margen cae 20% relativo pero rotación sube 20% relativo, ROA:", "Queda casi igual", ["Sube 40%", "Cae 40%", "Se duplica"], "\\(0.8\\times1.2=0.96\\), queda muy cerca pero levemente menor."),
+    choiceRow("Si MAF sube de 2 a 3 con ROA 8%, ROE cambia de:", "16% a 24%", ["24% a 16%", "8% a 12%", "2% a 3%"], "\\(8\\%\\times2=16\\%\\), \\(8\\%\\times3=24\\%\\)."),
+    choiceRow("Una caída de margen de 12% a 6% requiere que la rotación se duplique para:", "Mantener el ROA", ["Duplicar ROE siempre", "Eliminar deuda", "Bajar ventas"], "El producto margen por rotación se mantiene si uno cae a la mitad y el otro se duplica."),
+    choiceRow("ROE 36%, margen 6%, rotación 2. MAF:", "3.0", ["12", "0.33", "1.08"], "\\(MAF=36\\%/(6\\%\\times2)=3\\)."),
+    choiceRow("Si el componente que más explica un ROE alto es MAF, la recomendación analítica es:", "Revisar riesgo financiero y cobertura de deuda", ["Ignorar pasivos", "Concluir eficiencia operativa perfecta", "Eliminar análisis de margen"], "El apalancamiento puede elevar retorno sin mejorar operaciones.")
+  ]
+};
+
+financeTheoryData["aef-semana-12"] = {
+  facil: [
+    choiceRow("EBITDA significa:", "Utilidad antes de intereses, impuestos, depreciación y amortización", ["Utilidad neta después de dividendos", "Activo corriente menos pasivo corriente", "Ventas menos cuentas por cobrar"], "EBITDA viene de Earnings Before Interest, Taxes, Depreciation and Amortization."),
+    choiceRow("El EBITDA busca medir principalmente:", "Desempeño operativo antes de estructura financiera y D&A", ["Solo liquidez legal", "Solo patrimonio", "Solo impuestos pagados"], "Aísla intereses, impuestos, depreciación y amortización para mirar operación."),
+    choiceRow("Una fórmula básica del EBITDA es:", "EBIT + Depreciación + Amortización", ["Ventas / Activos", "Utilidad neta / Patrimonio", "CxC / Ventas"], "Se parte de EBIT y se agregan cargos no desembolsables de D&A."),
+    choiceRow("El EBIT se interpreta como:", "Utilidad operativa", ["Utilidad después de dividendos", "Caja final", "Pasivo total"], "EBIT es resultado antes de intereses e impuestos."),
+    choiceRow("El margen EBITDA se calcula como:", "EBITDA / Ventas", ["Ventas / EBITDA", "EBIT / Activos", "NOPAT / Patrimonio"], "Mide qué porcentaje de ventas queda como EBITDA."),
+    choiceRow("Una limitación del EBITDA es que:", "No representa exactamente flujo de caja", ["Incluye todos los intereses", "Es igual a utilidad neta", "No usa ventas"], "No considera capex, impuestos, intereses ni cambios de capital de trabajo."),
+    choiceRow("El EBITDA no considera:", "Intereses, impuestos, depreciación y amortización", ["Ventas netas", "Utilidad bruta", "Ingresos ordinarios"], "Justamente esas partidas se excluyen para mirar operación antes de ellas."),
+    choiceRow("NOPAT se calcula como:", "EBIT × (1 - tasa de impuesto)", ["EBITDA / Ventas", "Ventas / Activos", "Utilidad / Patrimonio"], "NOPAT aproxima resultado operativo después de impuestos."),
+    choiceRow("GOPAT se calcula como:", "EBITDA × (1 - tasa de impuesto)", ["EBIT - Ventas", "Activo / Patrimonio", "CxP / Compras"], "Aplica tasa efectiva al EBITDA."),
+    choiceRow("El margen operativo se calcula como:", "EBIT / Ventas", ["EBITDA / Activos", "NOPAT / Caja", "Ventas / Patrimonio"], "Relaciona utilidad operativa con ventas.")
+  ],
+  medio: [
+    choiceRow("EBITDA permite comparar empresas del mismo sector porque:", "Reduce efectos de deuda, impuestos y políticas de D&A", ["Elimina todas las diferencias", "Siempre equivale a caja", "Ignora ventas"], "Ayuda a aislar operación, aunque no elimina todos los factores."),
+    choiceRow("Una empresa muy endeudada puede mostrar EBITDA alto pero:", "Tener problemas para pagar intereses", ["No tener obligaciones", "No pagar impuestos nunca", "No requerir inversión"], "El EBITDA no descuenta intereses."),
+    choiceRow("EBITDA alto no garantiza flujo libre porque:", "Puede requerir inversiones fuertes de mantenimiento", ["Incluye capex", "Es caja exacta", "Elimina inventarios"], "No resta capex ni cambios de capital de trabajo."),
+    choiceRow("El margen EBITDA indica:", "Porcentaje de ventas convertido en resultado operativo antes de D&A", ["Días de cobro", "Rotación de inventarios", "Deuda por patrimonio"], "Es EBITDA dividido entre ventas."),
+    choiceRow("Si EBITDA crece pero margen EBITDA cae, significa que:", "Las ventas crecieron proporcionalmente más que el EBITDA o subieron costos", ["La rentabilidad relativa mejoró siempre", "No hay cambios", "La deuda desapareció"], "El margen evalúa proporción, no solo monto."),
+    choiceRow("NOPAT sirve para observar:", "Resultado operativo después de impuestos", ["Caja bancaria final", "Solo utilidad bruta", "Solo deuda"], "Parte del EBIT y aplica tasa impositiva."),
+    choiceRow("Cash Flow operativo aproximado puede calcularse como:", "NOPAT + Depreciación y amortización", ["Ventas - Activos", "ROE × MAF", "CxC + CxP"], "Agrega cargos no desembolsables al resultado operativo después de impuestos."),
+    choiceRow("La depreciación se suma al EBITDA porque:", "Es un gasto contable no desembolsable del periodo", ["Es una venta", "Es deuda nueva", "Es impuesto pagado"], "No representa salida de efectivo actual, aunque sí refleja consumo económico de activos."),
+    choiceRow("Una advertencia sobre EBITDA es:", "Debe complementarse con deuda, capex y flujo de caja", ["Debe usarse solo", "Sustituye todos los estados", "Elimina análisis financiero"], "El indicador es útil, pero incompleto."),
+    choiceRow("EBITDA se enfoca en:", "El giro principal antes de ciertas partidas", ["Dividendos pagados", "Valor de mercado de acciones", "Número de proveedores"], "Su objetivo es leer desempeño operativo.")
+  ],
+  dificil: [
+    choiceRow("Un EBITDA positivo con utilidad neta negativa puede explicarse por:", "Intereses, impuestos, depreciación o amortización elevados", ["Ventas inexistentes", "EBITDA igual a caja", "Patrimonio negativo siempre"], "Las partidas excluidas por EBITDA pueden volver negativa la utilidad neta."),
+    choiceRow("Una empresa intensiva en activos puede tener EBITDA atractivo pero requerir:", "Alto capex de mantenimiento", ["Cero inversión", "Menos activos siempre", "Sin depreciación"], "El EBITDA no descuenta inversiones necesarias para sostener capacidad."),
+    choiceRow("Si el margen EBITDA sube y el margen operativo no, puede deberse a:", "Mayor peso de depreciación y amortización", ["Menor D&A siempre", "Más intereses", "Menos ventas"], "EBITDA excluye D&A; EBIT sí lo incorpora."),
+    choiceRow("Para una empresa con deuda alta, el EBITDA debe compararse con:", "Intereses y vencimientos", ["Solo ventas brutas", "Solo inventario", "Solo nombre legal"], "La capacidad operativa debe alcanzar compromisos financieros."),
+    choiceRow("El EBITDA puede ser engañoso si se usa para:", "Concluir que todo el EBITDA es efectivo disponible", ["Comparar operación", "Calcular margen EBITDA", "Analizar tendencia"], "No todo EBITDA se convierte en caja libre."),
+    choiceRow("GOPAT se diferencia de NOPAT porque:", "Parte del EBITDA y no del EBIT", ["No considera impuestos", "Es igual a ventas", "Solo usa patrimonio"], "GOPAT aplica impuesto al EBITDA; NOPAT al EBIT."),
+    choiceRow("Si depreciación aumenta por nuevas inversiones, EBITDA y EBIT:", "EBIT baja respecto al EBITDA", ["EBITDA baja igual que EBIT siempre", "Ambos son idénticos", "No se pueden calcular"], "La depreciación afecta EBIT, pero se suma para llegar a EBITDA."),
+    choiceRow("Una caída del margen EBITDA puede indicar:", "Mayor presión de costos operativos antes de D&A", ["Siempre menos deuda", "Mayor ROE seguro", "Mejor eficiencia garantizada"], "El margen mide cuánto queda de las ventas antes de D&A."),
+    choiceRow("EBITDA no incorpora cambios de capital de trabajo; por eso debe revisarse:", "Cobranza, inventarios y pagos", ["Solo dividendos", "Solo marca", "Solo patrimonio histórico"], "Ventas no cobradas o inventarios acumulados pueden consumir caja."),
+    choiceRow("Una interpretación profesional del EBITDA debe incluir:", "Margen, tendencia, deuda, capex y flujo de caja", ["Solo el número absoluto", "Solo utilidad bruta", "Solo ventas"], "El indicador requiere contexto operativo y financiero.")
+  ]
+};
+
+financePracticeBanks["aef-semana-12"] = {
+  facil: [
+    choiceRow("EBIT 100 y depreciación 20, amortización 10. EBITDA:", "130", ["100", "70", "110"], "\\(EBITDA=100+20+10=130\\)."),
+    choiceRow("EBITDA 200 y ventas 1,000. Margen EBITDA:", "20%", ["5%", "80%", "200%"], "\\(200/1000=20\\%\\)."),
+    choiceRow("EBIT 150 y ventas 750. Margen operativo:", "20%", ["15%", "5%", "50%"], "\\(150/750=20\\%\\)."),
+    choiceRow("EBIT 80 y tasa 30%. NOPAT:", "56", ["24", "80", "104"], "\\(80(1-0.30)=56\\)."),
+    choiceRow("EBITDA 120 y tasa 30%. GOPAT:", "84", ["36", "120", "156"], "\\(120(1-0.30)=84\\)."),
+    choiceRow("NOPAT 70 y D&A 30. Cash Flow operativo aproximado:", "100", ["40", "70", "30"], "\\(70+30=100\\)."),
+    choiceRow("Utilidad bruta 400 y gastos operativos sin D&A 250. EBITDA:", "150", ["650", "250", "400"], "\\(400-250=150\\)."),
+    choiceRow("EBITDA 300, depreciación 60 y amortización 20. EBIT:", "220", ["380", "300", "80"], "\\(EBIT=300-60-20=220\\)."),
+    choiceRow("Ventas 900 y EBITDA 180. Margen EBITDA:", "20%", ["5%", "18%", "80%"], "\\(180/900=20\\%\\)."),
+    choiceRow("Ventas 800 y EBIT 120. Margen operativo:", "15%", ["12%", "20%", "85%"], "\\(120/800=15\\%\\).")
+  ],
+  medio: [
+    choiceRow("Ventas 1,000, costo 600, gastos sin D&A 180, D&A 50. EBITDA:", "220", ["170", "400", "270"], "Utilidad bruta \\(400\\); EBITDA \\(=400-180=220\\)."),
+    choiceRow("Con esos datos, EBIT:", "170", ["220", "50", "400"], "\\(EBIT=EBITDA-D\\&A=220-50=170\\)."),
+    choiceRow("Con ventas 1,000 y EBIT 170. Margen operativo:", "17%", ["22%", "50%", "83%"], "\\(170/1000=17\\%\\)."),
+    choiceRow("Con ventas 1,000 y EBITDA 220. Margen EBITDA:", "22%", ["17%", "78%", "5%"], "\\(220/1000=22\\%\\)."),
+    choiceRow("EBIT 170 y tasa 30%. NOPAT:", "119", ["51", "170", "220"], "\\(170(1-0.30)=119\\)."),
+    choiceRow("EBITDA 220 y tasa 30%. GOPAT:", "154", ["66", "119", "220"], "\\(220(1-0.30)=154\\)."),
+    choiceRow("Ventas 2,000, costo 1,200, gastos sin D&A 350, D&A 100. EBITDA:", "450", ["350", "550", "800"], "Utilidad bruta \\(800\\); EBITDA \\(=800-350=450\\)."),
+    choiceRow("Con EBITDA 450 y D&A 100. EBIT:", "350", ["550", "450", "100"], "\\(450-100=350\\)."),
+    choiceRow("EBIT 350, intereses 80, impuestos 90. Utilidad neta:", "180", ["350", "270", "620"], "\\(350-80-90=180\\)."),
+    choiceRow("EBITDA 450 y ventas 2,000. Margen EBITDA:", "22.5%", ["17.5%", "45%", "77.5%"], "\\(450/2000=22.5\\%\\).")
+  ],
+  dificil: [
+    choiceRow("Ventas 5,000, costo 3,000, gastos sin D&A 900, D&A 300. EBITDA y EBIT:", "1,100 y 800", ["800 y 1,100", "2,000 y 1,100", "1,100 y 1,400"], "Utilidad bruta \\(2,000\\); EBITDA \\(=2,000-900=1,100\\); EBIT \\(=800\\)."),
+    choiceRow("Con EBIT 800, intereses 250 e impuestos 180. Utilidad neta:", "370", ["800", "550", "1,230"], "\\(800-250-180=370\\)."),
+    choiceRow("Con ventas 5,000 y EBITDA 1,100. Margen EBITDA:", "22%", ["16%", "7.4%", "78%"], "\\(1,100/5,000=22\\%\\)."),
+    choiceRow("Con ventas 5,000 y EBIT 800. Margen operativo:", "16%", ["22%", "84%", "8%"], "\\(800/5,000=16\\%\\)."),
+    choiceRow("EBIT 800 y tasa efectiva 30%. NOPAT:", "560", ["240", "1,040", "800"], "\\(800(1-0.30)=560\\)."),
+    choiceRow("EBITDA 1,100 y tasa efectiva 30%. GOPAT:", "770", ["330", "560", "1,100"], "\\(1,100(1-0.30)=770\\)."),
+    choiceRow("NOPAT 560 y D&A 300. Cash Flow operativo aproximado:", "860", ["260", "560", "300"], "\\(560+300=860\\)."),
+    choiceRow("EBITDA 1,100, intereses 700 y capex 600. Lectura:", "EBITDA no alcanza por sí solo para concluir holgura de caja", ["Situación perfecta", "No hay deuda", "No se necesita capex"], "Debe revisarse deuda, intereses e inversión; EBITDA no es flujo libre."),
+    choiceRow("Si D&A sube de 100 a 250 con mismo EBITDA 600, EBIT:", "Baja de 500 a 350", ["Sube de 500 a 850", "No cambia", "Se vuelve 600"], "EBIT \\(=EBITDA-D\\&A\\)."),
+    choiceRow("Ventas 1,500, EBITDA 300, EBIT 180. D&A implícita:", "120", ["480", "300", "180"], "\\(D\\&A=EBITDA-EBIT=120\\).")
   ]
 };
 
@@ -2703,6 +3596,210 @@ const financeCourse = {
   heroSubtitle: "Aprende a leer, clasificar e interpretar estados financieros con criterio contable."
 };
 
+const englishWeeks = [
+  { id: "ing-basico", label: "Basic", title: "Essential foundations" },
+  { id: "ing-a1", label: "A1", title: "Beginner user" },
+  { id: "ing-a2", label: "A2", title: "Pre-intermediate" },
+  { id: "ing-b1", label: "B1", title: "Intermediate" },
+  { id: "ing-b2", label: "B2", title: "Upper-intermediate" }
+];
+
+const englishTopics = [
+  {
+    id: "ing-basico-topic",
+    week: "ing-basico",
+    title: "Basic: control the sentence structure",
+    question: "Build simple sentences without losing subject, verb and word order.",
+    example: "Goal: answer simple questions with be, present simple, pronouns, numbers, dates and everyday vocabulary.",
+    skills: [
+      { label: "Grammar", title: "Be + present simple", detail: "I am, she is, they are; do/does for routines and questions." },
+      { label: "Reading", title: "Short sentences", detail: "Identify who does what, when and where." },
+      { label: "Listening", title: "Basic data", detail: "Recognize names, times, places and numbers." },
+      { label: "Vocabulary", title: "Daily life", detail: "Family, university, schedules, objects and common actions." }
+    ],
+    fill: [
+      "Essential verbs list with examples.",
+      "20-question mini diagnostic.",
+      "Common mistakes with do/does and be.",
+      "Short audio with specific details."
+    ]
+  },
+  {
+    id: "ing-a1-topic",
+    week: "ing-a1",
+    title: "A1: functional base",
+    question: "Understand and produce simple messages about routines, location and description.",
+    example: "Goal: read short texts, describe people/places and answer direct questions without word-for-word translation.",
+    skills: [
+      { label: "Grammar", title: "There is/are + prepositions", detail: "Location, simple quantities, adjectives and possessives." },
+      { label: "Reading", title: "Explicit information", detail: "Find visible details in notices, emails and short dialogues." },
+      { label: "Listening", title: "Slow conversations", detail: "Catch basic intention and keywords." },
+      { label: "Vocabulary", title: "Campus and routines", detail: "Classes, transport, food, schedules and activities." }
+    ],
+    fill: [
+      "A1 structure checklist.",
+      "Short notice/email-style readings.",
+      "Location and description questions.",
+      "Multiple-choice listening practice."
+    ]
+  },
+  {
+    id: "ing-a2-topic",
+    week: "ing-a2",
+    title: "A2: pre-intermediate",
+    question: "Connect ideas about the past, future, quantities and comparisons.",
+    example: "Goal: solve questions with simple past, future, comparatives, quantifiers and medium-difficulty texts.",
+    skills: [
+      { label: "Grammar", title: "Past + future", detail: "Regular/irregular verbs, going to, will and time expressions." },
+      { label: "Reading", title: "Detail and sequence", detail: "Order events and recognize simple cause." },
+      { label: "Listening", title: "Distractors", detail: "Separate the mentioned option from the correct answer." },
+      { label: "Vocabulary", title: "Basic connectors", detail: "Because, but, so, then, before, after and comparatives." }
+    ],
+    fill: [
+      "Priority irregular verbs table.",
+      "Past vs present exercises.",
+      "Readings with event sequence.",
+      "Question bank with comparatives."
+    ]
+  },
+  {
+    id: "ing-b1-topic",
+    week: "ing-b1",
+    title: "B1: intermediate placement level",
+    question: "Understand main ideas, infer intention and use longer structures.",
+    example: "Goal: manage present perfect, modals, basic conditionals, connectors and simple inference reading.",
+    skills: [
+      { label: "Grammar", title: "Perfect + modals", detail: "Present perfect, should, must, have to, can/could and first conditional." },
+      { label: "Reading", title: "Main idea", detail: "Separate thesis, support, detail and author intention." },
+      { label: "Listening", title: "Opinion and intention", detail: "Detect agreement, disagreement, recommendation or problem." },
+      { label: "Vocabulary", title: "Academic basics", detail: "Frequent words in university contexts." }
+    ],
+    fill: [
+      "Placement verb tense map.",
+      "Readings with main idea and inference.",
+      "Listening focused on speaker intention.",
+      "Timed B1 mock test."
+    ]
+  },
+  {
+    id: "ing-b2-topic",
+    week: "ing-b2",
+    title: "B2: upper-intermediate",
+    question: "Solve texts and questions with more abstraction, grammar accuracy and academic vocabulary.",
+    example: "Goal: answer difficult questions with passive voice, reported speech, conditionals, relative clauses and collocations.",
+    skills: [
+      { label: "Grammar", title: "Complex structures", detail: "Passive voice, reported speech, relative clauses and conditionals." },
+      { label: "Reading", title: "Advanced inference", detail: "Tone, author stance, purpose and paragraph relationships." },
+      { label: "Listening", title: "Fine detail", detail: "Recognize reformulations, contrast and conclusion." },
+      { label: "Vocabulary", title: "Collocations", detail: "Phrasal verbs, word formation and academic expressions." }
+    ],
+    fill: [
+      "Priority collocations and phrasal verbs list.",
+      "Longer texts with inference and tone.",
+      "Reported speech/passive practice.",
+      "Final B2 mock test with error review."
+    ]
+  }
+];
+
+const englishTheoryData = {
+  "ing-basico": {
+    facil: [
+      choiceRow("Choose the correct sentence:", "She is a student.", ["She are a student.", "She am a student.", "She be a student."], "With she, use is."),
+      choiceRow("Choose the correct question:", "Do you study English?", ["Does you study English?", "Are you study English?", "You do study English?"], "With you in present simple questions, use Do."),
+      choiceRow("I ___ from Peru.", "am", ["is", "are", "do"], "With I, use am.")
+    ],
+    medio: [
+      choiceRow("He ___ coffee every morning.", "drinks", ["drink", "drinking", "is drink"], "In present simple, he/she/it takes -s."),
+      choiceRow("They ___ at the university now.", "are", ["is", "am", "be"], "They usa are."),
+      choiceRow("Choose the negative sentence:", "I do not like math.", ["I not like math.", "I am not like math.", "I does not like math."], "In present simple, I uses do not.")
+    ],
+    dificil: [
+      choiceRow("Choose the best answer: ___ your sister live near campus?", "Does", ["Do", "Is", "Are"], "For he/she present simple questions, use Does."),
+      choiceRow("My classes ___ at 8 a.m.", "start", ["starts", "is start", "starting"], "Classes es plural, por eso el verbo queda start."),
+      choiceRow("There ___ two books on the desk.", "are", ["is", "am", "be"], "With plural nouns, use there are.")
+    ]
+  },
+  "ing-a1": {
+    facil: [
+      choiceRow("There ___ a library near my house.", "is", ["are", "am", "do"], "With singular nouns, use there is."),
+      choiceRow("The book is ___ the table.", "on", ["at", "to", "from"], "On means on a surface."),
+      choiceRow("Choose the correct sentence:", "This is my backpack.", ["This my backpack.", "These is my backpack.", "This are my backpack."], "This is works for singular nouns.")
+    ],
+    medio: [
+      choiceRow("I usually go to class ___ bus.", "by", ["in", "on", "at"], "The correct phrase is by bus."),
+      choiceRow("How ___ students are in your class?", "many", ["much", "any", "some"], "Many is used with plural countable nouns."),
+      choiceRow("She has ___ orange notebook.", "an", ["a", "the an", "any"], "Orange starts with a vowel sound.")
+    ],
+    dificil: [
+      choiceRow("Choose the best answer: The classroom is ___ the second floor.", "on", ["in", "at", "to"], "For floors, use on."),
+      choiceRow("There aren't ___ chairs in the room.", "any", ["some", "a", "much"], "In plural negative sentences, any is commonly used."),
+      choiceRow("My brother's car means:", "The car belongs to my brother", ["My brother is a car", "The car is my brothers", "My brother has no car"], "Possessive 's shows ownership.")
+    ]
+  },
+  "ing-a2": {
+    facil: [
+      choiceRow("Yesterday, I ___ to the library.", "went", ["go", "goes", "going"], "Yesterday exige pasado; go cambia a went."),
+      choiceRow("Tomorrow, we ___ study for the test.", "will", ["did", "was", "went"], "Will marca futuro."),
+      choiceRow("This exam is ___ than the last one.", "easier", ["easy", "more easy", "easiest"], "Easy cambia a easier en comparativo.")
+    ],
+    medio: [
+      choiceRow("I didn't ___ the answer.", "know", ["knew", "knows", "known"], "After didn't, use the base form of the verb."),
+      choiceRow("There is ___ milk in the fridge.", "some", ["many", "a few", "any one"], "Milk is uncountable; some works in affirmative sentences."),
+      choiceRow("She is going to ___ a new course.", "take", ["took", "takes", "taking"], "After going to, use the base form.")
+    ],
+    dificil: [
+      choiceRow("Choose the correct sentence:", "I have fewer classes than my friend.", ["I have less classes than my friend.", "I have few class than my friend.", "I have fewer class than my friend."], "Fewer is used with plural countable nouns."),
+      choiceRow("When I arrived, the class ___ already started.", "had", ["has", "was", "did"], "Had already started forma past perfect."),
+      choiceRow("If it rains, I ___ stay home.", "will", ["would", "did", "was"], "First conditional: if + present, will + verb.")
+    ]
+  },
+  "ing-b1": {
+    facil: [
+      choiceRow("I have lived here ___ 2022.", "since", ["for", "during", "ago"], "Since marks the starting point."),
+      choiceRow("You ___ submit the form today. It is required.", "must", ["might", "would", "can to"], "Must expresses strong obligation."),
+      choiceRow("If I study, I ___ pass.", "will", ["would", "had", "was"], "First conditional.")
+    ],
+    medio: [
+      choiceRow("Choose the best connector: I was tired; ___, I finished the assignment.", "however", ["because", "so", "although of"], "However introduce contraste entre dos ideas."),
+      choiceRow("The main idea of a paragraph is usually:", "The central point the author wants to communicate", ["A random example", "Only the final word", "A grammar mistake"], "Main idea resume el punto central."),
+      choiceRow("She has never ___ sushi.", "eaten", ["ate", "eat", "eating"], "Present perfect usa participio: eaten.")
+    ],
+    dificil: [
+      choiceRow("Choose the correct sentence:", "If I had more time, I would practice listening.", ["If I have more time, I would practice listening.", "If I had more time, I will practice listening.", "If I would have more time, I practice listening."], "Second conditional: if + past, would + verb."),
+      choiceRow("The phrase 'in contrast' signals:", "Opposition", ["Cause", "Example only", "Sequence"], "In contrast signals difference or opposition."),
+      choiceRow("A speaker says 'I guess that might work.' The tone is:", "Uncertain", ["Completely sure", "Angry", "Impossible"], "Might and I guess reduce certainty.")
+    ]
+  },
+  "ing-b2": {
+    facil: [
+      choiceRow("The report ___ by the team yesterday.", "was written", ["wrote", "has wrote", "was writing by"], "Passive voice: was/were + past participle."),
+      choiceRow("She said she ___ busy.", "was", ["is", "will", "be"], "In reported speech, the verb tense often shifts back."),
+      choiceRow("Students ___ submit late work may lose points.", "who", ["which", "where", "whose place"], "Who se refiere a personas.")
+    ],
+    medio: [
+      choiceRow("Choose the best option: The proposal was rejected ___ its lack of evidence.", "due to", ["although", "despite of", "because"], "Due to introduce causa nominal."),
+      choiceRow("A text's tone refers to:", "The author's attitude toward the subject", ["Only the number of paragraphs", "The title length", "The font"], "Tone es la actitud o postura del autor."),
+      choiceRow("Choose the correct collocation:", "make a decision", ["do a decision", "take a homework", "make an exam"], "The correct collocation is make a decision.")
+    ],
+    dificil: [
+      choiceRow("If the instructions had been clearer, fewer students ___ mistakes.", "would have made", ["would make", "will have made", "had made"], "Third conditional: would have + past participle."),
+      choiceRow("The sentence 'The results were not insignificant' uses:", "Understatement", ["Direct command", "Simple past only", "A question tag"], "The double negative softens or indirectly emphasizes the idea."),
+      choiceRow("A paragraph that challenges a previous claim is most likely:", "Presenting a counterargument", ["Repeating the same example", "Defining a word only", "Listing dates"], "Challenging a claim introduce contraargumento.")
+    ]
+  }
+};
+
+const englishCourse = {
+  weeks: englishWeeks,
+  topics: englishTopics,
+  theoryData: englishTheoryData,
+  practiceBanks: {},
+  heroTitle: "ING UPC English Placement",
+  heroSubtitle: "Prepare by level: Basic, A1, A2, B1 and B2 with grammar, reading, listening and vocabulary.",
+  subtitle: "Basic · A1 · A2 · B1 · B2"
+};
+
 const courseContent = {
   "economia-produccion": productionCourse,
   "poder-mercado": {
@@ -2713,7 +3810,8 @@ const courseContent = {
     heroTitle: "EPM Economía de la Empresa con Poder de Mercado",
     heroSubtitle: "Estudia monopolio, oligopolio, concentración, teoría de juegos e información asimétrica."
   },
-  "analisis-estados-financieros": financeCourse
+  "analisis-estados-financieros": financeCourse,
+  "ingles-placement-upc": englishCourse
 };
 
 function numericOptions(answer, index) {
@@ -2988,6 +4086,15 @@ courseList.addEventListener("click", (event) => {
   openCourse(card.dataset.course);
 });
 
+toggleClassesButton?.addEventListener("click", () => {
+  const isHidden = classesPanel.classList.toggle("hidden");
+  toggleClassesButton.setAttribute("aria-expanded", String(!isHidden));
+  toggleClassesButton.textContent = isHidden ? "Ver clases" : "Ocultar clases";
+  if (!isHidden) {
+    classesPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+});
+
 document.querySelector("#backToCourses").addEventListener("click", () => showOnly("courses"));
 
 document.querySelector("#theoryWeek").addEventListener("change", (event) => selectWeek(event.target.value));
@@ -3008,5 +4115,7 @@ renderTopics();
 renderGuide();
 renderChoiceQuiz(state.weekId);
 renderPracticeQuiz(state.weekId);
+renderBalancePracticeArea();
 updateProgress();
+startPlacementCountdown();
 showOnly("courses");

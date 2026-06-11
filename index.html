@@ -3,28 +3,323 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GE | Guías de Economía y Finanzas</title>
+    <title>UPC Placement Test | Preparation</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <section id="coursesView" class="courses-view">
-      <header class="course-topbar">
-        <a class="brand" href="#coursesView" aria-label="Guía de Estudio">
+    <section id="coursesView" class="courses-view placement-page">
+      <header class="course-topbar placement-topbar">
+        <a class="brand" href="#coursesView" aria-label="Placement Test UPC">
           <span class="brand-mark">GE</span>
           <span>
-            <strong>GE Estudio</strong>
-            <small>Economía y finanzas</small>
+            <strong>UPC Placement</strong>
+            <small>Intensive prep</small>
           </span>
         </a>
+        <button id="toggleClasses" class="classes-toggle" type="button" aria-expanded="false" aria-controls="classesPanel">
+          Ver clases
+        </button>
       </header>
-      <div class="courses-head">
-        <div>
-          <p class="eyebrow">Biblioteca de estudio</p>
-          <h1>Selecciona un curso</h1>
-          <p>Elige una guía para estudiar economía, finanzas, estados financieros y análisis aplicado.</p>
-        </div>
-      </div>
-      <div id="courseList" class="course-grid"></div>
+
+      <main class="placement-main" aria-label="UPC Placement Test preparation">
+        <section class="placement-hero">
+          <div class="placement-copy">
+            <p class="eyebrow">UPC Placement Test · June 20</p>
+            <h1>A focused prep plan for the placement test</h1>
+            <p>
+              Your preparation hub: diagnostic work, topics to complete, mock tests,
+              resources and pending tasks in one place.
+            </p>
+          </div>
+          <aside class="countdown-card" aria-label="Countdown to June 20">
+            <span>Time left</span>
+            <div class="countdown-grid">
+              <strong><span id="countdownDays">--</span><small>days</small></strong>
+              <strong><span id="countdownHours">--</span><small>hours</small></strong>
+              <strong><span id="countdownMinutes">--</span><small>minutes</small></strong>
+            </div>
+            <p id="countdownLabel">For June 20 at 10:00 a.m.</p>
+          </aside>
+        </section>
+
+        <section class="english-route" aria-label="English route for the placement test">
+          <div class="english-route-head">
+            <p class="eyebrow">English route</p>
+            <h2>From basic foundations to B2 with a clear map</h2>
+          </div>
+          <div class="level-lane">
+            <article>
+              <span>Basic</span>
+              <strong>Survival foundations</strong>
+              <p>Pronouns, be, present simple, questions and essential vocabulary.</p>
+            </article>
+            <article>
+              <span>A1</span>
+              <strong>Functional base</strong>
+              <p>Routines, descriptions, prepositions, there is/are and short listening.</p>
+            </article>
+            <article>
+              <span>A2</span>
+              <strong>Pre-intermediate</strong>
+              <p>Past, future, comparatives, quantifiers and reading for detail.</p>
+            </article>
+            <article>
+              <span>B1</span>
+              <strong>Intermediate</strong>
+              <p>Perfect tenses, modals, conditionals, connectors and inference.</p>
+            </article>
+            <article>
+              <span>B2</span>
+              <strong>Upper-intermediate</strong>
+              <p>Passive voice, reported speech, collocations and academic reading.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="daily-plan" aria-label="Daily goals until the placement test">
+          <div class="daily-plan-head">
+            <div>
+              <p class="eyebrow">Daily goals</p>
+              <h2>Study plan until test day</h2>
+              <p>Built around your real availability: today is blocked, Tuesday-Friday 6-9 p.m., Saturday after 3 p.m., Sunday flexible, and Monday after 3 p.m.</p>
+            </div>
+            <aside>
+              <strong>Rule for every session</strong>
+              <span>60% study · 25% practice · 15% content filling</span>
+            </aside>
+          </div>
+
+          <div class="plan-timeline">
+            <article class="plan-day blocked">
+              <time>Mon, Jun 8</time>
+              <h3>Blocked day</h3>
+              <p>No study load today. Only collect links, files or screenshots if they are already at hand.</p>
+              <ul>
+                <li>Do not start new content.</li>
+                <li>Leave tomorrow's diagnostic ready.</li>
+              </ul>
+            </article>
+
+            <article class="plan-day">
+              <time>Tue, Jun 9 · 6-9 p.m.</time>
+              <h3>Diagnostic + content skeleton</h3>
+              <p>Take a short diagnostic and fill the missing structure for Basic and A1.</p>
+              <ul>
+                <li>30-question diagnostic.</li>
+                <li>Fill Basic/A1 grammar checklist.</li>
+                <li>Create the error log.</li>
+              </ul>
+            </article>
+
+            <article class="plan-day">
+              <time>Wed, Jun 10 · 6-9 p.m.</time>
+              <h3>Basic + A1 repair</h3>
+              <p>Close the easiest gaps first so higher levels do not collapse later.</p>
+              <ul>
+                <li>Be, present simple, questions and negatives.</li>
+                <li>There is/are, prepositions and countables.</li>
+                <li>Add 20 practice questions to the bank.</li>
+              </ul>
+            </article>
+
+            <article class="plan-day">
+              <time>Thu, Jun 11 · 6-9 p.m.</time>
+              <h3>A2 grammar + reading</h3>
+              <p>Move into past, future, comparatives and reading for detail.</p>
+              <ul>
+                <li>Build irregular verbs table.</li>
+                <li>Complete A2 reading notes.</li>
+                <li>Add one short A2 reading set.</li>
+              </ul>
+            </article>
+
+            <article class="plan-day">
+              <time>Fri, Jun 12 · 6-9 p.m.</time>
+              <h3>A2 listening + first mock</h3>
+              <p>Train distractors and measure timing before the weekend block.</p>
+              <ul>
+                <li>Listening practice with specific information.</li>
+                <li>Mini mock test 1.</li>
+                <li>Update weak-topic list.</li>
+              </ul>
+            </article>
+
+            <article class="plan-day weekend">
+              <time>Sat, Jun 13 · after 3 p.m.</time>
+              <h3>B1 deep work</h3>
+              <p>Use the longer block for B1 structures and content filling.</p>
+              <ul>
+                <li>Present perfect, modals and first/second conditional.</li>
+                <li>Main idea + inference reading.</li>
+                <li>Fill B1 lesson content and examples.</li>
+              </ul>
+            </article>
+
+            <article class="plan-day flexible">
+              <time>Sun, Jun 14 · flexible</time>
+              <h3>Light buffer</h3>
+              <p>Keep this flexible. If the day disappears, nothing critical breaks.</p>
+              <ul>
+                <li>Review error log for 30-45 minutes.</li>
+                <li>Optional vocabulary flashcards.</li>
+                <li>No new heavy topic.</li>
+              </ul>
+            </article>
+
+            <article class="plan-day weekend">
+              <time>Mon, Jun 15 · after 3 p.m.</time>
+              <h3>B2 foundations</h3>
+              <p>Start the advanced layer with structures that often appear in placement tests.</p>
+              <ul>
+                <li>Passive voice and reported speech.</li>
+                <li>Relative clauses and connectors.</li>
+                <li>Fill B2 content map.</li>
+              </ul>
+            </article>
+
+            <article class="plan-day">
+              <time>Tue, Jun 16 · 6-9 p.m.</time>
+              <h3>B2 reading + vocabulary</h3>
+              <p>Work on tone, inference, collocations and phrasal verbs.</p>
+              <ul>
+                <li>One longer reading passage.</li>
+                <li>Collocations and word formation list.</li>
+                <li>Add difficult questions to review bank.</li>
+              </ul>
+            </article>
+
+            <article class="plan-day">
+              <time>Wed, Jun 17 · 6-9 p.m.</time>
+              <h3>Full mock + review</h3>
+              <p>Run a timed mock test and review mistakes immediately.</p>
+              <ul>
+                <li>Full mock test.</li>
+                <li>Score by section.</li>
+                <li>Choose the final three weak areas.</li>
+              </ul>
+            </article>
+
+            <article class="plan-day">
+              <time>Thu, Jun 18 · 6-9 p.m.</time>
+              <h3>Targeted repair</h3>
+              <p>Only repair what the mock test proved is weak.</p>
+              <ul>
+                <li>Grammar weak area drill.</li>
+                <li>Reading/listening weak area drill.</li>
+                <li>Finish missing content cards.</li>
+              </ul>
+            </article>
+
+            <article class="plan-day">
+              <time>Fri, Jun 19 · 6-9 p.m.</time>
+              <h3>Final review</h3>
+              <p>Keep it calm: strategy, error log and light practice only.</p>
+              <ul>
+                <li>Review error log.</li>
+                <li>Confirm access, schedule and documents.</li>
+                <li>Set test-day timing strategy.</li>
+              </ul>
+            </article>
+
+            <article class="plan-day test-day">
+              <time>Sat, Jun 20 · 10 a.m.</time>
+              <h3>Test day</h3>
+              <p>No cramming. Warm up lightly and protect your focus.</p>
+              <ul>
+                <li>10-minute vocabulary warm-up.</li>
+                <li>Read instructions carefully.</li>
+                <li>Use the timing plan by section.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="classesPanel" class="classes-panel hidden" aria-label="Clases disponibles">
+          <div class="classes-panel-head">
+            <div>
+              <p class="eyebrow">Clases</p>
+              <h2>Biblioteca de cursos</h2>
+              <p>Las guías siguen disponibles, pero ahora quedan como acceso secundario.</p>
+            </div>
+          </div>
+          <div id="courseList" class="course-grid"></div>
+        </section>
+
+        <section class="placement-shell" aria-label="Placement test section outline">
+          <div class="placement-section-head">
+            <p class="eyebrow">New section</p>
+            <h2>Placement Test UPC</h2>
+            <p>Initial outline to complete with real content, questions and materials.</p>
+          </div>
+
+          <div class="placement-grid">
+            <article class="placement-block priority-block">
+              <span>01</span>
+              <h3>Initial diagnostic</h3>
+              <ul>
+                <li>Current level: pending.</li>
+                <li>Latest score or mock test: pending.</li>
+                <li>Frequent mistakes detected: pending.</li>
+                <li>Minimum target score: pending.</li>
+              </ul>
+            </article>
+
+            <article class="placement-block">
+              <span>02</span>
+              <h3>Syllabus to complete</h3>
+              <ul>
+                <li>Grammar: tenses, conditionals, modals and connectors.</li>
+                <li>Reading: main idea, detail, inference and vocabulary.</li>
+                <li>Listening: gist, specific information and distractors.</li>
+                <li>Vocabulary: academic words, collocations and phrasal verbs.</li>
+              </ul>
+            </article>
+
+            <article class="placement-block">
+              <span>03</span>
+              <h3>Practice bank</h3>
+              <ul>
+                <li>Exam-style questions: pending.</li>
+                <li>Exercises by topic: pending.</li>
+                <li>Explained mistakes: pending.</li>
+                <li>Difficult questions to review: pending.</li>
+              </ul>
+            </article>
+
+            <article class="placement-block">
+              <span>04</span>
+              <h3>Mock tests</h3>
+              <ul>
+                <li>Mock test 1: date, score and review.</li>
+                <li>Mock test 2: date, score and review.</li>
+                <li>Final mock test: time strategy.</li>
+              </ul>
+            </article>
+
+            <article class="placement-block">
+              <span>05</span>
+              <h3>Schedule until test day</h3>
+              <ul>
+                <li>Tue-Fri: focused 6-9 p.m. work blocks.</li>
+                <li>Saturday: longer deep-work block after 3 p.m.</li>
+                <li>Sunday: flexible buffer only.</li>
+                <li>Final day: light review, access check and rest.</li>
+              </ul>
+            </article>
+
+            <article class="placement-block">
+              <span>06</span>
+              <h3>Final checklist</h3>
+              <ul>
+                <li>Test format confirmed.</li>
+                <li>Schedule and access confirmed.</li>
+                <li>Documents or credentials ready.</li>
+                <li>Time plan by section defined.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+      </main>
     </section>
 
     <div id="appShell" class="hidden">
@@ -36,8 +331,8 @@
           <small>Unidad 1</small>
         </span>
       </a>
-      <nav class="main-nav" aria-label="Volver a cursos">
-        <button id="backToCourses" class="nav-link" type="button">Volver a cursos</button>
+      <nav class="main-nav" aria-label="Volver al placement test">
+        <button id="backToCourses" class="nav-link" type="button">Volver al placement</button>
       </nav>
     </header>
 
@@ -95,6 +390,7 @@
         <div class="week-mode-tabs" aria-label="Contenido de la semana">
           <button class="week-mode-btn active" data-section="learn">Guía / teoría</button>
           <button class="week-mode-btn" data-section="theory">Examen teórico</button>
+          <button class="week-mode-btn" data-section="balance" hidden>Balance General</button>
           <button class="week-mode-btn" data-section="practice">Ejercicios prácticos</button>
         </div>
       </section>
@@ -147,6 +443,17 @@
           </div>
           <div id="theoryQuiz" class="quiz"></div>
           <div id="theoryResult" class="result-box" hidden></div>
+        </section>
+
+        <section id="balance" class="app-section" aria-labelledby="balanceTitle">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Práctica interactiva</p>
+              <h2 id="balanceTitle"><span class="title-icon">🧾</span> Balance General</h2>
+              <p>Clasifica cuentas, arma la estructura del balance general y verifica si cumple la ecuación contable.</p>
+            </div>
+          </div>
+          <article id="balanceView" class="lesson"></article>
         </section>
 
         <section id="practice" class="app-section" aria-labelledby="practiceTitle">
